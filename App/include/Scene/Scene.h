@@ -15,9 +15,9 @@ class Scene
 public:
 	Scene();
 
-	inline Camera* GetCamera() { return m_camera.get(); }
+	Camera* GetCamera() const { return m_camera.get(); }
 
-	inline ECS::EntityManager& GetEntityManager() { return m_entityManager; }
+	ECS::EntityManager& GetEntityManager() { return m_entityManager; }
 
 	// Simulates the scene
 	void Simulate(float deltaTime, unsigned int timeSteps = 1);
@@ -51,7 +51,9 @@ private:
 	// Constructs the scene's GUI
 	void ConstructGUI();
 
-	void ConstructLevelTreeGUI();
+	void ConstructLevelTreeTab();
+	void ConstructWorldTab();
+	void ConstructCameraTab();
 
 protected:
 	ECS::EntityManager m_entityManager; // Contains all the entities for the scene
@@ -61,5 +63,5 @@ protected:
 private:
 	// TODO: Hacky fix for now - remove this when a more robust model system is implemented
 	std::unique_ptr<Shader> m_modelShader;
-	std::unique_ptr<Model> m_model;
+	glm::vec4 m_sceneColor;
 };

@@ -1,18 +1,12 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include <Events/Event.h>
+#include <AssetManager.h>
 #include <Window.h>
 #include <Layer.h>
 
-#include <Renderer/Shader.h>
-#include <Renderer/Texture.h>
-#include <Renderer/VertexArray.h>
+#include <Events/Event.h>
 
 #include <memory>
-
 #include <cassert>
 
 class Layer;
@@ -43,6 +37,8 @@ public:
 
 	const Window& GetWindow() const;
 
+	AssetManager& GetAssetManager() { return m_assetManager; }
+
 	template<typename T>
 	void AddLayer()
 	{
@@ -56,6 +52,8 @@ private:
 private:
 	ApplicationSpecification m_appSpec;
 	std::unique_ptr<Window> m_window;
+
+	AssetManager m_assetManager;
 
 	float m_deltaTime;
 	float m_lastTime;

@@ -16,7 +16,7 @@ public:
 
 	Entity& CreateEntity();
 
-	inline size_t GetEntityCount() const { return m_entityCount; }
+	size_t GetEntityCount() const { return m_entityCount; }
 
 	template<IsComponent T>
 	T& GetComponentFromEntity(size_t id)

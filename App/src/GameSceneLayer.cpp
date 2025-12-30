@@ -9,14 +9,6 @@
 
 #include <Scene/Scene.h>
 
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-
-#include <iostream>
-
-#define STRINGIFY(X) #X
-
 GameSceneLayer::GameSceneLayer()
 	: m_sceneHasFocus(true)
 {
@@ -32,7 +24,7 @@ void GameSceneLayer::OnUpdate(float deltaTime)
 void GameSceneLayer::OnEvent(Core::Event& event)
 {
 	Core::EventDispatcher dispatcher(event);
-	dispatcher.Dispatch<Core::KeyPressedEvent>([this](Core::KeyPressedEvent& event) { return OnKeyPressed(event.GetKeyCode()); });
+	dispatcher.Dispatch<Core::KeyPressedEvent>([this](const Core::KeyPressedEvent& event) { return OnKeyPressed(event.GetKeyCode()); });
 	m_scene->OnEvent(event);
 }
 

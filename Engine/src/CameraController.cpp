@@ -28,7 +28,7 @@ void CameraController::Update(float deltaTime)
 {
 	const glm::vec3 cameraForward = m_camera.forward();
 	const glm::vec3 walkDirection = glm::normalize(glm::vec3(cameraForward.x, 0.0f, cameraForward.z));
-	const float movementSpeed = 5.f;
+	const float movementSpeed = 15.f;
 	const glm::vec3 upVector = glm::vec3(0.f, 1.0f, 0.f);
 
 	glm::vec3 moveDelta(0.0f);

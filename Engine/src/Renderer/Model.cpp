@@ -1,34 +1,43 @@
 #include <Renderer/Model.h>
 
 #include <iostream>
-#include <fstream>
+#include <filesystem>
 
-Model::Model(const char* filepath)
+Model::Model(const std::string& filepath)
+	: m_filepath(filepath), m_loaded(false)
 {
-	// Load model into meshes
-	LoadModel(filepath);
+	std::filesystem::path path(m_filepath);
+
+	// Retrieve the name and directory from the filepath
+	m_name = path.filename().stem().string();
+	m_directory = m_filepath.substr(0, m_filepath.find_last_of('/'));
 }
 
-void Model::LoadModel(const char* filepath)
+bool Model::LoadModel()
 {
+	if (m_loaded)
+	{
+		return false;
+	}
 
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(filepath, aiProcess_Triangulate |
+	const aiScene* scene = importer.ReadFile(m_filepath.c_str(), aiProcess_Triangulate |
 		aiProcess_FlipUVs |
 		aiProcess_GenSmoothNormals |
 		aiProcess_CalcTangentSpace);
 
 	if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
 	{
-		std::cerr << "Failed to import model: " << filepath << std::endl;
-		std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
-		return;
+		std::cerr << "Failed to import model: " << m_filepath << "\n";
+		std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << "\n";
+		return false;
 	}
 
-	const std::string filePathStr = filepath;
-	m_directory = filePathStr.substr(0, filePathStr.find_last_of('/'));
 
 	processNode(scene->mRootNode, scene);
+
+	m_loaded = true;
+	return true;
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene)
@@ -56,7 +65,7 @@ void Model::Draw(Shader& shader)
 
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 {
-	if (!mesh || !mesh->HasPositions() || !mesh->HasNormals())
+	if (!mesh || !mesh->HasPositions())
 	{
 		assert(false && "ERROR: Tried to process invalid mesh!");
 		std::cerr << "ERROR: Tried to process invalid mesh: " << mesh->mName.C_Str() << std::endl;
@@ -69,7 +78,11 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		Vertex vertex;
 		vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-		vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+
+		if (mesh->HasNormals())
+		{
+			vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+		}
 		vertex.textureCoord = mesh->HasTextureCoords(0) ? glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y) : glm::vec2(0, 0);
 		vertices.emplace_back(vertex);
 	}

@@ -1,16 +1,16 @@
 #include <Scene/Scene.h>
 
 #include <Application.h>
-
 #include <Events/InputEvents.h>
+#include <Renderer/Renderer.h>
 
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include <ranges>
+
 
 using Core::EventDispatcher;
 
-// TODO: Remove this hard-coded dependancy once a more robust model system is implemented
+// TODO: Remove this hard-coded dependency once a more robust model system is implemented
 
 // Vertex Shaders
 const std::string kPositionNormalAndTexCoordVS = SHADER_DIR + std::string("/positionNormalAndTexCoords.vertex.glsl");
@@ -20,19 +20,20 @@ const std::string kColorFromTextureFS = SHADER_DIR + std::string("/colorFromText
 
 // Models
 const std::string kBackpackModel = MODEL_DIR + std::string("/backpack/backpack.obj");
+const std::string kGirlModel = MODEL_DIR + std::string("/girl/girl.obj");
 
 Scene::Scene()
-	: m_entityManager(), m_camera(nullptr), m_cameraController(nullptr)
+	: m_camera(nullptr), m_cameraController(nullptr)
 {
-	// Set model
-	m_model = std::make_unique<Model>(kBackpackModel.c_str());
+	// Import all models 
+	Core::Application::GetApp()->GetAssetManager().ImportModel(kBackpackModel);
+	Core::Application::GetApp()->GetAssetManager().ImportModel(kGirlModel);
 
 	// Create shaders
 	m_modelShader = std::make_unique<Shader>(kPositionNormalAndTexCoordVS, kColorFromTextureFS);
 
 	// Init camera
 	const glm::vec3 cameraPos(0.0f, 0.0f, 4.0f);
-	const glm::vec3 cameraForward(0.0f, 0.0f, -1.0f);
 	const float cameraFOV = 45.f;
 
 	m_camera = std::make_unique<Camera>(cameraPos, 0.0f, -90.f, 0.0f, cameraFOV);
@@ -40,7 +41,7 @@ Scene::Scene()
 
 	// Set initial color
 	const glm::vec4 bgColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClearColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+	Renderer::ClearColor(bgColor);
 }
 
 void Scene::Simulate(float deltaTime, unsigned int timeSteps /* = 1*/)
@@ -50,11 +51,6 @@ void Scene::Simulate(float deltaTime, unsigned int timeSteps /* = 1*/)
 		Update(deltaTime);
 	}
 	Render();
-}
-
-void Scene::ConstructGUI()
-{
-	ConstructLevelTreeGUI();
 }
 
 void Scene::OnEvent(Core::Event& event)
@@ -87,8 +83,8 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render()
 {
-	// Clear screen
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	Renderer::ClearColor(m_sceneColor);
+	Renderer::ClearScreen();
 
 	// View
 	glm::mat4 view = m_camera->viewMatrix();
@@ -149,111 +145,192 @@ bool Scene::OnMouseMove(double xPos, double yPos)
 	return false;
 }
 
-void Scene::ConstructLevelTreeGUI()
+void Scene::ConstructGUI()
 {
-	ImGui::Begin("Level Tree");
-
-	if (m_entityManager.GetEntityCount() == 0)
+	ImGui::Begin("Scene");
+	if (ImGui::BeginTabBar("SceneTabs"))
 	{
-		const ImVec4 grayTextColor(0.5f, 0.5f, 0.5f, 1.f);
-		ImGui::TextColored(grayTextColor, "Right-click to add a game object");
+		ConstructLevelTreeTab();
+		ConstructWorldTab();
+		ConstructCameraTab();
+		ImGui::EndTabBar();
 	}
+	ImGui::End();
+}
 
-	if (ImGui::BeginPopupContextWindow("level_tree_context"))
+void Scene::ConstructLevelTreeTab()
+{
+	if (ImGui::BeginTabItem("Level Tree"))
 	{
-		if (ImGui::MenuItem("New Game Object"))
+		// Retrieve AssetManager
+		Core::AssetManager& assetManager = Core::Application::GetApp()->GetAssetManager();
+
+		if (m_entityManager.GetEntityCount() == 0)
 		{
-			// Add a game object with a transform
-			m_entityManager.CreateEntity().AddComponent<ECS::TransformComponent>();
+			const ImVec4 grayTextColor(0.5f, 0.5f, 0.5f, 1.f);
+			ImGui::TextColored(grayTextColor, "Right-click to add a game object");
 		}
-		ImGui::EndPopup();
-	}
 
-	for (size_t i = 0; i < m_entityManager.GetEntityCount(); ++i)
-	{
-		ECS::Entity& entity = m_entityManager.GetEntity(i);
-
-		// Push unique ID for this entity
-		ImGui::PushID(entity.GetID());
-
-		const bool isNodeOpen = ImGui::TreeNode("gameObject", "Game Object %zu", entity.GetID());
-
-		if (ImGui::BeginPopupContextItem())
+		if (ImGui::BeginPopupContextWindow("level_tree_context"))
 		{
-			const bool canAddComponents = !entity.HasComponent<ECS::MeshComponent>();
-			if (canAddComponents)
+			if (ImGui::MenuItem("New Game Object"))
 			{
-				if (ImGui::BeginMenu("Add Component"))
-				{
-					if (!entity.HasComponent<ECS::MeshComponent>())
-					{
-						if (ImGui::MenuItem("Mesh"))
-						{
-							entity.AddComponent<ECS::MeshComponent>(m_model.get());
-						}
-					}
-
-					ImGui::EndMenu();
-				}
+				// Add a game object with a transform
+				m_entityManager.CreateEntity().AddComponent<ECS::TransformComponent>();
 			}
-
-			const bool canRemoveComponents = entity.HasComponent<ECS::MeshComponent>();
-			if (canRemoveComponents)
-			{
-				if (ImGui::BeginMenu("Remove Component"))
-				{
-					if (entity.HasComponent<ECS::MeshComponent>())
-					{
-						if (ImGui::MenuItem("Mesh"))
-						{
-							entity.RemoveComponent<ECS::MeshComponent>();
-						}
-					}
-
-					ImGui::EndMenu();
-				}
-			}
-
 			ImGui::EndPopup();
 		}
 
-		// Display TreeNode for Entity
-		if (isNodeOpen)
+		for (size_t i = 0; i < m_entityManager.GetEntityCount(); ++i)
 		{
-			// Display Entity Transform
-			if (entity.HasComponent<ECS::TransformComponent>())
-			{
-				if (ImGui::CollapsingHeader("Transform"))
-				{
-					ECS::TransformComponent& transformComp = entity.GetComponent<ECS::TransformComponent>();
+			ECS::Entity& entity = m_entityManager.GetEntity(i);
 
-					float objectPos[3]{ static_cast<float>(transformComp.x), static_cast<float>(transformComp.y), static_cast<float>(transformComp.z) };
-					if (ImGui::DragFloat3("Position", objectPos))
+			// Push unique ID for this entity
+			ImGui::PushID(entity.GetID());
+
+			const bool isNodeOpen = ImGui::TreeNode("gameObject", "Game Object %zu", entity.GetID());
+
+			if (ImGui::BeginPopupContextItem())
+			{
+				const bool canAddComponents = !entity.HasComponent<ECS::MeshComponent>();
+				if (canAddComponents)
+				{
+					if (ImGui::BeginMenu("Add Component"))
 					{
-						transformComp.x = static_cast<double>(objectPos[0]);
-						transformComp.y = static_cast<double>(objectPos[1]);
-						transformComp.z = static_cast<double>(objectPos[2]);
+						if (!entity.HasComponent<ECS::MeshComponent>())
+						{
+							if (ImGui::MenuItem("Mesh"))
+							{
+								entity.AddComponent<ECS::MeshComponent>();
+							}
+						}
+
+						ImGui::EndMenu();
 					}
 				}
-			}
 
-			ImGui::Spacing();
-
-			// Display Entity Mesh
-			if (entity.HasComponent<ECS::MeshComponent>())
-			{
-				if (ImGui::CollapsingHeader("Mesh"))
+				const bool canRemoveComponents = entity.HasComponent<ECS::MeshComponent>();
+				if (canRemoveComponents)
 				{
-					ImGui::Text("Mesh: [ACTIVE]");
+					if (ImGui::BeginMenu("Remove Component"))
+					{
+						if (entity.HasComponent<ECS::MeshComponent>())
+						{
+							if (ImGui::MenuItem("Mesh"))
+							{
+								entity.RemoveComponent<ECS::MeshComponent>();
+							}
+						}
+
+						ImGui::EndMenu();
+					}
 				}
+
+				ImGui::EndPopup();
 			}
 
-			ImGui::TreePop();
+			// Display TreeNode for Entity
+			if (isNodeOpen)
+			{
+				// Display Entity Transform
+				if (entity.HasComponent<ECS::TransformComponent>())
+				{
+					if (ImGui::CollapsingHeader("Transform"))
+					{
+						ECS::TransformComponent& transformComp = entity.GetComponent<ECS::TransformComponent>();
+
+						float objectPos[3]{ static_cast<float>(transformComp.x), static_cast<float>(transformComp.y), static_cast<float>(transformComp.z) };
+						if (ImGui::DragFloat3("Position", objectPos))
+						{
+							transformComp.x = static_cast<double>(objectPos[0]);
+							transformComp.y = static_cast<double>(objectPos[1]);
+							transformComp.z = static_cast<double>(objectPos[2]);
+						}
+					}
+				}
+
+				ImGui::Spacing();
+
+				// Display Entity Mesh
+				if (entity.HasComponent<ECS::MeshComponent>())
+				{
+					if (ImGui::CollapsingHeader("Mesh"))
+					{
+						ECS::MeshComponent& meshComp = entity.GetComponent<ECS::MeshComponent>();
+
+						// Get current model name for preview
+						const std::string currentModelStr = meshComp.GetModel() ? meshComp.GetModel()->GetName() : "None";
+
+						// List all possible models
+						if (ImGui::BeginCombo("Model", currentModelStr.c_str()))
+						{
+							const bool isNoModelSelected = meshComp.GetModel() == nullptr;
+
+							if (ImGui::Selectable("None", isNoModelSelected))
+							{
+								meshComp.SetModel(nullptr);
+							}
+
+							if (isNoModelSelected)
+							{
+								ImGui::SetItemDefaultFocus();
+							}
+
+							for (const auto& model : std::views::values(assetManager.GetModels()))
+							{
+								const bool isSelected = meshComp.GetModel() == model.get();
+
+								if (ImGui::Selectable(model->GetName().c_str(), isSelected))
+								{
+									meshComp.SetModel(model.get());
+								}
+
+								if (isSelected)
+								{
+									ImGui::SetItemDefaultFocus();
+								}
+							}
+
+							ImGui::EndCombo();
+						}
+					}
+				}
+
+				ImGui::TreePop();
+			}
+
+			// Pop unique ID for this entity
+			ImGui::PopID();
 		}
 
-		// Pop unique ID for this entity
-		ImGui::PopID();
+		ImGui::EndTabItem();
 	}
 
-	ImGui::End();
+}
+
+void Scene::ConstructWorldTab()
+{
+	if (ImGui::BeginTabItem("World"))
+	{
+		float sceneColor[4] = { m_sceneColor.r, m_sceneColor.g, m_sceneColor.b, m_sceneColor.a };
+		if (ImGui::ColorPicker4("Scene Color", sceneColor))
+		{
+			m_sceneColor = glm::vec4(sceneColor[0], sceneColor[1], sceneColor[2], sceneColor[3]);
+		}
+
+		ImGui::EndTabItem();
+	}
+}
+
+void Scene::ConstructCameraTab()
+{
+	if (ImGui::BeginTabItem("Camera"))
+	{
+		float cameraFOV = m_camera->fov();
+		if (ImGui::SliderFloat("FOV", &cameraFOV, 1.f, 120.f))
+		{
+			m_camera->SetFOV(cameraFOV);
+		}
+		ImGui::EndTabItem();
+	}
 }

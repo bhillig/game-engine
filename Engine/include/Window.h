@@ -31,7 +31,7 @@ public:
 
 	void RenderGUI();
 
-	void Update();
+	void Show();
 
 	int GetWidth() const { return m_windowSpecification.Width; }
 

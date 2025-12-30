@@ -51,6 +51,7 @@ add_subdirectory(external/assimp)
 
 set(SOURCES 
 	src/Application.cpp
+	src/AssetManager.cpp
 	src/Camera.cpp
 	src/CameraController.cpp
 	src/Window.cpp
@@ -59,6 +60,7 @@ set(SOURCES
 	src/Renderer/ElementBuffer.cpp
 	src/Renderer/Mesh.cpp
 	src/Renderer/Model.cpp
+	src/Renderer/Renderer.cpp
 	src/Renderer/Shader.cpp
 	src/Renderer/Texture.cpp
 	src/Renderer/VertexArray.cpp
@@ -68,6 +70,7 @@ set(SOURCES
 
 set(HEADERS
 	include/Application.h
+	include/AssetManager.h
 	include/Camera.h
 	include/CameraController.h
 	include/ECS/Component.h
@@ -82,6 +85,7 @@ set(HEADERS
 	include/Renderer/ElementBuffer.h
 	include/Renderer/Mesh.h
 	include/Renderer/Model.h
+	include/Renderer/Renderer.h
 	include/Renderer/Shader.h
 	include/Renderer/Texture.h
 	include/Renderer/VertexArray.h

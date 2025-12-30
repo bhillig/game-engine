@@ -56,6 +56,22 @@ bool Window::Create()
 		}
 	});
 
+	glfwSetMouseButtonCallback(m_handle, [](GLFWwindow* window, int button, int action, int mods) {
+		Window* self = static_cast<Window*>(glfwGetWindowUserPointer(window));
+		if (!self) return;
+
+		if (action == GLFW_PRESS)
+		{
+			MouseButtonPressedEvent event(button);
+			self->m_windowSpecification.Callback(event);
+		}
+		else if (action == GLFW_RELEASE)
+		{
+			MouseButtonReleasedEvent event(button);
+			self->m_windowSpecification.Callback(event);
+		}
+	});
+
 	glfwSetCursorPosCallback(m_handle, [](GLFWwindow* window, double xPos, double yPos) {
 		Window* self = static_cast<Window*>(glfwGetWindowUserPointer(window));
 		if (!self) return;
@@ -84,6 +100,18 @@ bool Window::Create()
 		self->m_windowSpecification.Callback(event);
 	});
 
+	// Init ImGui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable docking
+	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable multi-viewports
+	ImGui::StyleColorsDark();
+
+	// Setup backends
+	ImGui_ImplGlfw_InitForOpenGL(m_handle, true);
+	ImGui_ImplOpenGL3_Init("#version 460");
+
 	// Initialize GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cerr << "Failed to initialize GLAD" << std::endl;
@@ -107,6 +135,34 @@ void Window::SetupGUIForFrame()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
+	// Create a fullscreen dockspace
+	//ImGuiViewport* viewport = ImGui::GetMainViewport();
+	//ImGui::SetNextWindowPos(viewport->WorkPos);
+	//ImGui::SetNextWindowSize(viewport->WorkSize);
+	//ImGui::SetNextWindowViewport(viewport->ID);
+
+	//ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar |
+	//	ImGuiWindowFlags_NoDocking |
+	//	ImGuiWindowFlags_NoTitleBar |
+	//	ImGuiWindowFlags_NoCollapse |
+	//	ImGuiWindowFlags_NoResize |
+	//	ImGuiWindowFlags_NoMove |
+	//	ImGuiWindowFlags_NoBringToFrontOnFocus |
+	//	ImGuiWindowFlags_NoNavFocus;
+
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+	//ImGui::Begin("DockSpace", nullptr, window_flags);
+	//ImGui::PopStyleVar(3);
+
+	//// DockSpace
+	//ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+	//ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+
+	//ImGui::End();
 }
 
 void Window::RenderGUI()
@@ -115,7 +171,7 @@ void Window::RenderGUI()
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Window::Update()
+void Window::Show()
 {
 	// Swap front and back buffers
 	glfwSwapBuffers(m_handle);

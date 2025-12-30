@@ -11,7 +11,7 @@ public:
 	virtual ~Component() {}
 
 	void SetActive(bool active) { m_active = active; }
-	inline bool IsActive() const { return m_active; }
+	bool IsActive() const { return m_active; }
 
 private:
 	bool m_active = false;
@@ -38,7 +38,9 @@ public:
 	MeshComponent(Model* model)
 		: m_model(model) {}
 
-	inline Model* GetModel() { return m_model; }
+	void SetModel(Model* model) { m_model = model; }
+
+	Model* GetModel() const { return m_model; }
 
 private:
 	Model* m_model;

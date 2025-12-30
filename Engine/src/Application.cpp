@@ -38,36 +38,27 @@ bool Application::Init()
 	// TODO: Add glfw error callback
 	if (!glfwInit())
 	{
-		std::cerr << "Application failed to initialize: Failed to init glfw!\n";
+		std::cerr << "Failed to init glfw!\n";
 		return false;
 	}
 
 	if (!m_window->Create())
 	{
-		std::cerr << "Application failed to initialize: Failed to create window!\n";
+		std::cerr << "Failed to create window!\n";
 		return false;
 	}
 
-	// Init ImGui
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	ImGui::StyleColorsDark();
-
-	// Setup backends
-	ImGui_ImplGlfw_InitForOpenGL(m_window->GetHandle(), true);
-	ImGui_ImplOpenGL3_Init("#version 460");
 	return true;
 }
 
 void Application::Run()
 {
-	m_lastTime = glfwGetTime();
+	m_lastTime = static_cast<float>(glfwGetTime());
 
 	while (!m_window->ShouldClose())
 	{
 		// Calculate deltaTime
-		const float currentTime = glfwGetTime();
+		const float currentTime = static_cast<float>(glfwGetTime());
 		m_deltaTime = currentTime - m_lastTime;
 		m_lastTime = currentTime;
 
@@ -80,16 +71,12 @@ void Application::Run()
 		for (const auto& layer : m_layerStack)
 		{
 			layer->OnUpdate(m_deltaTime);
-		}
-
-		// Render layers
-		for (const auto& layer : m_layerStack)
-		{
 			layer->OnRender();
 		}
 
+		// Render GUI and show updated buffer
 		m_window->RenderGUI();
-		m_window->Update();
+		m_window->Show();
 	}
 }
 
@@ -113,6 +100,7 @@ void Application::RaiseEvent(Event& event)
 
 Application::~Application()
 {
+	glfwTerminate();
 	s_instance = nullptr;
 }
 
