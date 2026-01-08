@@ -60,6 +60,7 @@ set(SOURCES
 	src/Renderer/ElementBuffer.cpp
 	src/Renderer/Mesh.cpp
 	src/Renderer/Model.cpp
+	src/Renderer/ModelLoader.cpp
 	src/Renderer/Renderer.cpp
 	src/Renderer/Shader.cpp
 	src/Renderer/Texture.cpp
@@ -85,13 +86,15 @@ set(HEADERS
 	include/Renderer/ElementBuffer.h
 	include/Renderer/Mesh.h
 	include/Renderer/Model.h
+	include/Renderer/ModelLoader.h
 	include/Renderer/Renderer.h
 	include/Renderer/Shader.h
 	include/Renderer/Texture.h
 	include/Renderer/VertexArray.h
 	include/Renderer/VertexBuffer.h
 	include/Renderer/VertexBufferLayout.h
-	include/Utils/FileUtils.h)
+	include/Utils/FileUtils.h
+	include/Utils/ThreadSafeQueue.h)
 
 add_library(Engine STATIC ${SOURCES} ${HEADERS})
 

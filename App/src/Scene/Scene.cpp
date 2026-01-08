@@ -13,21 +13,21 @@ using Core::EventDispatcher;
 // TODO: Remove this hard-coded dependency once a more robust model system is implemented
 
 // Vertex Shaders
-const std::string kPositionNormalAndTexCoordVS = SHADER_DIR + std::string("/positionNormalAndTexCoords.vertex.glsl");
+static constexpr std::string_view kPositionNormalAndTexCoordVS = SHADER_DIR "/positionNormalAndTexCoords.vertex.glsl";
 
 // Fragment Shaders
-const std::string kColorFromTextureFS = SHADER_DIR + std::string("/colorFromTexture.fragment.glsl");
+static constexpr std::string_view kColorFromTextureFS = SHADER_DIR "/colorFromTexture.fragment.glsl";
 
 // Models
-const std::string kBackpackModel = MODEL_DIR + std::string("/backpack/backpack.obj");
-const std::string kGirlModel = MODEL_DIR + std::string("/girl/girl.obj");
+static constexpr std::string_view kBackpackModel = MODEL_DIR "/backpack/backpack.obj";
+static constexpr std::string_view kGirlModel = MODEL_DIR "/girl/girl.obj";
 
 Scene::Scene()
 	: m_camera(nullptr), m_cameraController(nullptr)
 {
 	// Import all models 
-	Core::Application::GetApp()->GetAssetManager().ImportModel(kBackpackModel);
-	Core::Application::GetApp()->GetAssetManager().ImportModel(kGirlModel);
+	Core::Application::GetApp()->GetAssetManager().RequestLoadModel(std::string(kBackpackModel));
+	Core::Application::GetApp()->GetAssetManager().RequestLoadModel(std::string(kGirlModel));
 
 	// Create shaders
 	m_modelShader = std::make_unique<Shader>(kPositionNormalAndTexCoordVS, kColorFromTextureFS);
@@ -276,7 +276,7 @@ void Scene::ConstructLevelTreeTab()
 								ImGui::SetItemDefaultFocus();
 							}
 
-							for (const auto& model : std::views::values(assetManager.GetModels()))
+							for (const auto& model : assetManager.GetModels())
 							{
 								const bool isSelected = meshComp.GetModel() == model.get();
 

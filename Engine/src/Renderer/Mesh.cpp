@@ -4,10 +4,10 @@
 
 #include <Renderer/VertexBufferLayout.h>
 
-Mesh::Mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices, std::vector<TextureRef>&& textures)
-	: m_vertices(std::move(vertices))
-	, m_indices(std::move(indices))
-	, m_textures(std::move(textures))
+Mesh::Mesh(MeshData&& meshData)
+	: m_vertices(std::move(meshData.vertices))
+	, m_indices(std::move(meshData.indices))
+	, m_textures(std::move(meshData.textureReferences))
 	, m_vao()
 	, m_vbo(m_vertices.data(), m_vertices.size() * sizeof(Vertex))
 	, m_ebo(m_indices.data(), m_indices.size() * sizeof(unsigned int))

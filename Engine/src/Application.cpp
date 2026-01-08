@@ -74,6 +74,9 @@ void Application::Run()
 			layer->OnRender();
 		}
 
+		// Update AssetManager
+		m_assetManager.Update();
+
 		// Render GUI and show updated buffer
 		m_window->RenderGUI();
 		m_window->Show();

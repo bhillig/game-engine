@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Renderer/Model.h>
+#include <Renderer/ModelLoader.h>
 
 #include <memory>
 #include <string>
@@ -12,15 +13,22 @@ namespace Core
 class AssetManager
 {
 public:
-	AssetManager() = default;
+	AssetManager();
+	~AssetManager();
 
-	bool ImportModel(const std::string& filepath);
+	void Update();
 
-	const std::unordered_map<std::string, std::unique_ptr<Model>>& GetModels() const { return m_models; }
+	void RequestLoadModel(const std::string& filepath);
+
+	const std::vector<std::unique_ptr<Model>>& GetModels() const { return m_models; }
 
 private:
-	std::unordered_map<std::string, std::unique_ptr<Model>> m_models; // Maps filepath to model
 
+	std::thread m_modelLoaderThread;
+	threadsafe_queue<ModelLoadedData> m_modelToConstructQueue;
+	ModelLoader m_modelLoader;
+
+	std::vector<std::unique_ptr<Model>> m_models; // Maps filepath to model
 };
 
 }

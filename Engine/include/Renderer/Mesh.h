@@ -26,10 +26,30 @@ struct TextureRef
 	std::shared_ptr<Texture> texture;
 };
 
+// Pairs a texture type (e.g "texture_diffuse" with a filepath)
+using MeshDataTexturePairVec = std::vector<std::pair<std::string, std::string>>;
+
+struct MeshLoadedData
+{
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	MeshDataTexturePairVec textureData; // Pairs a texture type (e.g "texture_diffuse" with a filepath)
+};
+
+using MeshDataTextureDataPairVec = std::vector<std::pair<std::string, std::shared_ptr<Texture>>>;
+
+
+struct MeshData
+{
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	std::vector<TextureRef> textureReferences; // Pairs a texture type (e.g "texture_diffuse" with a texture)
+};
+
 class Mesh
 {
 public:
-	Mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices, std::vector<TextureRef>&& textures);
+	Mesh(MeshData&& meshData);
 	Mesh(Mesh&& other) noexcept;
 	Mesh& operator=(Mesh&& other) noexcept;
 	Mesh(const Mesh&) = delete;

@@ -41,12 +41,12 @@ void LinkShaderProgram(unsigned int shaderProgram)
 	}
 }
 
-Shader::Shader(const std::string& vertexShaderFilePath, const std::string& fragmentShaderFilePath)
+Shader::Shader(std::string_view vertexShaderFilePath, std::string_view fragmentShaderFilePath)
 {
 	std::string vertexShaderSource;
-	fileUtils::ReadTextFromFile(vertexShaderFilePath, vertexShaderSource);
+	fileUtils::ReadTextFromFile(vertexShaderFilePath.data(), vertexShaderSource);
 	std::string fragmentShaderSource;
-	fileUtils::ReadTextFromFile(fragmentShaderFilePath, fragmentShaderSource);
+	fileUtils::ReadTextFromFile(fragmentShaderFilePath.data(), fragmentShaderSource);
 
 	unsigned int vertexShader = CompileShader(vertexShaderSource.c_str(), GL_VERTEX_SHADER);
 	unsigned int fragmentShader = CompileShader(fragmentShaderSource.c_str(), GL_FRAGMENT_SHADER);

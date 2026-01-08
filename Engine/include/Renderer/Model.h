@@ -1,5 +1,6 @@
 #pragma once
 
+#include <future>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
@@ -21,27 +22,20 @@ namespace Core
 class Model
 {
 public:
-	Model(const std::string& filepath);
+	Model(const std::string& filepath, std::vector<MeshLoadedData>&& meshData);
 
-	void Draw(Shader& shader);
+	void Draw(Shader& shader) const;
 
 	std::string GetName() const { return m_name; }
 
 private:
 
-	bool LoadModel();
-
-	void processNode(aiNode* node, const aiScene* scene);
-	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-	std::vector<TextureRef> loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& typeName);
-
-	std::vector<Mesh> m_meshes;
+	std::string m_filepath;
 	std::string m_directory;
 	std::string m_name;
-	std::string m_filepath;
-	bool m_loaded;
+	std::vector<Mesh> m_meshes;
 
-	std::unordered_map<std::string, TextureRef> m_textureCache;
+	std::unordered_map<std::string, std::shared_ptr<Texture>> m_textureMap;
 
 	friend class Core::AssetManager;
 };

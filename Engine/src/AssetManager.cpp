@@ -1,30 +1,48 @@
 #include <AssetManager.h>
 #include <filesystem>
+#include <iostream>
+
 
 namespace Core
 {
 
-bool AssetManager::ImportModel(const std::string& filepath)
+AssetManager::AssetManager()
+	: m_modelLoader([this](ModelLoadedData&& modelData)
+	{
+		m_modelToConstructQueue.push(std::move(modelData));
+	})
+{
+	m_modelLoaderThread = std::thread(&ModelLoader::ProcessTasks_Thread, &m_modelLoader);
+}
+
+AssetManager::~AssetManager()
+{
+	if (m_modelLoaderThread.joinable())
+	{
+		m_modelLoaderThread.join();
+	}
+}
+
+void AssetManager::Update()
+{
+	// If we have a model ready to be constructed - construct it
+	ModelLoadedData modelData;
+	if (m_modelToConstructQueue.try_pop(modelData))
+	{
+		std::cout << "[RESOURCE] Model Loaded: " << modelData.filepath << "\n";
+		m_models.emplace_back(std::make_unique<Model>(modelData.filepath, std::move(modelData.meshData)));
+	}
+}
+
+void AssetManager::RequestLoadModel(const std::string& filepath)
 {
 	std::filesystem::path path(filepath);
 	if (!exists(path))
 	{
-		return false;
+		return;
 	}
 
-	if (m_models.contains(filepath))
-	{
-		return false;
-	}
-
-	std::unique_ptr<Model> model = std::make_unique<Model>(path.string());
-	if (!model->LoadModel())
-	{
-		return false;
-	}
-
-	m_models[filepath] = std::move(model);
-	return true;
+	m_modelLoader.AddModelLoadTaskToQueue({ filepath });
 }
 
 }

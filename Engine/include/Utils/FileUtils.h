@@ -5,6 +5,6 @@
 namespace fileUtils
 {
 
-	bool ReadTextFromFile(const std::string& filepath, std::string& text);
+	bool ReadTextFromFile(std::string_view filepath, std::string& text);
 
 } // namespace fileUtils
