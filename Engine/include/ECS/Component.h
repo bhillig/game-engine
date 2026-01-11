@@ -2,6 +2,10 @@
 
 #include <Renderer/Model.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 namespace ECS
 {
 
@@ -17,17 +21,17 @@ private:
 	bool m_active = false;
 };
 
-// For now will be very primitive and just be a xyz position
 class TransformComponent : public Component
 {
 public:
 	TransformComponent()
-		: x(0), y(0), z(0) {}
-	TransformComponent(double x, double y, double z)
-		: x(x), y(y), z(z) {}
-	double x;
-	double y;
-	double z;
+		: position(0.0, 0.0, 0.0)
+		, rotation(0.f, 0.f, 0.f)
+		, scale(1.f, 1.f, 1.f) {}
+
+	glm::vec3 position;
+	glm::vec3 rotation;
+	glm::vec3 scale;
 };
 
 class MeshComponent : public Component

@@ -105,7 +105,11 @@ void Scene::Render()
 
 		// Set model matrix for model
 		glm::mat4 modelObj(1.f);
-		modelObj = glm::translate(modelObj, glm::vec3(transformComp.x, transformComp.y, transformComp.z));
+		modelObj = glm::translate(modelObj, transformComp.position);
+		modelObj = glm::rotate(modelObj, transformComp.rotation.x, glm::vec3(1, 0, 0));
+		modelObj = glm::rotate(modelObj, transformComp.rotation.y, glm::vec3(0, 1, 0));
+		modelObj = glm::rotate(modelObj, transformComp.rotation.z, glm::vec3(0, 0, 1));
+		modelObj = glm::scale(modelObj, transformComp.scale);
 		m_modelShader->SetUniformMatrix4fv("u_Model", glm::value_ptr(modelObj));
 
 		// Draw model
@@ -239,12 +243,22 @@ void Scene::ConstructLevelTreeTab()
 					{
 						ECS::TransformComponent& transformComp = entity.GetComponent<ECS::TransformComponent>();
 
-						float objectPos[3]{ static_cast<float>(transformComp.x), static_cast<float>(transformComp.y), static_cast<float>(transformComp.z) };
+						float objectPos[3]{ static_cast<float>(transformComp.position.x), static_cast<float>(transformComp.position.y), static_cast<float>(transformComp.position.z) };
 						if (ImGui::DragFloat3("Position", objectPos))
 						{
-							transformComp.x = static_cast<double>(objectPos[0]);
-							transformComp.y = static_cast<double>(objectPos[1]);
-							transformComp.z = static_cast<double>(objectPos[2]);
+							transformComp.position = glm::vec3(objectPos[0], objectPos[1], objectPos[2]);
+						}
+
+						float objectRot[3]{ transformComp.rotation.x, transformComp.rotation.y, transformComp.rotation.z };
+						if (ImGui::DragFloat3("Rotation", objectRot))
+						{
+							transformComp.rotation = glm::vec3(objectRot[0], objectRot[1], objectRot[2]);
+						}
+
+						float objectScale[3]{ transformComp.scale.x, transformComp.scale.y, transformComp.scale.z };
+						if (ImGui::DragFloat3("Scale", objectScale))
+						{
+							transformComp.scale = glm::vec3(objectScale[0], objectScale[1], objectScale[2]);
 						}
 					}
 				}
