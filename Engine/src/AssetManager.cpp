@@ -12,15 +12,6 @@ AssetManager::AssetManager()
 		m_modelToConstructQueue.push(std::move(modelData));
 	})
 {
-	m_modelLoaderThread = std::thread(&ModelLoader::ProcessTasks_Thread, &m_modelLoader);
-}
-
-AssetManager::~AssetManager()
-{
-	if (m_modelLoaderThread.joinable())
-	{
-		m_modelLoaderThread.join();
-	}
 }
 
 void AssetManager::Update()

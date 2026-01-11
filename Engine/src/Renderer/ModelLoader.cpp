@@ -8,11 +8,27 @@
 ModelLoader::ModelLoader(ModelLoadedCallbackFunc callback)
 	: m_onModelLoadedCallback(std::move(callback))
 {
+	m_workerThread = std::thread(&ModelLoader::ProcessTasks_Thread, this);
+}
+
+ModelLoader::~ModelLoader()
+{
+	RequestWorkerThreadStop();
+	if (m_workerThread.joinable())
+	{
+		m_workerThread.join();
+	}
 }
 
 void ModelLoader::AddModelLoadTaskToQueue(ModelLoadTask&& task)
 {
 	m_modelLoadTaskQueue.push(std::move(task));
+}
+
+void ModelLoader::RequestWorkerThreadStop()
+{
+	m_stopRequested = true; // Set the thread state to stop
+	m_modelLoadTaskQueue.notify_stop(); // Wake up processes blocked on the queue
 }
 
 bool ModelLoader::LoadModel(const std::string& filepath, ModelLoadedData& modelData)
@@ -34,7 +50,6 @@ bool ModelLoader::LoadModel(const std::string& filepath, ModelLoadedData& modelD
 	// Set filepath
 	modelData.filepath = filepath;
 
-	// TODO: Improve this - ModelLoader should not need to know the current model's directory like this
 	m_currentModelDirectory = filepath.substr(0, filepath.find_last_of('/'));
 
 	// Set model into mesh data
@@ -121,10 +136,14 @@ void ModelLoader::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, cons
 
 void ModelLoader::ProcessTasks_Thread()
 {
-	while (true)
+	m_stopRequested = false;
+	while (!m_stopRequested)
 	{
 		ModelLoadTask task;
-		m_modelLoadTaskQueue.wait_and_pop(task);
+		if (!m_modelLoadTaskQueue.wait_and_pop(task, m_stopRequested))
+		{
+			break;
+		}
 
 		// Load the model and notify callback function
 		ModelLoadedData data;

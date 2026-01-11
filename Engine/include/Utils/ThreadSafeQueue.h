@@ -86,6 +86,22 @@ public:
 		return data;
 	}
 
+	bool wait_and_pop(T& value, const std::atomic<bool>& stopFlag)
+	{
+		std::unique_lock lock(m_mutex);
+		m_dataCondition.wait(lock, [this, &stopFlag] { return !m_queue.empty() || stopFlag.load(); });
+
+		// If the queue is empty then the stop flag was set
+		if (m_queue.empty())
+		{
+			return false;
+		}
+
+		value = std::move(m_queue.front());
+		m_queue.pop();
+		return true;
+	}
+
 	void wait_and_pop(T& value)
 	{
 		std::unique_lock lock(m_mutex);
@@ -101,6 +117,11 @@ public:
 		std::shared_ptr<T> data(std::make_shared<T>(std::move(m_queue.front())));
 		m_queue.pop();
 		return data;
+	}
+
+	void notify_stop()
+	{
+		m_dataCondition.notify_all();
 	}
 
 	size_t size() const

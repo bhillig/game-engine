@@ -22,6 +22,7 @@ class ModelLoader
 {
 public:
 	ModelLoader(ModelLoadedCallbackFunc callback);
+	~ModelLoader();
 
 	void AddModelLoadTaskToQueue(ModelLoadTask&& task);
 
@@ -37,10 +38,15 @@ private:
 
 	void ProcessTasks_Thread();
 
+	void RequestWorkerThreadStop();
+
 	std::unordered_map<std::string, TextureRef> m_textureCache;
 	std::string m_currentModelDirectory;
+
 	ModelLoadedCallbackFunc m_onModelLoadedCallback;
+	std::thread m_workerThread;
 	threadsafe_queue<ModelLoadTask> m_modelLoadTaskQueue;
+	std::atomic<bool> m_stopRequested;
 
 	friend class Core::AssetManager;
 };
