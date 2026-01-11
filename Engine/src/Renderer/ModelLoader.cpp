@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+
 ModelLoader::ModelLoader(ModelLoadedCallbackFunc callback)
 	: m_onModelLoadedCallback(std::move(callback))
 {

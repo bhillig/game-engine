@@ -1,18 +1,15 @@
 #pragma once
 
-#include <future>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-
 #include <Renderer/Mesh.h>
 #include <Renderer/Texture.h>
 
 #include <vector>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
+struct AABB
+{
+	glm::vec3 min;
+	glm::vec3 max;
+};
 
 namespace Core
 {
@@ -28,12 +25,16 @@ public:
 
 	std::string GetName() const { return m_name; }
 
+	AABB GetLocalAABB() const { return m_axisAlignedBoundingBox; }
+
 private:
 
+	void CalculateAABB(AABB& aaBB);
+
 	std::string m_filepath;
-	std::string m_directory;
 	std::string m_name;
 	std::vector<Mesh> m_meshes;
+	AABB m_axisAlignedBoundingBox;
 
 	std::unordered_map<std::string, std::shared_ptr<Texture>> m_textureMap;
 

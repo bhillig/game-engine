@@ -3,6 +3,8 @@
 #include <Utils/ThreadSafeQueue.h>
 #include <Renderer/Model.h>
 
+#include <assimp/scene.h>
+
 struct ModelLoadTask
 {
 	std::string filepath;
