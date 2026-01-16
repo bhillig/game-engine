@@ -82,7 +82,7 @@ public:
 	bool RemoveEntity(size_t index);
 
 private:
-	std::tuple<std::vector<TransformComponent>, std::vector<MeshComponent>> m_componentPool;
+	std::tuple<std::vector<TransformComponent>, std::vector<MeshComponent>, std::vector<BoundingBoxComponent>> m_componentPool;
 	std::vector<bool> m_activePool;
 };
 

@@ -33,14 +33,14 @@ Scene::Scene()
 	m_modelShader = std::make_unique<Shader>(kPositionNormalAndTexCoordVS, kColorFromTextureFS);
 
 	// Init camera
-	const glm::vec3 cameraPos(0.0f, 0.0f, 4.0f);
-	const float cameraFOV = 45.f;
+	constexpr glm::vec3 cameraPos(0.0f, 0.0f, 4.0f);
+	constexpr float cameraFOV = 45.f;
 
 	m_camera = std::make_unique<Camera>(cameraPos, 0.0f, -90.f, 0.0f, cameraFOV);
 	m_cameraController = std::make_unique<CameraController>(*m_camera);
 
 	// Set initial color
-	const glm::vec4 bgColor(0.0f, 0.0f, 0.0f, 1.0f);
+	constexpr glm::vec4 bgColor(0.0f, 0.0f, 0.0f, 1.0f);
 	Renderer::ClearColor(bgColor);
 }
 
@@ -196,7 +196,7 @@ void Scene::ConstructLevelTreeTab()
 
 			if (ImGui::BeginPopupContextItem())
 			{
-				const bool canAddComponents = !entity.HasComponent<ECS::MeshComponent>();
+				const bool canAddComponents = !entity.HasComponent<ECS::MeshComponent>() || !entity.HasComponent<ECS::BoundingBoxComponent>();
 				if (canAddComponents)
 				{
 					if (ImGui::BeginMenu("Add Component"))
@@ -209,11 +209,19 @@ void Scene::ConstructLevelTreeTab()
 							}
 						}
 
+						if (!entity.HasComponent<ECS::BoundingBoxComponent>())
+						{
+							if (ImGui::MenuItem("Bounding Box"))
+							{
+								entity.AddComponent<ECS::BoundingBoxComponent>();
+							}
+						}
+
 						ImGui::EndMenu();
 					}
 				}
 
-				const bool canRemoveComponents = entity.HasComponent<ECS::MeshComponent>();
+				const bool canRemoveComponents = entity.HasComponent<ECS::MeshComponent>() || entity.HasComponent<ECS::BoundingBoxComponent>();
 				if (canRemoveComponents)
 				{
 					if (ImGui::BeginMenu("Remove Component"))
@@ -223,6 +231,14 @@ void Scene::ConstructLevelTreeTab()
 							if (ImGui::MenuItem("Mesh"))
 							{
 								entity.RemoveComponent<ECS::MeshComponent>();
+							}
+						}
+
+						if (entity.HasComponent<ECS::BoundingBoxComponent>())
+						{
+							if (ImGui::MenuItem("Bounding Box"))
+							{
+								entity.RemoveComponent<ECS::BoundingBoxComponent>();
 							}
 						}
 
@@ -306,6 +322,33 @@ void Scene::ConstructLevelTreeTab()
 							}
 
 							ImGui::EndCombo();
+						}
+					}
+				}
+
+				ImGui::Spacing();
+
+				// Display Entity Bounding Box
+				if (entity.HasComponent<ECS::MeshComponent>())
+				{
+					if (ImGui::CollapsingHeader("Bounding Box"))
+					{
+						ECS::BoundingBoxComponent& bbComp = entity.GetComponent<ECS::BoundingBoxComponent>();
+
+						// Set Bounding Box Center
+						const glm::vec3 center = bbComp.GetCenter();
+						float bbPos[3]{ center.x, center.y, center.z };
+						if (ImGui::DragFloat3("Center", bbPos))
+						{
+							bbComp.SetCenter(glm::vec3(bbPos[0], bbPos[1], bbPos[2]));
+						}
+
+						// Set Bounding Box Size
+						const glm::vec3 size = bbComp.GetSize();\
+						float bbSize[3]{ size.x, size.y, size.z };
+						if (ImGui::DragFloat3("Size", bbSize))
+						{
+							bbComp.SetSize(glm::vec3(size[0], size[1], size[2]));
 						}
 					}
 				}

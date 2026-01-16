@@ -13,6 +13,7 @@ void EntityMemoryPool::ReserveAll(size_t count)
 	// For all types reserve count
 	std::get<0>(m_componentPool).reserve(count); // TransformComponent
 	std::get<1>(m_componentPool).reserve(count); // MeshComponent
+	std::get<2>(m_componentPool).reserve(count); // BoundingBoxComponent
 	m_activePool.reserve(count);
 }
 
@@ -26,6 +27,7 @@ void EntityMemoryPool::ResizeAll(size_t count)
 	// For all types resize count
 	std::get<0>(m_componentPool).resize(count); // TransformComponent
 	std::get<1>(m_componentPool).resize(count); // MeshComponent
+	std::get<2>(m_componentPool).resize(count); // BoundingBoxComponent
 	m_activePool.resize(count);
 }
 
@@ -49,6 +51,7 @@ bool EntityMemoryPool::RemoveEntity(size_t index)
 	// For all types
 	std::get<0>(m_componentPool)[index].SetActive(false); // TransformComponent
 	std::get<1>(m_componentPool)[index].SetActive(false); // MeshComponent
+	std::get<2>(m_componentPool)[index].SetActive(false); // BoundingBoxComponent
 	m_activePool[index] = false;
 	return true;
 }

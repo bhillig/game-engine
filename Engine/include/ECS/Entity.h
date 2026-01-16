@@ -9,7 +9,7 @@ class Entity
 {
 public:
 
-	inline size_t GetID() const { return m_id; }
+	size_t GetID() const { return m_id; }
 
 	// Add Component
 	template<IsComponent T, typename... Args>
@@ -44,7 +44,7 @@ public:
 	}
 
 	// Destroy entity
-	inline void Destroy() { m_pool->RemoveEntity(m_id); }
+	void Destroy() { m_pool->RemoveEntity(m_id); }
 
 private:
 	Entity(size_t id, EntityMemoryPool* pool)
