@@ -50,4 +50,45 @@ private:
 	Model* m_model;
 };
 
+class BoundingBoxComponent : public Component
+{
+public:
+	BoundingBoxComponent()  : m_min(0.f), m_max(0.f) {};
+	BoundingBoxComponent(const glm::vec3& min, const glm::vec3& max)
+		: m_min(min), m_max(max) {}
+
+	void SetCenter(const glm::vec3& center)
+	{
+		const glm::vec3 extents = GetExtents();
+		m_min = center - extents;
+		m_max = center + extents;
+	}
+
+	void SetExtents(const glm::vec3& extents)
+	{
+		const glm::vec3 center = GetCenter();
+		m_min = center - extents;
+		m_max = center + extents;
+	}
+
+	void SetSize(const glm::vec3& size)
+	{
+		SetExtents(size * 0.5f);
+	}
+
+	glm::vec3 GetCenter() const { return (m_min + m_max) * 0.5f; }
+
+	glm::vec3 GetExtents() const { return (m_max - m_min) * 0.5f; }
+
+	glm::vec3 GetSize() const { return m_max - m_min; }
+
+	const glm::vec3& GetMin() const { return m_min; }
+
+	const glm::vec3& GetMax() const { return m_max; }
+
+private:
+	glm::vec3 m_min;
+	glm::vec3 m_max;
+};
+
 } // namespace ECS
