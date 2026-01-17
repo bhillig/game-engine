@@ -54,6 +54,7 @@ set(SOURCES
 	src/AssetManager.cpp
 	src/Camera.cpp
 	src/CameraController.cpp
+	src/Renderer.cpp
 	src/Window.cpp
 	src/ECS/EntityManager.cpp
 	src/ECS/EntityMemoryPool.cpp
@@ -61,7 +62,6 @@ set(SOURCES
 	src/Renderer/Mesh.cpp
 	src/Renderer/Model.cpp
 	src/Renderer/ModelLoader.cpp
-	src/Renderer/Renderer.cpp
 	src/Renderer/Shader.cpp
 	src/Renderer/Texture.cpp
 	src/Renderer/VertexArray.cpp
@@ -74,6 +74,9 @@ set(HEADERS
 	include/AssetManager.h
 	include/Camera.h
 	include/CameraController.h
+	include/Layer.h
+	include/Renderer.h
+	include/Window.h
 	include/ECS/Component.h
 	include/ECS/Entity.h
 	include/ECS/EntityManager.h
@@ -81,13 +84,10 @@ set(HEADERS
 	include/Events/Event.h
 	include/Events/InputEvents.h
 	include/Events/WindowEvents.h
-	include/Layer.h
-	include/Window.h
 	include/Renderer/ElementBuffer.h
 	include/Renderer/Mesh.h
 	include/Renderer/Model.h
 	include/Renderer/ModelLoader.h
-	include/Renderer/Renderer.h
 	include/Renderer/Shader.h
 	include/Renderer/Texture.h
 	include/Renderer/VertexArray.h

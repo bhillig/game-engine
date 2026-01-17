@@ -1,8 +1,9 @@
 #pragma once
 
 #include <AssetManager.h>
-#include <Window.h>
 #include <Layer.h>
+#include <Renderer.h>
+#include <Window.h>
 
 #include <Events/Event.h>
 
@@ -38,6 +39,8 @@ public:
 	const Window& GetWindow() const;
 
 	AssetManager& GetAssetManager() { return m_assetManager; }
+	
+	Renderer& GetRenderer() { return m_renderer; }
 
 	template<typename T>
 	void AddLayer()
@@ -54,6 +57,7 @@ private:
 	std::unique_ptr<Window> m_window;
 
 	AssetManager m_assetManager;
+	Renderer m_renderer;
 
 	float m_deltaTime;
 	float m_lastTime;

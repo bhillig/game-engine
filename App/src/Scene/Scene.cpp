@@ -1,14 +1,16 @@
 #include <Scene/Scene.h>
 
 #include <Application.h>
+#include <Renderer.h>
+
 #include <Events/InputEvents.h>
-#include <Renderer/Renderer.h>
 
 #include <imgui.h>
 #include <ranges>
 
 
 using Core::EventDispatcher;
+using Core::Renderer;
 
 // TODO: Remove this hard-coded dependency once a more robust model system is implemented
 
