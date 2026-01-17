@@ -13,15 +13,26 @@ namespace Core
 class AssetManager
 {
 public:
-	AssetManager();
+
+	static void RequestLoadModel(const std::string& filepath);
+
+	static const std::vector<std::unique_ptr<Model>>& GetModels();
+
+private:
+
+	void RequestLoadModelImpl(const std::string& filepath);
+
+	const std::vector<std::unique_ptr<Model>>& GetModelsImpl() const { return m_models; }
+
+	void Initialize();
 
 	void Update();
 
-	void RequestLoadModel(const std::string& filepath);
+	friend class Application;
 
-	const std::vector<std::unique_ptr<Model>>& GetModels() const { return m_models; }
+	static AssetManager& GetAssetManager();
+	AssetManager();
 
-private:
 	std::vector<std::unique_ptr<Model>> m_models;
 
 	threadsafe_queue<ModelLoadedData> m_modelToConstructQueue;

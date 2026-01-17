@@ -1,7 +1,9 @@
 #include <AssetManager.h>
+
+#include <Application.h>
+
 #include <filesystem>
 #include <iostream>
-
 
 namespace Core
 {
@@ -12,6 +14,11 @@ AssetManager::AssetManager()
 		m_modelToConstructQueue.push(std::move(modelData));
 	})
 {
+}
+
+void AssetManager::Initialize()
+{
+	// no-op for now
 }
 
 void AssetManager::Update()
@@ -27,6 +34,16 @@ void AssetManager::Update()
 
 void AssetManager::RequestLoadModel(const std::string& filepath)
 {
+	GetAssetManager().RequestLoadModelImpl(filepath);
+}
+
+const std::vector<std::unique_ptr<Model>>& AssetManager::GetModels()
+{
+	return GetAssetManager().GetModelsImpl();
+}
+
+void AssetManager::RequestLoadModelImpl(const std::string& filepath)
+{
 	std::filesystem::path path(filepath);
 	if (!exists(path))
 	{
@@ -34,6 +51,11 @@ void AssetManager::RequestLoadModel(const std::string& filepath)
 	}
 
 	m_modelLoader.AddModelLoadTaskToQueue({ filepath });
+}
+
+AssetManager& AssetManager::GetAssetManager()
+{
+	return Application::GetApp()->GetAssetManager();
 }
 
 }

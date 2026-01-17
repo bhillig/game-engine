@@ -29,6 +29,17 @@ public:
 		, rotation(0.f, 0.f, 0.f)
 		, scale(1.f, 1.f, 1.f) {}
 
+	glm::mat4 transformMatrix() const
+	{
+		glm::mat4 transform(1.f);
+		transform = glm::translate(transform, position);
+		transform = glm::rotate(transform, rotation.x, glm::vec3(1, 0, 0));
+		transform = glm::rotate(transform, rotation.y, glm::vec3(0, 1, 0));
+		transform = glm::rotate(transform, rotation.z, glm::vec3(0, 0, 1));
+		transform = glm::scale(transform, scale);
+		return transform;
+	}
+
 	glm::vec3 position;
 	glm::vec3 rotation;
 	glm::vec3 scale;

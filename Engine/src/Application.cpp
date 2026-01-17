@@ -30,6 +30,7 @@ Application::Application(const ApplicationSpecification& appSpec)
 	m_window = std::make_unique<Window>(m_appSpec.WindowSpec);
 
 	// Construct Engine Subsystems
+	m_assetManager = std::unique_ptr<AssetManager>(new AssetManager());
 	m_renderer = std::unique_ptr<Renderer>(new Renderer());
 }
 
@@ -49,6 +50,7 @@ bool Application::Init()
 	}
 
 	// Initialize Engine Subsystems
+	m_assetManager->Initialize();
 	m_renderer->Initialize();
 
 	return true;
@@ -78,7 +80,7 @@ void Application::Run()
 		}
 
 		// Update AssetManager
-		m_assetManager.Update();
+		m_assetManager->Update();
 
 		// Render GUI and show updated buffer
 		m_window->RenderGUI();
@@ -90,6 +92,12 @@ const Window& Application::GetWindow() const
 {
 	assert(m_window && "Window not initialized!");
 	return *m_window;
+}
+
+AssetManager& Application::GetAssetManager()
+{
+	assert(m_assetManager && "AssetManger not initialized!");
+	return *m_assetManager;
 }
 
 Renderer& Application::GetRenderer()

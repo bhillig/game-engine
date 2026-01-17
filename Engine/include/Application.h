@@ -14,11 +14,12 @@ class Layer;
 
 namespace Core
 {
-	struct ApplicationSpecification
-	{
-		std::string Name = "Application";
-		WindowSpecification WindowSpec;
-	};
+
+struct ApplicationSpecification
+{
+	std::string Name = "Application";
+	WindowSpecification WindowSpec;
+};
 
 class Application
 {
@@ -38,7 +39,7 @@ public:
 
 	const Window& GetWindow() const;
 
-	AssetManager& GetAssetManager() { return m_assetManager; }
+	AssetManager& GetAssetManager();
 	
 	Renderer& GetRenderer();
 
@@ -57,7 +58,7 @@ private:
 	std::unique_ptr<Window> m_window;
 
 	// Engine Subsystems
-	AssetManager m_assetManager;
+	std::unique_ptr<AssetManager> m_assetManager;
 	std::unique_ptr<Renderer> m_renderer;
 
 	float m_deltaTime;

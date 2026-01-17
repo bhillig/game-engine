@@ -8,6 +8,7 @@
 #include <imgui.h>
 #include <ranges>
 
+using Core::AssetManager;
 using Core::EventDispatcher;
 using Core::Renderer;
 
@@ -19,8 +20,8 @@ Scene::Scene()
 	: m_camera(nullptr), m_cameraController(nullptr)
 {
 	// Import all models 
-	Core::Application::GetApp()->GetAssetManager().RequestLoadModel(std::string(kBackpackModel));
-	Core::Application::GetApp()->GetAssetManager().RequestLoadModel(std::string(kGirlModel));
+	AssetManager::RequestLoadModel(std::string(kBackpackModel));
+	AssetManager::RequestLoadModel(std::string(kGirlModel));
 
 	// Init camera
 	constexpr glm::vec3 cameraPos(0.0f, 0.0f, 4.0f);
@@ -91,18 +92,10 @@ void Scene::Render()
 			continue;
 		}
 
-		// Set model matrix for model
-		glm::mat4 modelObj(1.f);
-		modelObj = glm::translate(modelObj, transformComp.position);
-		modelObj = glm::rotate(modelObj, transformComp.rotation.x, glm::vec3(1, 0, 0));
-		modelObj = glm::rotate(modelObj, transformComp.rotation.y, glm::vec3(0, 1, 0));
-		modelObj = glm::rotate(modelObj, transformComp.rotation.z, glm::vec3(0, 0, 1));
-		modelObj = glm::scale(modelObj, transformComp.scale);
-
 		// Draw model
 		if (Model* model = meshComp.GetModel())
 		{
-			Renderer::Submit(*model, modelObj);
+			Renderer::Submit(*model, transformComp.transformMatrix());
 		}
 	}
 
@@ -153,9 +146,6 @@ void Scene::ConstructLevelTreeTab()
 {
 	if (ImGui::BeginTabItem("Level Tree"))
 	{
-		// Retrieve AssetManager
-		Core::AssetManager& assetManager = Core::Application::GetApp()->GetAssetManager();
-
 		if (m_entityManager.GetEntityCount() == 0)
 		{
 			const ImVec4 grayTextColor(0.5f, 0.5f, 0.5f, 1.f);
@@ -293,7 +283,7 @@ void Scene::ConstructLevelTreeTab()
 								ImGui::SetItemDefaultFocus();
 							}
 
-							for (const auto& model : assetManager.GetModels())
+							for (const auto& model : AssetManager::GetModels())
 							{
 								const bool isSelected = meshComp.GetModel() == model.get();
 
