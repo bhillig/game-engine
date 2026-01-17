@@ -306,7 +306,7 @@ void Scene::ConstructLevelTreeTab()
 				ImGui::Spacing();
 
 				// Display Entity Bounding Box
-				if (entity.HasComponent<ECS::MeshComponent>())
+				if (entity.HasComponent<ECS::BoundingBoxComponent>())
 				{
 					if (ImGui::CollapsingHeader("Bounding Box"))
 					{
