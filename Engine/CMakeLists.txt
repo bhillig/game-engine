@@ -110,3 +110,13 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${ALL_FILES})
 # GLM (Header Only Math Library)
 # ----------------------------------------------------------
 target_include_directories(Engine PUBLIC external/glm/include)
+
+# Define SHADER_DIR
+target_compile_definitions(Engine PRIVATE SHADER_DIR="$<TARGET_FILE_DIR:Engine>/rc/shaders")
+
+# Copy resources to build folder
+add_custom_command(TARGET Engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/rc"
+        "$<TARGET_FILE_DIR:Engine>/rc"
+)

@@ -8,17 +8,8 @@
 #include <imgui.h>
 #include <ranges>
 
-
 using Core::EventDispatcher;
 using Core::Renderer;
-
-// TODO: Remove this hard-coded dependency once a more robust model system is implemented
-
-// Vertex Shaders
-static constexpr std::string_view kPositionNormalAndTexCoordVS = SHADER_DIR "/positionNormalAndTexCoords.vertex.glsl";
-
-// Fragment Shaders
-static constexpr std::string_view kColorFromTextureFS = SHADER_DIR "/colorFromTexture.fragment.glsl";
 
 // Models
 static constexpr std::string_view kBackpackModel = MODEL_DIR "/backpack/backpack.obj";
@@ -30,9 +21,6 @@ Scene::Scene()
 	// Import all models 
 	Core::Application::GetApp()->GetAssetManager().RequestLoadModel(std::string(kBackpackModel));
 	Core::Application::GetApp()->GetAssetManager().RequestLoadModel(std::string(kGirlModel));
-
-	// Create shaders
-	m_modelShader = std::make_unique<Shader>(kPositionNormalAndTexCoordVS, kColorFromTextureFS);
 
 	// Init camera
 	constexpr glm::vec3 cameraPos(0.0f, 0.0f, 4.0f);
@@ -88,13 +76,11 @@ void Scene::Render()
 	Renderer::ClearColor(m_sceneColor);
 	Renderer::ClearScreen();
 
-	// View
-	glm::mat4 view = m_camera->viewMatrix();
-	m_modelShader->SetUniformMatrix4fv("u_View", glm::value_ptr(view));
+	// Retrieve aspect ratio
+	const Core::Window& window = Core::Application::GetApp()->GetWindow();
+	const float aspectRatio = static_cast<float>(window.GetWidth()) / static_cast<float>(window.GetHeight());
 
-	// Projection
-	glm::mat4 projection = glm::perspective(glm::radians(m_camera->fov()), static_cast<float>(Core::Application::GetApp()->GetWindow().GetWidth()) / Core::Application::GetApp()->GetWindow().GetHeight(), 0.1f, 100.f);
-	m_modelShader->SetUniformMatrix4fv("u_Projection", glm::value_ptr(projection));
+	Renderer::BeginScene(m_camera->viewMatrix(), m_camera->projectionMatrix(aspectRatio));
 
 	for (size_t i = 0; i < m_entityManager.GetEntityCount(); ++i)
 	{
@@ -112,12 +98,11 @@ void Scene::Render()
 		modelObj = glm::rotate(modelObj, transformComp.rotation.y, glm::vec3(0, 1, 0));
 		modelObj = glm::rotate(modelObj, transformComp.rotation.z, glm::vec3(0, 0, 1));
 		modelObj = glm::scale(modelObj, transformComp.scale);
-		m_modelShader->SetUniformMatrix4fv("u_Model", glm::value_ptr(modelObj));
 
 		// Draw model
 		if (Model* model = meshComp.GetModel())
 		{
-			model->Draw(*m_modelShader);
+			Renderer::Submit(*model, modelObj);
 		}
 	}
 

@@ -7,9 +7,6 @@
 #include <Camera.h>
 #include <CameraController.h>
 
-class Shader;
-class Model;
-
 class Scene
 {
 public:
@@ -61,7 +58,5 @@ protected:
 	std::unique_ptr<CameraController> m_cameraController; // CameraController for passing input to the camera
 
 private:
-	// TODO: Hacky fix for now - remove this when a more robust model system is implemented
-	std::unique_ptr<Shader> m_modelShader;
 	glm::vec4 m_sceneColor;
 };

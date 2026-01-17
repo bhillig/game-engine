@@ -21,8 +21,6 @@ target_include_directories(App PRIVATE include)
 set(ALL_FILES ${SOURCES} ${HEADERS})
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${ALL_FILES})
 
-# Define SHADER_DIR
-target_compile_definitions(App PRIVATE SHADER_DIR="$<TARGET_FILE_DIR:App>/rc/shaders")
 # Define TEXTURE_DIR
 target_compile_definitions(App PRIVATE TEXTURE_DIR="$<TARGET_FILE_DIR:App>/rc/textures")
 # Define MODEL_DIR

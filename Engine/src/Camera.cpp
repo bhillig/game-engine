@@ -22,6 +22,11 @@ glm::vec3 Camera::forward() const
 	return cameraForward;
 }
 
+glm::mat4 Camera::projectionMatrix(float aspectRatio) const
+{
+	return glm::perspective(glm::radians(fov()), aspectRatio, 0.1f, 100.f);
+}
+
 glm::mat4 Camera::viewMatrix() const
 {
 	return glm::lookAt(glm::vec3(m_position), // Camera location

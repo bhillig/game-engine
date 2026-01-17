@@ -40,7 +40,7 @@ public:
 
 	AssetManager& GetAssetManager() { return m_assetManager; }
 	
-	Renderer& GetRenderer() { return m_renderer; }
+	Renderer& GetRenderer();
 
 	template<typename T>
 	void AddLayer()
@@ -56,8 +56,9 @@ private:
 	ApplicationSpecification m_appSpec;
 	std::unique_ptr<Window> m_window;
 
+	// Engine Subsystems
 	AssetManager m_assetManager;
-	Renderer m_renderer;
+	std::unique_ptr<Renderer> m_renderer;
 
 	float m_deltaTime;
 	float m_lastTime;

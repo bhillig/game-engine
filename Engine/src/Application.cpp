@@ -28,6 +28,9 @@ Application::Application(const ApplicationSpecification& appSpec)
 	};
 
 	m_window = std::make_unique<Window>(m_appSpec.WindowSpec);
+
+	// Construct Engine Subsystems
+	m_renderer = std::unique_ptr<Renderer>(new Renderer());
 }
 
 bool Application::Init()
@@ -44,6 +47,9 @@ bool Application::Init()
 		std::cerr << "Failed to create window!\n";
 		return false;
 	}
+
+	// Initialize Engine Subsystems
+	m_renderer->Initialize();
 
 	return true;
 }
@@ -84,6 +90,12 @@ const Window& Application::GetWindow() const
 {
 	assert(m_window && "Window not initialized!");
 	return *m_window;
+}
+
+Renderer& Application::GetRenderer()
+{
+	assert(m_renderer && "Renderer not initialized!");
+	return *m_renderer;
 }
 
 void Application::RaiseEvent(Event& event)

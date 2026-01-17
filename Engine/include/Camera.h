@@ -12,6 +12,7 @@ public:
 	const glm::vec3& position() const { return m_position; }
 	glm::vec3 forward() const;
 	glm::vec3 rotation() const { return { m_pitch, m_yaw, m_roll }; }
+	glm::mat4 projectionMatrix(float aspectRatio) const;
 	glm::mat4 viewMatrix() const;
 	float fov() const { return m_fov; }
 
