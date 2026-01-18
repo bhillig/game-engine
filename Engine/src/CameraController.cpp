@@ -42,11 +42,11 @@ void CameraController::Update(float deltaTime)
 	}
 	if (m_leftPressed)
 	{
-		moveDelta = -(glm::normalize(glm::cross(walkDirection, upVector)) * movementSpeed * deltaTime);
+		moveDelta = (glm::normalize(glm::cross(walkDirection, upVector)) * movementSpeed * deltaTime);
 	}
 	if (m_rightPressed)
 	{
-		moveDelta = glm::normalize(glm::cross(walkDirection, upVector)) * movementSpeed * deltaTime;
+		moveDelta = -glm::normalize(glm::cross(walkDirection, upVector)) * movementSpeed * deltaTime;
 	}
 
 	m_camera.Move(moveDelta);

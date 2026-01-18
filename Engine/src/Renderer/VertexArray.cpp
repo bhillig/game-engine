@@ -37,6 +37,7 @@ VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
 
 void VertexArray::Add(const VertexBuffer& buffer, const VertexBufferLayout& layout)
 {
+	Bind();
 	buffer.Bind();
 	const std::vector<VertexBufferElement>& elements = layout.GetElements();
 	unsigned int offset = 0;

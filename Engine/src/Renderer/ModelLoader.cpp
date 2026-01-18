@@ -36,6 +36,7 @@ bool ModelLoader::LoadModel(const std::string& filepath, ModelLoadedData& modelD
 
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filepath.c_str(), aiProcess_Triangulate |
+		aiProcess_MakeLeftHanded |
 		aiProcess_FlipUVs |
 		aiProcess_GenSmoothNormals |
 		aiProcess_CalcTangentSpace);

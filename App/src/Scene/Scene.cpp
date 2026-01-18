@@ -24,7 +24,7 @@ Scene::Scene()
 	AssetManager::RequestLoadModel(std::string(kGirlModel));
 
 	// Init camera
-	constexpr glm::vec3 cameraPos(0.0f, 0.0f, 4.0f);
+	constexpr glm::vec3 cameraPos(0.0f, 0.0f, -4.0f);
 	constexpr float cameraFOV = 45.f;
 
 	m_camera = std::make_unique<Camera>(cameraPos, 0.0f, -90.f, 0.0f, cameraFOV);
@@ -86,18 +86,31 @@ void Scene::Render()
 	for (size_t i = 0; i < m_entityManager.GetEntityCount(); ++i)
 	{
 		ECS::TransformComponent& transformComp = m_entityManager.GetComponentFromEntity<ECS::TransformComponent>(i);
-		ECS::MeshComponent& meshComp = m_entityManager.GetComponentFromEntity<ECS::MeshComponent>(i);
-		if (!transformComp.IsActive() || !meshComp.IsActive())
+		if (!transformComp.IsActive())
 		{
 			continue;
 		}
 
 		// Draw model
-		if (Model* model = meshComp.GetModel())
+		ECS::MeshComponent& meshComp = m_entityManager.GetComponentFromEntity<ECS::MeshComponent>(i);
+		if (meshComp.IsActive())
 		{
-			Renderer::Submit(*model, transformComp.transformMatrix());
+			if (Model* model = meshComp.GetModel())
+			{
+				Renderer::Submit(*model, transformComp.transformMatrix());
+			}
 		}
+
+		// Draw bounding box
+		ECS::BoundingBoxComponent& bbComp = m_entityManager.GetComponentFromEntity<ECS::BoundingBoxComponent>(i);
+		if (bbComp.IsActive())
+		{
+			Renderer::DrawBoundingBox(bbComp.GetMin(), bbComp.GetMax());
+		}
+
 	}
+
+	Renderer::EndScene();
 
 	ConstructGUI();
 }
@@ -190,7 +203,7 @@ void Scene::ConstructLevelTreeTab()
 						{
 							if (ImGui::MenuItem("Bounding Box"))
 							{
-								entity.AddComponent<ECS::BoundingBoxComponent>();
+								entity.AddComponent<ECS::BoundingBoxComponent>().SetSize(glm::vec3(1.f));
 							}
 						}
 
@@ -236,7 +249,7 @@ void Scene::ConstructLevelTreeTab()
 					{
 						ECS::TransformComponent& transformComp = entity.GetComponent<ECS::TransformComponent>();
 
-						float objectPos[3]{ static_cast<float>(transformComp.position.x), static_cast<float>(transformComp.position.y), static_cast<float>(transformComp.position.z) };
+						float objectPos[3]{ transformComp.position.x, transformComp.position.y, transformComp.position.z };
 						if (ImGui::DragFloat3("Position", objectPos))
 						{
 							transformComp.position = glm::vec3(objectPos[0], objectPos[1], objectPos[2]);
@@ -315,17 +328,17 @@ void Scene::ConstructLevelTreeTab()
 						// Set Bounding Box Center
 						const glm::vec3 center = bbComp.GetCenter();
 						float bbPos[3]{ center.x, center.y, center.z };
-						if (ImGui::DragFloat3("Center", bbPos))
+						if (ImGui::DragFloat3("Center", bbPos, 0.25f))
 						{
 							bbComp.SetCenter(glm::vec3(bbPos[0], bbPos[1], bbPos[2]));
 						}
 
 						// Set Bounding Box Size
-						const glm::vec3 size = bbComp.GetSize();\
+						const glm::vec3 size = bbComp.GetSize();
 						float bbSize[3]{ size.x, size.y, size.z };
-						if (ImGui::DragFloat3("Size", bbSize))
+						if (ImGui::DragFloat3("Size", bbSize, 0.25f))
 						{
-							bbComp.SetSize(glm::vec3(size[0], size[1], size[2]));
+							bbComp.SetSize(glm::vec3(bbSize[0], bbSize[1], bbSize[2]));
 						}
 					}
 				}

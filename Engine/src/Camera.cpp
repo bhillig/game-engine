@@ -18,18 +18,18 @@ glm::vec3 Camera::forward() const
 	glm::vec3 cameraForward(0.f);
 	cameraForward.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
 	cameraForward.y = sin(glm::radians(m_pitch));
-	cameraForward.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+	cameraForward.z = -sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
 	return cameraForward;
 }
 
 glm::mat4 Camera::projectionMatrix(float aspectRatio) const
 {
-	return glm::perspective(glm::radians(fov()), aspectRatio, 0.1f, 100.f);
+	return glm::perspectiveLH(glm::radians(fov()), aspectRatio, 0.1f, 100.f);
 }
 
 glm::mat4 Camera::viewMatrix() const
 {
-	return glm::lookAt(glm::vec3(m_position), // Camera location
+	return glm::lookAtLH(glm::vec3(m_position), // Camera location
 		glm::vec3(m_position + forward()), // Target location
 		glm::vec3(0.f, 1.0f, 0.f));	// World up direction
 }
