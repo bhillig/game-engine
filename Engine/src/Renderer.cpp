@@ -1,24 +1,61 @@
 #include <Renderer.h>
 
+#include <Application.h>
+
+#include <Renderer/CubemapTexture.h>
 #include <Renderer/VertexArray.h>
 #include <Renderer/VertexBuffer.h>
 #include <Renderer/VertexBufferLayout.h>
 
 #include <glad/glad.h>
 
-#include <Application.h>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <stb_image.h>
 
 // Vertex Shaders
 static constexpr std::string_view kPositionNormalAndTexCoordVS = SHADER_DIR "/positionNormalAndTexCoords.vertex.glsl";
 static constexpr std::string_view kPositionAndColorVS = SHADER_DIR "/positionAndColor.vertex.glsl";
+static constexpr std::string_view kCubeMapVS = SHADER_DIR "/cubemap.vertex.glsl";
 
 // Fragment Shaders
 static constexpr std::string_view kColorFromTextureFS = SHADER_DIR "/colorFromTexture.fragment.glsl";
 static constexpr std::string_view kColorFromVertexFS = SHADER_DIR "/colorFromVertex.fragment.glsl";
+static constexpr std::string_view kCubeMapFS = SHADER_DIR "/cubemap.fragment.glsl";
+
+// Skybox Textures
+static constexpr std::string_view kSkyboxRightTexture = TEXTURE_DIR "/skybox/skybox-right.jpg";
+static constexpr std::string_view kSkyboxLeftTexture = TEXTURE_DIR "/skybox/skybox-left.jpg";
+static constexpr std::string_view kSkyboxTopTexture = TEXTURE_DIR "/skybox/skybox-top.jpg";
+static constexpr std::string_view kSkyboxBottomTexture = TEXTURE_DIR "/skybox/skybox-bottom.jpg";
+static constexpr std::string_view kSkyboxBackTexture = TEXTURE_DIR "/skybox/skybox-back.jpg";
+static constexpr std::string_view kSkyboxFrontTexture = TEXTURE_DIR "/skybox/skybox-front.jpg";
+
+// Uniform constants
+static constexpr const char* kModelMatrixUniform = "u_Model";
+static constexpr const char* kViewMatrixUniform = "u_View";
+static constexpr const char* kProjectionMatrixUniform = "u_Projection";
 
 namespace Core
 {
+
+Renderer::Renderer()
+{
+	// no-op for now
+}
+
+void Renderer::Initialize()
+{
+	stbi_set_flip_vertically_on_load(true);
+
+	// Create Engine Shaders
+	m_modelShader = std::make_unique<Shader>(kPositionNormalAndTexCoordVS, kColorFromTextureFS);
+	m_lineShader = std::make_unique<Shader>(kPositionAndColorVS, kColorFromVertexFS);
+	m_cubeMapShader = std::make_unique<Shader>(kCubeMapVS, kCubeMapFS);
+
+	// Create Engine Textures
+	m_skyBoxTexture = std::make_unique<CubemapTexture>(kSkyboxRightTexture, kSkyboxLeftTexture, kSkyboxTopTexture, kSkyboxBottomTexture, kSkyboxFrontTexture, kSkyboxBackTexture);
+}
 
 void Renderer::BeginScene(const glm::mat4& view, const glm::mat4& projection)
 {
@@ -50,37 +87,40 @@ void Renderer::DrawLine(const glm::vec3& a, const glm::vec3& b, const glm::vec3&
 	GetRenderer().DrawLineImpl(a, b, color);
 }
 
+void Renderer::DrawSkybox()
+{
+	GetRenderer().DrawSkyboxImpl();
+}
+
 void Renderer::Submit(const Model& model, const glm::mat4& transform)
 {
 	GetRenderer().SubmitImpl(model, transform);
 }
 
-void Renderer::Initialize()
-{
-	m_modelShader = std::make_unique<Shader>(kPositionNormalAndTexCoordVS, kColorFromTextureFS);
-	m_lineShader = std::make_unique<Shader>(kPositionAndColorVS, kColorFromVertexFS);
-}
-
 void Renderer::BeginSceneImpl(const glm::mat4& view, const glm::mat4& projection)
 {
 	m_view = view;
-	m_modelShader->SetUniformMatrix4fv("u_View", glm::value_ptr(m_view));
-	m_lineShader->SetUniformMatrix4fv("u_View", glm::value_ptr(m_view));
+	m_modelShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
+	m_lineShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
+	m_cubeMapShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
 
 	m_projection = projection;
-	m_modelShader->SetUniformMatrix4fv("u_Projection", glm::value_ptr(m_projection));
-	m_lineShader->SetUniformMatrix4fv("u_Projection", glm::value_ptr(m_projection));
+	m_modelShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
+	m_lineShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
+	m_cubeMapShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
 }
 
 void Renderer::EndSceneImpl()
 {
 	m_view = glm::mat4(1);
-	m_modelShader->SetUniformMatrix4fv("u_View", glm::value_ptr(m_view));
-	m_lineShader->SetUniformMatrix4fv("u_View", glm::value_ptr(m_view));
+	m_modelShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
+	m_lineShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
+	m_cubeMapShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
 
 	m_projection = glm::mat4(1);
-	m_modelShader->SetUniformMatrix4fv("u_Projection", glm::value_ptr(m_projection));
-	m_lineShader->SetUniformMatrix4fv("u_Projection", glm::value_ptr(m_projection));
+	m_modelShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
+	m_lineShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
+	m_cubeMapShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
 }
 
 void Renderer::ClearColorImpl(const glm::vec4& color)
@@ -143,7 +183,7 @@ void Renderer::DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::v
 
 	glm::mat4 transform = glm::mat4(1.f);
 	m_lineShader->Bind();
-	m_lineShader->SetUniformMatrix4fv("u_Model", glm::value_ptr(transform));
+	m_lineShader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(transform));
 
 	vao.Bind();
 
@@ -153,13 +193,89 @@ void Renderer::DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::v
 	vao.Unbind();
 }
 
+void Renderer::DrawSkyboxImpl()
+{
+	float skyboxVertices[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+
+	VertexBufferLayout layout;
+	layout.Push<float>(3);
+
+	VertexBuffer vbo(skyboxVertices, sizeof(skyboxVertices));
+
+	VertexArray vao;
+	vao.Add(vbo, layout);
+
+	glDepthFunc(GL_LEQUAL);
+	glDepthMask(false);
+	m_cubeMapShader->Bind();
+	vao.Bind();
+	m_skyBoxTexture->Bind();
+
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+
+	m_cubeMapShader->Unbind();
+	vao.Unbind();
+	m_skyBoxTexture->Unbind();
+	glDepthMask(true);
+	glDepthFunc(GL_LESS);
+
+}
+
 void Renderer::SubmitImpl(const Model& model, const glm::mat4& transform)
 {
 	glm::mat4 modelTransform = transform;
 	m_modelShader->Bind();
-	m_modelShader->SetUniformMatrix4fv("u_Model", glm::value_ptr(modelTransform));
+	m_modelShader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(modelTransform));
 	model.Draw(*m_modelShader);
 	m_modelShader->Unbind();
+}
+
+Renderer::~Renderer()
+{
+	// no-op for now
 }
 
 Renderer& Renderer::GetRenderer()

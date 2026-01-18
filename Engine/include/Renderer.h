@@ -6,6 +6,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
+class CubemapTexture;
 class Model;
 class Shader;
 
@@ -15,6 +16,7 @@ namespace Core
 class Renderer
 {
 public:
+	~Renderer();
 
 	// Sets the view and projection matrices for rendering
 	static void BeginScene(const glm::mat4& view, const glm::mat4& projection);
@@ -39,6 +41,11 @@ public:
 	// @param b - Second vertex
 	// @param color - Color of the line to be drawn
 	static void DrawLine(const glm::vec3& a, const glm::vec3& b, const glm::vec3& color = glm::vec3(1.f));
+
+	// Draws the engine's skybox
+	static void DrawSkybox();
+
+	// TODO: Implement a function which allows users to pass in a skybox texture so games can apply their own skybox's
 
 	// Submits a model to be rendered
 	// @param model - The model to render
@@ -68,12 +75,15 @@ private:
 	// Implementation of DrawLine
 	void DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::vec3& color = glm::vec3(1.f));
 
+	// Implementation of DrawSkybox
+	void DrawSkyboxImpl();
+
 	// Implementation of Submit
 	void SubmitImpl(const Model& model, const glm::mat4& transform);
 
 	friend class Application;
 
-	Renderer() = default;
+	Renderer();
 	static Renderer& GetRenderer(); // Returns Renderer instance from Application
 
 	glm::mat4 m_view;
@@ -81,7 +91,9 @@ private:
 
 	std::unique_ptr<Shader> m_modelShader;
 	std::unique_ptr<Shader> m_lineShader;
+	std::unique_ptr<Shader> m_cubeMapShader;
 
+	std::unique_ptr<CubemapTexture> m_skyBoxTexture;
 };
 
 }

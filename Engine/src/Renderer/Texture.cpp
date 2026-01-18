@@ -1,12 +1,9 @@
 #include <Renderer/Texture.h>
 
 #include <stb_image.h>
-#include <cassert>
 
 Texture::Texture(const std::string& filepath, int slot)
 {
-	stbi_set_flip_vertically_on_load(true);
-
 	// Create and bind texture
 	glGenTextures(1, &m_rendererID);
 	glActiveTexture(GL_TEXTURE0 + slot);
@@ -29,7 +26,7 @@ Texture::Texture(const std::string& filepath, int slot)
 	// Free buffer memory
 	if (m_buffer) 
 	{
-		stbi_image_free((void*)m_buffer);
+		stbi_image_free(m_buffer);
 	}
 }
 

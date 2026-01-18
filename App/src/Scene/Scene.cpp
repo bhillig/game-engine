@@ -83,6 +83,8 @@ void Scene::Render()
 
 	Renderer::BeginScene(m_camera->viewMatrix(), m_camera->projectionMatrix(aspectRatio));
 
+	Renderer::DrawSkybox();
+
 	for (size_t i = 0; i < m_entityManager.GetEntityCount(); ++i)
 	{
 		ECS::TransformComponent& transformComp = m_entityManager.GetComponentFromEntity<ECS::TransformComponent>(i);

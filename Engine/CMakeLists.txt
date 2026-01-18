@@ -58,6 +58,7 @@ set(SOURCES
 	src/Window.cpp
 	src/ECS/EntityManager.cpp
 	src/ECS/EntityMemoryPool.cpp
+	src/Renderer/CubemapTexture.cpp
 	src/Renderer/ElementBuffer.cpp
 	src/Renderer/Mesh.cpp
 	src/Renderer/Model.cpp
@@ -84,6 +85,7 @@ set(HEADERS
 	include/Events/Event.h
 	include/Events/InputEvents.h
 	include/Events/WindowEvents.h
+	include/Renderer/CubemapTexture.h
 	include/Renderer/ElementBuffer.h
 	include/Renderer/Mesh.h
 	include/Renderer/Model.h
@@ -113,6 +115,8 @@ target_include_directories(Engine PUBLIC external/glm/include)
 
 # Define SHADER_DIR
 target_compile_definitions(Engine PRIVATE SHADER_DIR="$<TARGET_FILE_DIR:Engine>/rc/shaders")
+# Define TEXTURE_DIR
+target_compile_definitions(Engine PRIVATE TEXTURE_DIR="$<TARGET_FILE_DIR:Engine>/rc/textures")
 
 # Copy resources to build folder
 add_custom_command(TARGET Engine POST_BUILD
