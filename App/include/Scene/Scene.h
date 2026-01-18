@@ -58,5 +58,6 @@ protected:
 	std::unique_ptr<CameraController> m_cameraController; // CameraController for passing input to the camera
 
 private:
+	bool m_skyBoxEnabled; // Whether skybox is enabled
 	bool m_useSpaceSkybox; // Toggle between skybox and space-skybox
 };

@@ -17,7 +17,7 @@ static constexpr std::string_view kBackpackModel = MODEL_DIR "/backpack/backpack
 static constexpr std::string_view kGirlModel = MODEL_DIR "/girl/girl.obj";
 
 Scene::Scene()
-	: m_camera(nullptr), m_cameraController(nullptr), m_useSpaceSkybox(false)
+	: m_camera(nullptr), m_cameraController(nullptr), m_skyBoxEnabled(true), m_useSpaceSkybox(false)
 {
 	// Import all models 
 	AssetManager::RequestLoadModel(std::string(kBackpackModel));
@@ -83,14 +83,17 @@ void Scene::Render()
 
 	Renderer::BeginScene(m_camera->viewMatrix(), m_camera->projectionMatrix(aspectRatio));
 
-	if (m_useSpaceSkybox)
+	if (m_skyBoxEnabled)
 	{
-		Renderer::DrawSpaceSkybox();
+		if (m_useSpaceSkybox)
+		{
+			Renderer::DrawSpaceSkybox();
 
-	}
-	else
-	{
-		Renderer::DrawSkybox();
+		}
+		else
+		{
+			Renderer::DrawSkybox();
+		}
 	}
 
 	for (size_t i = 0; i < m_entityManager.GetEntityCount(); ++i)
@@ -369,6 +372,12 @@ void Scene::ConstructWorldTab()
 {
 	if (ImGui::BeginTabItem("World"))
 	{
+		bool skyBoxEnabled = m_skyBoxEnabled;
+		if (ImGui::Checkbox("Enable Skybox", &skyBoxEnabled))
+		{
+			m_skyBoxEnabled = skyBoxEnabled;
+		}
+
 		bool useSpaceSkybox = m_useSpaceSkybox;
 		if (ImGui::Checkbox("Use Space Skybox", &useSpaceSkybox))
 		{
