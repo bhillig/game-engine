@@ -58,5 +58,5 @@ protected:
 	std::unique_ptr<CameraController> m_cameraController; // CameraController for passing input to the camera
 
 private:
-	glm::vec4 m_sceneColor;
+	bool m_useSpaceSkybox; // Toggle between skybox and space-skybox
 };

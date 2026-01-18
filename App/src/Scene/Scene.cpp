@@ -17,7 +17,7 @@ static constexpr std::string_view kBackpackModel = MODEL_DIR "/backpack/backpack
 static constexpr std::string_view kGirlModel = MODEL_DIR "/girl/girl.obj";
 
 Scene::Scene()
-	: m_camera(nullptr), m_cameraController(nullptr)
+	: m_camera(nullptr), m_cameraController(nullptr), m_useSpaceSkybox(false)
 {
 	// Import all models 
 	AssetManager::RequestLoadModel(std::string(kBackpackModel));
@@ -74,7 +74,7 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render()
 {
-	Renderer::ClearColor(m_sceneColor);
+	Renderer::ClearColor(glm::vec4(0, 0, 0, 1));
 	Renderer::ClearScreen();
 
 	// Retrieve aspect ratio
@@ -83,7 +83,15 @@ void Scene::Render()
 
 	Renderer::BeginScene(m_camera->viewMatrix(), m_camera->projectionMatrix(aspectRatio));
 
-	Renderer::DrawSkybox();
+	if (m_useSpaceSkybox)
+	{
+		Renderer::DrawSpaceSkybox();
+
+	}
+	else
+	{
+		Renderer::DrawSkybox();
+	}
 
 	for (size_t i = 0; i < m_entityManager.GetEntityCount(); ++i)
 	{
@@ -361,10 +369,10 @@ void Scene::ConstructWorldTab()
 {
 	if (ImGui::BeginTabItem("World"))
 	{
-		float sceneColor[4] = { m_sceneColor.r, m_sceneColor.g, m_sceneColor.b, m_sceneColor.a };
-		if (ImGui::ColorPicker4("Scene Color", sceneColor))
+		bool useSpaceSkybox = m_useSpaceSkybox;
+		if (ImGui::Checkbox("Use Space Skybox", &useSpaceSkybox))
 		{
-			m_sceneColor = glm::vec4(sceneColor[0], sceneColor[1], sceneColor[2], sceneColor[3]);
+			m_useSpaceSkybox = useSpaceSkybox;
 		}
 
 		ImGui::EndTabItem();

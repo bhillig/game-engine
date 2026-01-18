@@ -31,6 +31,14 @@ static constexpr std::string_view kSkyboxBottomTexture = TEXTURE_DIR "/skybox/sk
 static constexpr std::string_view kSkyboxBackTexture = TEXTURE_DIR "/skybox/skybox-back.jpg";
 static constexpr std::string_view kSkyboxFrontTexture = TEXTURE_DIR "/skybox/skybox-front.jpg";
 
+// Space Skybox Textures
+static constexpr std::string_view kSpaceSkyboxRightTexture = TEXTURE_DIR "/space-skybox/right.png";
+static constexpr std::string_view kSpaceSkyboxLeftTexture = TEXTURE_DIR "/space-skybox/left.png";
+static constexpr std::string_view kSpaceSkyboxTopTexture = TEXTURE_DIR "/space-skybox/top.png";
+static constexpr std::string_view kSpaceSkyboxBottomTexture = TEXTURE_DIR "/space-skybox/bottom.png";
+static constexpr std::string_view kSpaceSkyboxBackTexture = TEXTURE_DIR "/space-skybox/back.png";
+static constexpr std::string_view kSpaceSkyboxFrontTexture = TEXTURE_DIR "/space-skybox/front.png";
+
 // Uniform constants
 static constexpr const char* kModelMatrixUniform = "u_Model";
 static constexpr const char* kViewMatrixUniform = "u_View";
@@ -55,6 +63,7 @@ void Renderer::Initialize()
 
 	// Create Engine Textures
 	m_skyBoxTexture = std::make_unique<CubemapTexture>(kSkyboxRightTexture, kSkyboxLeftTexture, kSkyboxTopTexture, kSkyboxBottomTexture, kSkyboxFrontTexture, kSkyboxBackTexture);
+	m_spaceSkyBoxTexture = std::make_unique<CubemapTexture>(kSpaceSkyboxRightTexture, kSpaceSkyboxLeftTexture, kSpaceSkyboxTopTexture, kSpaceSkyboxBottomTexture, kSpaceSkyboxFrontTexture, kSpaceSkyboxBackTexture);
 }
 
 void Renderer::BeginScene(const glm::mat4& view, const glm::mat4& projection)
@@ -90,6 +99,11 @@ void Renderer::DrawLine(const glm::vec3& a, const glm::vec3& b, const glm::vec3&
 void Renderer::DrawSkybox()
 {
 	GetRenderer().DrawSkyboxImpl();
+}
+
+void Renderer::DrawSpaceSkybox()
+{
+	GetRenderer().DrawSpaceSkyboxImpl();
 }
 
 void Renderer::Submit(const Model& model, const glm::mat4& transform)
@@ -262,6 +276,76 @@ void Renderer::DrawSkyboxImpl()
 	glDepthMask(true);
 	glDepthFunc(GL_LESS);
 
+}
+
+void Renderer::DrawSpaceSkyboxImpl()
+{
+	float skyboxVertices[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+
+	VertexBufferLayout layout;
+	layout.Push<float>(3);
+
+	VertexBuffer vbo(skyboxVertices, sizeof(skyboxVertices));
+
+	VertexArray vao;
+	vao.Add(vbo, layout);
+
+	glDepthFunc(GL_LEQUAL);
+	glDepthMask(false);
+	m_cubeMapShader->Bind();
+	vao.Bind();
+	m_spaceSkyBoxTexture->Bind();
+
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+
+	m_cubeMapShader->Unbind();
+	vao.Unbind();
+	m_spaceSkyBoxTexture->Unbind();
+	glDepthMask(true);
+	glDepthFunc(GL_LESS);
 }
 
 void Renderer::SubmitImpl(const Model& model, const glm::mat4& transform)

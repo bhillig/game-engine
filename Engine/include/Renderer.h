@@ -45,6 +45,9 @@ public:
 	// Draws the engine's skybox
 	static void DrawSkybox();
 
+	// Draws the engine's space skybox
+	static void DrawSpaceSkybox();
+
 	// TODO: Implement a function which allows users to pass in a skybox texture so games can apply their own skybox's
 
 	// Submits a model to be rendered
@@ -78,6 +81,9 @@ private:
 	// Implementation of DrawSkybox
 	void DrawSkyboxImpl();
 
+	// Implementation of DrawSpaceSkybox
+	void DrawSpaceSkyboxImpl();
+
 	// Implementation of Submit
 	void SubmitImpl(const Model& model, const glm::mat4& transform);
 
@@ -94,6 +100,7 @@ private:
 	std::unique_ptr<Shader> m_cubeMapShader;
 
 	std::unique_ptr<CubemapTexture> m_skyBoxTexture;
+	std::unique_ptr<CubemapTexture> m_spaceSkyBoxTexture;
 };
 
 }
