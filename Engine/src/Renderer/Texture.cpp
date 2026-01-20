@@ -16,16 +16,11 @@ Texture::Texture(const std::string& filepath, int slot)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// Load texture and generate mipmap
-	m_buffer = stbi_load(filepath.c_str(), &m_width, &m_height, &m_numberOfColorChannels, 0);
-
-	const int imageFormat = m_numberOfColorChannels == 3 ? GL_RGB : GL_RGBA;
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, imageFormat, GL_UNSIGNED_BYTE, m_buffer);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	// Free buffer memory
+	m_buffer = stbi_load(filepath.c_str(), &m_width, &m_height, &m_numberOfColorChannels, 4);
 	if (m_buffer) 
 	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_buffer);
+		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(m_buffer);
 	}
 }
