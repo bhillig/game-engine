@@ -120,6 +120,9 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${ALL_FILES})
 # ----------------------------------------------------------
 target_include_directories(Engine PUBLIC external/glm/include)
 
+# Precompile Header
+target_precompile_headers(Engine PUBLIC "include/gepch.h")
+
 # Define SHADER_DIR
 target_compile_definitions(Engine PRIVATE SHADER_DIR="$<TARGET_FILE_DIR:Engine>/rc/shaders")
 # Define TEXTURE_DIR
