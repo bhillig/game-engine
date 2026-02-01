@@ -58,7 +58,7 @@ public:
 private:
 
 	// Called by Application to initialize
-	void Initialize();
+	bool Initialize();
 
 	// Implementation of BeginScene
 	void BeginSceneImpl(const glm::mat4& view, const glm::mat4& projection);

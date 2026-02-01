@@ -59,6 +59,7 @@ set(SOURCES
 	src/AssetManager.cpp
 	src/Camera.cpp
 	src/CameraController.cpp
+	src/Log.cpp
 	src/Renderer.cpp
 	src/Window.cpp
 	src/ECS/EntityManager.cpp
@@ -81,6 +82,7 @@ set(HEADERS
 	include/Camera.h
 	include/CameraController.h
 	include/Layer.h
+	include/Log.h
 	include/Renderer.h
 	include/Window.h
 	include/ECS/Component.h

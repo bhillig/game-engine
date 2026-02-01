@@ -3,7 +3,6 @@
 #include <Application.h>
 
 #include <filesystem>
-#include <iostream>
 
 namespace Core
 {
@@ -16,9 +15,9 @@ AssetManager::AssetManager()
 {
 }
 
-void AssetManager::Initialize()
+bool AssetManager::Initialize()
 {
-	// no-op for now
+	return true;
 }
 
 void AssetManager::Update()
@@ -27,7 +26,7 @@ void AssetManager::Update()
 	ModelLoadedData modelData;
 	if (m_modelToConstructQueue.try_pop(modelData))
 	{
-		std::cout << "[RESOURCE] Model Loaded: " << modelData.filepath << "\n";
+		LOG_CORE_INFO("Model Loaded: {}", modelData.filepath)
 		m_models.emplace_back(std::make_unique<Model>(modelData.filepath, std::move(modelData.meshData)));
 	}
 }

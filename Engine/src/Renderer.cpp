@@ -52,7 +52,7 @@ Renderer::Renderer()
 	// no-op for now
 }
 
-void Renderer::Initialize()
+bool Renderer::Initialize()
 {
 	stbi_set_flip_vertically_on_load(true);
 
@@ -64,6 +64,8 @@ void Renderer::Initialize()
 	// Create Engine Textures
 	m_skyBoxTexture = std::make_unique<CubemapTexture>(kSkyboxRightTexture, kSkyboxLeftTexture, kSkyboxTopTexture, kSkyboxBottomTexture, kSkyboxFrontTexture, kSkyboxBackTexture);
 	m_spaceSkyBoxTexture = std::make_unique<CubemapTexture>(kSpaceSkyboxRightTexture, kSpaceSkyboxLeftTexture, kSpaceSkyboxTopTexture, kSpaceSkyboxBottomTexture, kSpaceSkyboxFrontTexture, kSpaceSkyboxBackTexture);
+
+	return true;
 }
 
 void Renderer::BeginScene(const glm::mat4& view, const glm::mat4& projection)

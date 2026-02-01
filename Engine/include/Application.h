@@ -1,6 +1,7 @@
 #pragma once
 
 #include <AssetManager.h>
+#include <Log.h>
 #include <Layer.h>
 #include <Renderer.h>
 #include <Window.h>

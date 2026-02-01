@@ -1,8 +1,5 @@
 #include <Application.h>
 
-#include <imgui.h>
-
-#include <iostream>
 #include <ranges>
 
 namespace Core
@@ -17,6 +14,9 @@ Application::Application(const ApplicationSpecification& appSpec)
 {
 	assert(!s_instance && "Application is already instantiated!");
 	s_instance = this;
+
+	// Initialize logging immediately
+	Log::Initialize();
 
 	if (m_appSpec.WindowSpec.Title.empty())
 	{
@@ -39,19 +39,31 @@ bool Application::Init()
 	// TODO: Add glfw error callback
 	if (!glfwInit())
 	{
-		std::cerr << "Failed to init glfw!\n";
+		LOG_CORE_CRITICAL("Failed to init glfw")
 		return false;
 	}
 
 	if (!m_window->Create())
 	{
-		std::cerr << "Failed to create window!\n";
+		LOG_CORE_CRITICAL("Failed to create window")
 		return false;
 	}
 
 	// Initialize Engine Subsystems
-	m_assetManager->Initialize();
-	m_renderer->Initialize();
+
+	if (!m_assetManager->Initialize())
+	{
+		LOG_CORE_CRITICAL("Failed to initialize asset manager")
+		return false;
+	}
+
+	if (!m_renderer->Initialize())
+	{
+		LOG_CORE_CRITICAL("Failed to initialize renderer")
+		return false;
+	}
+
+	LOG_CORE_INFO("Application '{}' Initialized", m_appSpec.Name);
 
 	return true;
 }

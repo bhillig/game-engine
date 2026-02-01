@@ -16,13 +16,18 @@ int main(int argc, char* argv[])
 	Core::Application app(appSpec);
 	if (!app.Init())
 	{
-		return -1;
+		LOG_CRITICAL("Failed to initialize '{}'", appSpec.Name)
+		return EXIT_FAILURE;
 	}
 
 	app.AddLayer<GameSceneLayer>();
 	app.AddLayer<GUILayer>();
 
+	LOG_INFO("Running '{}'", appSpec.Name)
+
 	app.Run();
 
-    return 0;
+	LOG_INFO("Exiting '{}'", appSpec.Name)
+
+    return EXIT_SUCCESS;
 }

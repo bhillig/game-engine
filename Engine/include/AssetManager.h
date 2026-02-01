@@ -24,7 +24,7 @@ private:
 
 	const std::vector<std::unique_ptr<Model>>& GetModelsImpl() const { return m_models; }
 
-	void Initialize();
+	bool Initialize();
 
 	void Update();
 
