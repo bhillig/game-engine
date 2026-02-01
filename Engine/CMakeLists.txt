@@ -49,6 +49,11 @@ target_link_libraries(imgui PUBLIC OpenGL::GL glfw)
 # ----------------------------------------------------------
 add_subdirectory(external/assimp)
 
+# ----------------------------------------------------------
+# spdlog - Fast C++ logging library
+# ----------------------------------------------------------
+add_subdirectory(external/spdlog)
+
 set(SOURCES 
 	src/Application.cpp
 	src/AssetManager.cpp
@@ -100,7 +105,7 @@ set(HEADERS
 
 add_library(Engine STATIC ${SOURCES} ${HEADERS})
 
-target_link_libraries(Engine PUBLIC OpenGL::GL glfw glad stb_image imgui assimp)
+target_link_libraries(Engine PUBLIC OpenGL::GL glfw glad stb_image imgui assimp spdlog)
 
 target_include_directories(Engine PUBLIC include)
 
