@@ -65,6 +65,7 @@ set(SOURCES
 	src/ECS/EntityManager.cpp
 	src/ECS/EntityMemoryPool.cpp
 	src/ImGui/ImGuiLayer.cpp
+	src/Platform/Windows/WindowsInput.cpp
 	src/Renderer/CubemapTexture.cpp
 	src/Renderer/ElementBuffer.cpp
 	src/Renderer/Mesh.cpp
@@ -82,6 +83,7 @@ set(HEADERS
 	include/AssetManager.h
 	include/Camera.h
 	include/CameraController.h
+	include/Input.h
 	include/Layer.h
 	include/Log.h
 	include/Renderer.h
@@ -94,6 +96,7 @@ set(HEADERS
 	include/Events/InputEvents.h
 	include/Events/WindowEvents.h
 	include/ImGui/ImGuiLayer.h
+	include/Platform/Windows/WindowsInput.h
 	include/Renderer/CubemapTexture.h
 	include/Renderer/ElementBuffer.h
 	include/Renderer/Mesh.h
