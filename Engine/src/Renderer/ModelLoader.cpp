@@ -43,8 +43,8 @@ bool ModelLoader::LoadModel(const std::string& filepath, ModelLoadedData& modelD
 
 	if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
 	{
-		std::cerr << "Failed to import model: " << filepath << "\n";
-		std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << "\n";
+		LOG_CORE_ERROR("Failed to import model: {}", filepath);
+		LOG_CORE_ERROR("ASSIMP: {}", importer.GetErrorString());
 		return false;
 	}
 

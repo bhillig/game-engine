@@ -26,3 +26,6 @@
 
 // STB Image
 #include <stb_image.h>
+
+// Logging
+#include <Log.h>

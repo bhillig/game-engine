@@ -1,4 +1,3 @@
-#include <iostream>
 #include <Renderer/CubemapTexture.h>
 
 #include <stb_image.h>
@@ -35,7 +34,7 @@ CubemapTexture::CubemapTexture(std::string_view posX, std::string_view negX, std
 		}
 		else
 		{
-			std::cerr << "Cubemap texture failed to load at path: " << m_filePaths.at(i).c_str() << "\n";
+			LOG_CORE_ERROR("Cubemap texture failed to load at path: {}", m_filePaths.at(i).c_str())
 		}
 		stbi_image_free(buffer);
 	}
