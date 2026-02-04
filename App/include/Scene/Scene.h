@@ -19,6 +19,9 @@ public:
 	// Simulates the scene
 	void Simulate(float deltaTime, unsigned int timeSteps = 1);
 
+	// Called every frame to render the scene
+	void Render();
+
 	// Process events
 	void OnEvent(Core::Event& event);
 	
@@ -32,9 +35,6 @@ protected:
 
 	// Called every timeSteps times per frame to update the scene's logic
 	void Update(float deltaTime);
-
-	// Called every frame to render the scene
-	void Render();
 
 protected:
 

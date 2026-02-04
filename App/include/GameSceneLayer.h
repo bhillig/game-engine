@@ -15,6 +15,8 @@ public:
 
 	void OnUpdate(float deltaTime) override;
 
+	void OnRender() override;
+
 	void OnEvent(Core::Event& event) override;
 
 // Event callbacks

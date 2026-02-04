@@ -1,19 +1,13 @@
 #include <Window.h>
 
-#include <iostream>
-
 #include <Events/InputEvents.h>
 #include <Events/WindowEvents.h>
-
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
 
 namespace Core
 {
 
 Window::Window(const WindowSpecification& windowSpec)
-	: m_windowSpecification(windowSpec) , m_handle(nullptr)
+	: m_windowSpecification(windowSpec), m_handle(nullptr)
 {
 }
 
@@ -29,7 +23,7 @@ bool Window::Create()
 	m_handle = glfwCreateWindow(m_windowSpecification.Width, m_windowSpecification.Height, m_windowSpecification.Title.c_str(), nullptr, nullptr);
 	if (!m_handle)
 	{
-		std::cerr << "Failed to create GLFW window!\n";
+		LOG_CORE_ERROR("Failed to create GLFW window!");
 		return false;
 	}
 
@@ -40,6 +34,10 @@ bool Window::Create()
 	glfwSetWindowUserPointer(m_handle, this);
 
 	// Set GLFW callbacks
+	glfwSetErrorCallback([](int error_code, const char* description) {
+		LOG_CORE_ERROR("GLFW Error {}: {}", error_code, description);
+	});
+
 	glfwSetKeyCallback(m_handle, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 		Window* self = static_cast<Window*>(glfwGetWindowUserPointer(window));
 		if (!self) return;
@@ -100,21 +98,9 @@ bool Window::Create()
 		self->m_windowSpecification.Callback(event);
 	});
 
-	// Init ImGui
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable docking
-	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable multi-viewports
-	ImGui::StyleColorsDark();
-
-	// Setup backends
-	ImGui_ImplGlfw_InitForOpenGL(m_handle, true);
-	ImGui_ImplOpenGL3_Init("#version 460");
-
 	// Initialize GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cerr << "Failed to initialize GLAD" << std::endl;
+		LOG_CORE_ERROR("Failed to initialize GLAD")
 		return false;
 	}
 
@@ -130,34 +116,10 @@ bool Window::Create()
 	return true;
 }
 
-void Window::SetupGUIForFrame()
-{
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-}
-
-void Window::RenderGUI()
-{
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
 void Window::Show()
 {
 	// Swap front and back buffers
 	glfwSwapBuffers(m_handle);
-}
-
-Window::~Window()
-{
-	// Shutdown ImGui
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-	// Shutdown GLFW window
-	glfwDestroyWindow(m_handle);
 }
 
 } // namespace Core

@@ -2,13 +2,12 @@
 
 #include <GameSceneLayer.h>
 #include <GUILayer.h>
-
-#include <iostream>
+#include <ImGui/ImGuiLayer.h>
 
 int main(int argc, char* argv[])
 {
 	Core::ApplicationSpecification appSpec;
-	appSpec.Name = "OpenGL App";
+	appSpec.Name = "Game Engine";
 	appSpec.WindowSpec.Width = 1920;
 	appSpec.WindowSpec.Height = 1080;
 
@@ -16,18 +15,19 @@ int main(int argc, char* argv[])
 	Core::Application app(appSpec);
 	if (!app.Init())
 	{
-		LOG_CRITICAL("Failed to initialize '{}'", appSpec.Name)
+		LOG_CRITICAL("Failed to initialize '{}'", appSpec.Name);
 		return EXIT_FAILURE;
 	}
 
 	app.AddLayer<GameSceneLayer>();
 	app.AddLayer<GUILayer>();
+	app.AddLayer<Core::ImGuiLayer>();
 
-	LOG_INFO("Running '{}'", appSpec.Name)
+	LOG_INFO("Running '{}'", appSpec.Name);
 
 	app.Run();
 
-	LOG_INFO("Exiting '{}'", appSpec.Name)
+	LOG_INFO("Exiting '{}'", appSpec.Name);
 
     return EXIT_SUCCESS;
 }

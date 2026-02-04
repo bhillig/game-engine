@@ -36,16 +36,15 @@ Application::Application(const ApplicationSpecification& appSpec)
 
 bool Application::Init()
 {
-	// TODO: Add glfw error callback
 	if (!glfwInit())
 	{
-		LOG_CORE_CRITICAL("Failed to init glfw")
+		LOG_CORE_CRITICAL("Failed to init glfw");
 		return false;
 	}
 
 	if (!m_window->Create())
 	{
-		LOG_CORE_CRITICAL("Failed to create window")
+		LOG_CORE_CRITICAL("Failed to create window");
 		return false;
 	}
 
@@ -53,7 +52,7 @@ bool Application::Init()
 
 	if (!m_assetManager->Initialize())
 	{
-		LOG_CORE_CRITICAL("Failed to initialize asset manager")
+		LOG_CORE_CRITICAL("Failed to initialize asset manager");
 		return false;
 	}
 
@@ -82,20 +81,22 @@ void Application::Run()
 		// Process events
 		glfwPollEvents();
 
-		m_window->SetupGUIForFrame();
-
 		// Update layers
 		for (const auto& layer : m_layerStack)
 		{
 			layer->OnUpdate(m_deltaTime);
+		}
+
+		// Render layers
+		for (const auto& layer : m_layerStack)
+		{
 			layer->OnRender();
 		}
 
 		// Update AssetManager
 		m_assetManager->Update();
 
-		// Render GUI and show updated buffer
-		m_window->RenderGUI();
+		// Show updated buffer
 		m_window->Show();
 	}
 }
@@ -132,6 +133,13 @@ void Application::RaiseEvent(Event& event)
 
 Application::~Application()
 {
+	// Destroy resources in reverse order of creation
+	m_layerStack.clear();
+
+	m_renderer.reset();
+	m_assetManager.reset();
+	m_window.reset();
+
 	glfwTerminate();
 	s_instance = nullptr;
 }

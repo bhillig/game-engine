@@ -64,6 +64,7 @@ set(SOURCES
 	src/Window.cpp
 	src/ECS/EntityManager.cpp
 	src/ECS/EntityMemoryPool.cpp
+	src/ImGui/ImGuiLayer.cpp
 	src/Renderer/CubemapTexture.cpp
 	src/Renderer/ElementBuffer.cpp
 	src/Renderer/Mesh.cpp
@@ -92,6 +93,7 @@ set(HEADERS
 	include/Events/Event.h
 	include/Events/InputEvents.h
 	include/Events/WindowEvents.h
+	include/ImGui/ImGuiLayer.h
 	include/Renderer/CubemapTexture.h
 	include/Renderer/ElementBuffer.h
 	include/Renderer/Mesh.h

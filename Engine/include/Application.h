@@ -48,6 +48,7 @@ public:
 	void AddLayer()
 	{
 		m_layerStack.emplace_back(std::make_unique<T>());
+		m_layerStack.back()->OnAttach();
 	}
 
 private:

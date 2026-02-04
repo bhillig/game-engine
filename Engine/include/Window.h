@@ -23,13 +23,9 @@ class Window
 {
 public:
 	Window(const WindowSpecification& windowSpec = WindowSpecification());
-	~Window();
+	~Window() = default;
 
 	bool Create();
-
-	void SetupGUIForFrame();
-
-	void RenderGUI();
 
 	void Show();
 

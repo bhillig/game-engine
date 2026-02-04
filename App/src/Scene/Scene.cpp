@@ -41,7 +41,6 @@ void Scene::Simulate(float deltaTime, unsigned int timeSteps /* = 1*/)
 	{
 		Update(deltaTime);
 	}
-	Render();
 }
 
 void Scene::OnEvent(Core::Event& event)
