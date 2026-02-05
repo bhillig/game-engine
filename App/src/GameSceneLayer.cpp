@@ -36,7 +36,7 @@ void GameSceneLayer::OnEvent(Core::Event& event)
 bool GameSceneLayer::OnKeyPressed(int keyCode)
 {
 	// Toggle scene focus
-	if (keyCode == GLFW_KEY_ESCAPE)
+	if (keyCode == KEY_ESCAPE)
 	{
 		ToggleSceneFocus();
 	}

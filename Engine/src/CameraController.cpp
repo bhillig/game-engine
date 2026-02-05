@@ -76,19 +76,19 @@ void CameraController::OnMouseMove(double xPos, double yPos)
 
 void CameraController::OnKeyPressed(int key)
 {
-	if (key == GLFW_KEY_W)
+	if (key == KEY_W)
 	{
 		m_forwardPressed = true;
 	}
-	else if (key == GLFW_KEY_S)
+	else if (key == KEY_S)
 	{
 		m_backwardPressed = true;
 	}
-	else if (key == GLFW_KEY_A)
+	else if (key == KEY_A)
 	{
 		m_leftPressed = true;
 	}
-	else if (key == GLFW_KEY_D)
+	else if (key == KEY_D)
 	{
 		m_rightPressed = true;
 	}
@@ -96,19 +96,19 @@ void CameraController::OnKeyPressed(int key)
 
 void CameraController::OnKeyReleased(int key)
 {
-	if (key == GLFW_KEY_W)
+	if (key == KEY_W)
 	{
 		m_forwardPressed = false;
 	}
-	else if (key == GLFW_KEY_S)
+	else if (key == KEY_S)
 	{
 		m_backwardPressed = false;
 	}
-	else if (key == GLFW_KEY_A)
+	else if (key == KEY_A)
 	{
 		m_leftPressed = false;
 	}
-	else if (key == GLFW_KEY_D)
+	else if (key == KEY_D)
 	{
 		m_rightPressed = false;
 	}

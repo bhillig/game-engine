@@ -84,6 +84,7 @@ set(HEADERS
 	include/Camera.h
 	include/CameraController.h
 	include/Input.h
+	include/InputKeyCodes.h
 	include/Layer.h
 	include/Log.h
 	include/Renderer.h

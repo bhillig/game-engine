@@ -22,7 +22,7 @@ void GUILayer::OnEvent(Core::Event& event)
 
 bool GUILayer::OnKeyPressed(int key)
 {
-	if (key == GLFW_KEY_ESCAPE)
+	if (key == KEY_ESCAPE)
 	{
 		ToggleControl();
 		return false;
