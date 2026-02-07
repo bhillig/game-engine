@@ -17,6 +17,8 @@ public:
 
 	void OnRender() override;
 
+	void OnImGuiRender() override;
+
 	void OnEvent(Core::Event& event) override;
 
 // Event callbacks

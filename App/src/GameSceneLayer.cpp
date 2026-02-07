@@ -26,6 +26,11 @@ void GameSceneLayer::OnRender()
 	m_scene->Render();
 }
 
+void GameSceneLayer::OnImGuiRender()
+{
+	m_scene->ImGuiRender();
+}
+
 void GameSceneLayer::OnEvent(Core::Event& event)
 {
 	Core::EventDispatcher dispatcher(event);

@@ -123,8 +123,19 @@ void Scene::Render()
 	}
 
 	Renderer::EndScene();
+}
 
-	ConstructGUI();
+void Scene::ImGuiRender()
+{
+	ImGui::Begin("Scene");
+	if (ImGui::BeginTabBar("SceneTabs"))
+	{
+		ConstructLevelTreeTab();
+		ConstructWorldTab();
+		ConstructCameraTab();
+		ImGui::EndTabBar();
+	}
+	ImGui::End();
 }
 
 bool Scene::OnKeyPressed(int key)
@@ -152,19 +163,6 @@ bool Scene::OnMouseMove(double xPos, double yPos)
 		m_cameraController->OnMouseMove(xPos, yPos);
 	}
 	return false;
-}
-
-void Scene::ConstructGUI()
-{
-	ImGui::Begin("Scene");
-	if (ImGui::BeginTabBar("SceneTabs"))
-	{
-		ConstructLevelTreeTab();
-		ConstructWorldTab();
-		ConstructCameraTab();
-		ImGui::EndTabBar();
-	}
-	ImGui::End();
 }
 
 void Scene::ConstructLevelTreeTab()

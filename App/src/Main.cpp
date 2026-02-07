@@ -2,7 +2,6 @@
 
 #include <GameSceneLayer.h>
 #include <GUILayer.h>
-#include <ImGui/ImGuiLayer.h>
 
 int main(int argc, char* argv[])
 {
@@ -21,7 +20,6 @@ int main(int argc, char* argv[])
 
 	app.AddLayer<GameSceneLayer>();
 	app.AddLayer<GUILayer>();
-	app.AddLayer<Core::ImGuiLayer>();
 
 	LOG_INFO("Running '{}'", appSpec.Name);
 

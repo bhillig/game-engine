@@ -64,7 +64,7 @@ set(SOURCES
 	src/Window.cpp
 	src/ECS/EntityManager.cpp
 	src/ECS/EntityMemoryPool.cpp
-	src/ImGui/ImGuiLayer.cpp
+	src/ImGui/CoreImGui.cpp
 	src/Platform/Windows/WindowsInput.cpp
 	src/Renderer/CubemapTexture.cpp
 	src/Renderer/ElementBuffer.cpp
@@ -96,7 +96,7 @@ set(HEADERS
 	include/Events/Event.h
 	include/Events/InputEvents.h
 	include/Events/WindowEvents.h
-	include/ImGui/ImGuiLayer.h
+	include/ImGui/CoreImGui.h
 	include/Platform/Windows/WindowsInput.h
 	include/Renderer/CubemapTexture.h
 	include/Renderer/ElementBuffer.h

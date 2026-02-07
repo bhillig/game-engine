@@ -22,6 +22,9 @@ public:
 	// Called every frame to render the scene
 	void Render();
 
+	// Called every frame to render the gui
+	void ImGuiRender();
+
 	// Process events
 	void OnEvent(Core::Event& event);
 	
@@ -44,9 +47,6 @@ protected:
 	bool OnMouseMove(double xPos, double yPos);
 
 private:
-
-	// Constructs the scene's GUI
-	void ConstructGUI();
 
 	void ConstructLevelTreeTab();
 	void ConstructWorldTab();

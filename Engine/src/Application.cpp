@@ -1,5 +1,7 @@
 #include <Application.h>
 
+#include <ImGui/CoreImGui.h>
+
 #include <ranges>
 
 namespace Core
@@ -62,6 +64,8 @@ bool Application::Init()
 		return false;
 	}
 
+	CoreImGui::Initialize();
+
 	LOG_CORE_INFO("Application '{}' Initialized", m_appSpec.Name);
 
 	return true;
@@ -92,6 +96,14 @@ void Application::Run()
 		{
 			layer->OnRender();
 		}
+
+		// Render ImGui
+		CoreImGui::Begin();
+		for (const auto& layer : m_layerStack)
+		{
+			layer->OnImGuiRender();
+		}
+		CoreImGui::End();
 
 		// Update AssetManager
 		m_assetManager->Update();
@@ -135,6 +147,8 @@ Application::~Application()
 {
 	// Destroy resources in reverse order of creation
 	m_layerStack.clear();
+
+	CoreImGui::Shutdown();
 
 	m_renderer.reset();
 	m_assetManager.reset();
