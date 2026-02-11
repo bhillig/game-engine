@@ -32,16 +32,18 @@ bool GUILayer::OnKeyPressed(int key)
 
 void GUILayer::ToggleControl()
 {
-	const Core::Window& window = Core::Application::GetApp()->GetWindow();
-	const int cursorMode = glfwGetInputMode(window.GetHandle(), GLFW_CURSOR);
+	// TODO: Remove this. Client code should not know about GLFW
+	GLFWwindow* window = static_cast<GLFWwindow*>(Core::Application::GetApp()->GetWindow().GetNativeHandle());
+
+	const int cursorMode = glfwGetInputMode(window, GLFW_CURSOR);
 	switch (cursorMode)
 	{
 	case GLFW_CURSOR_DISABLED:
-		glfwSetInputMode(window.GetHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		m_hasControl = true;
 		break;
 	case GLFW_CURSOR_NORMAL:
-		glfwSetInputMode(window.GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		m_hasControl = false;
 		break;
 	default:

@@ -40,7 +40,7 @@ void VertexArray::Add(const VertexBuffer& buffer, const VertexBufferLayout& layo
 	Bind();
 	buffer.Bind();
 	const std::vector<VertexBufferElement>& elements = layout.GetElements();
-	unsigned int offset = 0;
+	size_t offset = 0;
 	for (int i = 0; i < elements.size(); ++i)
 	{
 		const VertexBufferElement& element = elements[i];

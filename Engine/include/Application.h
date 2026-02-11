@@ -1,12 +1,12 @@
 #pragma once
 
 #include <AssetManager.h>
-#include <Log.h>
 #include <Layer.h>
 #include <Renderer.h>
 #include <Window.h>
 
 #include <Events/Event.h>
+#include <Events/WindowEvents.h>
 
 #include <memory>
 #include <cassert>
@@ -19,7 +19,7 @@ namespace Core
 struct ApplicationSpecification
 {
 	std::string Name = "Application";
-	WindowSpecification WindowSpec;
+	WindowData WindowSpec;
 };
 
 class Application
@@ -54,6 +54,8 @@ private:
 
 	void RaiseEvent(Event& event);
 
+	bool OnWindowClosed(WindowClosedEvent& event);
+
 private:
 	ApplicationSpecification m_appSpec;
 	std::unique_ptr<Window> m_window;
@@ -64,6 +66,7 @@ private:
 
 	float m_deltaTime;
 	float m_lastTime;
+	bool m_running;
 
 	std::vector<std::unique_ptr<Layer>> m_layerStack;
 

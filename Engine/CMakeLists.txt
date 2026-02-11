@@ -61,11 +61,12 @@ set(SOURCES
 	src/CameraController.cpp
 	src/Log.cpp
 	src/Renderer.cpp
-	src/Window.cpp
 	src/ECS/EntityManager.cpp
 	src/ECS/EntityMemoryPool.cpp
 	src/ImGui/CoreImGui.cpp
+	src/Platform/OpenGL/OpenGLGraphicsContext.cpp
 	src/Platform/Windows/WindowsInput.cpp
+	src/Platform/Windows/WindowsWindow.cpp
 	src/Renderer/CubemapTexture.cpp
 	src/Renderer/ElementBuffer.cpp
 	src/Renderer/Mesh.cpp
@@ -97,9 +98,12 @@ set(HEADERS
 	include/Events/InputEvents.h
 	include/Events/WindowEvents.h
 	include/ImGui/CoreImGui.h
+	include/Platform/OpenGL/OpenGLGraphicsContext.h
 	include/Platform/Windows/WindowsInput.h
+	include/Platform/Windows/WindowsWindow.h
 	include/Renderer/CubemapTexture.h
 	include/Renderer/ElementBuffer.h
+	include/Renderer/GraphicsContext.h
 	include/Renderer/Mesh.h
 	include/Renderer/Model.h
 	include/Renderer/ModelLoader.h

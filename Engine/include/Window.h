@@ -1,8 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include <Events/Event.h>
 
 #include <string>
@@ -11,7 +8,7 @@
 namespace Core
 {
 
-struct WindowSpecification
+struct WindowData
 {
 	std::string Title;
 	int Width = 1920;
@@ -22,24 +19,17 @@ struct WindowSpecification
 class Window
 {
 public:
-	Window(const WindowSpecification& windowSpec = WindowSpecification());
-	~Window() = default;
+	virtual ~Window() = default;
 
-	bool Create();
+	virtual bool Initialize() = 0;
 
-	void Show();
+	virtual void Update() = 0;
 
-	int GetWidth() const { return m_windowSpecification.Width; }
+	virtual int GetWidth() const = 0;
 
-	int GetHeight() const { return m_windowSpecification.Height; }
+	virtual int GetHeight() const = 0;
 
-	bool ShouldClose() const { return glfwWindowShouldClose(m_handle); }
-
-	GLFWwindow* GetHandle() const { return m_handle; }
-
-private:
-	WindowSpecification m_windowSpecification;
-	GLFWwindow* m_handle;
+	virtual void* GetNativeHandle() const = 0;
 };
 
 } // namespace Core

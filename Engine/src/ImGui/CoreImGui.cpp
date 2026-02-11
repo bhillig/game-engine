@@ -1,10 +1,12 @@
 #include <ImGui/CoreImGui.h>
 
+#include <Application.h>
+
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include <Application.h>
+#include <GLFW/glfw3.h>
 
 namespace CoreImGui
 {
@@ -13,11 +15,14 @@ void Initialize()
 {
 	const Core::Window& window = Core::Application::GetApp()->GetWindow();
 
+	GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(window.GetNativeHandle());
+	assert(glfwWindow && "Tried to initialize CoreImGui but window handle is not a GLFW window!");
+
 	// Init ImGui
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.DisplaySize = ImVec2(window.GetWidth(), window.GetHeight());
+	io.DisplaySize = ImVec2(static_cast<float>(window.GetWidth()), static_cast<float>(window.GetHeight()));
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable multi-viewports
 	ImGui::StyleColorsDark();
@@ -31,7 +36,7 @@ void Initialize()
 	}
 
 	// Setup backends
-	ImGui_ImplGlfw_InitForOpenGL(window.GetHandle(), true);
+	ImGui_ImplGlfw_InitForOpenGL(glfwWindow, true);
 	ImGui_ImplOpenGL3_Init("#version 460");
 }
 
@@ -47,7 +52,7 @@ void End()
 	const Core::Window& window = Core::Application::GetApp()->GetWindow();
 
 	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2(window.GetWidth(), window.GetHeight());
+	io.DisplaySize = ImVec2(static_cast<float>(window.GetWidth()), static_cast<float>(window.GetHeight()));
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -1,6 +1,10 @@
 #include <Application.h>
 
+#include <Platform/Windows/WindowsWindow.h>
+
 #include <ImGui/CoreImGui.h>
+
+#include <GLFW/glfw3.h>
 
 #include <ranges>
 
@@ -29,7 +33,7 @@ Application::Application(const ApplicationSpecification& appSpec)
 		RaiseEvent(event);
 	};
 
-	m_window = std::make_unique<Window>(m_appSpec.WindowSpec);
+	m_window = std::make_unique<WindowsWindow>(m_appSpec.WindowSpec);
 
 	// Construct Engine Subsystems
 	m_assetManager = std::unique_ptr<AssetManager>(new AssetManager());
@@ -44,7 +48,7 @@ bool Application::Init()
 		return false;
 	}
 
-	if (!m_window->Create())
+	if (!m_window->Initialize())
 	{
 		LOG_CORE_CRITICAL("Failed to create window");
 		return false;
@@ -60,7 +64,7 @@ bool Application::Init()
 
 	if (!m_renderer->Initialize())
 	{
-		LOG_CORE_CRITICAL("Failed to initialize renderer")
+		LOG_CORE_CRITICAL("Failed to initialize renderer");
 		return false;
 	}
 
@@ -73,9 +77,10 @@ bool Application::Init()
 
 void Application::Run()
 {
+	m_running = true;
 	m_lastTime = static_cast<float>(glfwGetTime());
 
-	while (!m_window->ShouldClose())
+	while (m_running)
 	{
 		// Calculate deltaTime
 		const float currentTime = static_cast<float>(glfwGetTime());
@@ -109,7 +114,7 @@ void Application::Run()
 		m_assetManager->Update();
 
 		// Show updated buffer
-		m_window->Show();
+		m_window->Update();
 	}
 }
 
@@ -133,6 +138,9 @@ Renderer& Application::GetRenderer()
 
 void Application::RaiseEvent(Event& event)
 {
+	Core::EventDispatcher dispatcher(event);
+	dispatcher.Dispatch<Core::WindowClosedEvent>([this](Core::WindowClosedEvent& event) { return OnWindowClosed(event); });
+
 	for (auto& layer : std::views::reverse(m_layerStack))
 	{
 		layer->OnEvent(event);
@@ -141,6 +149,12 @@ void Application::RaiseEvent(Event& event)
 			break;
 		}
 	}
+}
+
+bool Application::OnWindowClosed(WindowClosedEvent& event)
+{
+	m_running = false;
+	return true;
 }
 
 Application::~Application()

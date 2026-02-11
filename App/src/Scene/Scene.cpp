@@ -6,7 +6,6 @@
 #include <Events/InputEvents.h>
 
 #include <imgui.h>
-#include <ranges>
 
 using Core::AssetManager;
 using Core::EventDispatcher;
