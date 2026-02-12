@@ -50,15 +50,15 @@ class MeshComponent : public Component
 public:
 	MeshComponent() 
 	: m_model(nullptr){}
-	MeshComponent(Model* model)
+	MeshComponent(Core::Model* model)
 		: m_model(model) {}
 
-	void SetModel(Model* model) { m_model = model; }
+	void SetModel(Core::Model* model) { m_model = model; }
 
-	Model* GetModel() const { return m_model; }
+	Core::Model* GetModel() const { return m_model; }
 
 private:
-	Model* m_model;
+	Core::Model* m_model;
 };
 
 class BoundingBoxComponent : public Component

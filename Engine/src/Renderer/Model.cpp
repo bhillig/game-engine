@@ -3,6 +3,9 @@
 #include <iostream>
 #include <filesystem>
 
+namespace Core
+{
+
 Model::Model(const std::string& filepath, std::vector<MeshLoadedData>&& meshData)
 	: m_filepath(filepath)
 {
@@ -70,4 +73,6 @@ void Model::CalculateAABB(AABB& aaBB)
 			aaBB.max.z = std::max(aaBB.max.z, vertex.position.z);
 		}
 	}
+}
+
 }

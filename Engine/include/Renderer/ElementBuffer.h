@@ -1,22 +1,20 @@
 #pragma once
 
-#include <glad/glad.h>
+namespace Core
+{
 
 class ElementBuffer
 {
 public:
-	ElementBuffer() = default;
-	ElementBuffer(const void* data, GLsizeiptr dataSize);
-	ElementBuffer(const void* data, GLsizeiptr dataSize, GLenum usage);
-	~ElementBuffer();
+	virtual ~ElementBuffer() = default;
 
-	void Bind() const;
+	virtual void Bind() const = 0;
 
-	void Unbind() const;
+	virtual void Unbind() const = 0;
 
-	unsigned int Count() const { return m_count; }
+	virtual unsigned int Count() const = 0;
 
-private:
-	unsigned int m_rendererID;
-	unsigned int m_count;
+	static ElementBuffer* Create(const void* data, uint32_t dataSize);
 };
+
+}

@@ -47,6 +47,8 @@ static constexpr const char* kProjectionMatrixUniform = "u_Projection";
 namespace Core
 {
 
+RendererAPI Renderer::s_rendererAPI = RendererAPI::None;
+
 Renderer::Renderer()
 {
 	// no-op for now
@@ -64,6 +66,9 @@ bool Renderer::Initialize()
 	// Create Engine Textures
 	m_skyBoxTexture = std::make_unique<CubemapTexture>(kSkyboxRightTexture, kSkyboxLeftTexture, kSkyboxTopTexture, kSkyboxBottomTexture, kSkyboxFrontTexture, kSkyboxBackTexture);
 	m_spaceSkyBoxTexture = std::make_unique<CubemapTexture>(kSpaceSkyboxRightTexture, kSpaceSkyboxLeftTexture, kSpaceSkyboxTopTexture, kSpaceSkyboxBottomTexture, kSpaceSkyboxFrontTexture, kSpaceSkyboxBackTexture);
+
+	// Set Renderer API to OpenGL
+	SetRendererAPI(RendererAPI::OpenGL);
 
 	return true;
 }
@@ -111,6 +116,16 @@ void Renderer::DrawSpaceSkybox()
 void Renderer::Submit(const Model& model, const glm::mat4& transform)
 {
 	GetRenderer().SubmitImpl(model, transform);
+}
+
+void Renderer::SetRendererAPI(RendererAPI api)
+{
+	s_rendererAPI = api;
+}
+
+RendererAPI Renderer::GetAPI()
+{
+	return s_rendererAPI;
 }
 
 void Renderer::BeginSceneImpl(const glm::mat4& view, const glm::mat4& projection)
@@ -192,10 +207,10 @@ void Renderer::DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::v
 	layout.Push<float>(3);
 	layout.Push<float>(3);
 
-	VertexBuffer vbo(vertices, sizeof(vertices));
+	auto vbo = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(vertices, sizeof(vertices)));
 
 	VertexArray vao;
-	vao.Add(vbo, layout);
+	vao.Add(*vbo, layout);
 
 	glm::mat4 transform = glm::mat4(1.f);
 	m_lineShader->Bind();
@@ -258,11 +273,11 @@ void Renderer::DrawSkyboxImpl()
 
 	VertexBufferLayout layout;
 	layout.Push<float>(3);
-
-	VertexBuffer vbo(skyboxVertices, sizeof(skyboxVertices));
+	
+	auto vbo = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices)));
 
 	VertexArray vao;
-	vao.Add(vbo, layout);
+	vao.Add(*vbo, layout);
 
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(false);
@@ -330,10 +345,10 @@ void Renderer::DrawSpaceSkyboxImpl()
 	VertexBufferLayout layout;
 	layout.Push<float>(3);
 
-	VertexBuffer vbo(skyboxVertices, sizeof(skyboxVertices));
+	auto vbo = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices)));
 
 	VertexArray vao;
-	vao.Add(vbo, layout);
+	vao.Add(*vbo, layout);
 
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(false);

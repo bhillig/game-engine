@@ -7,12 +7,19 @@
 #include <glm/mat4x4.hpp>
 
 class CubemapTexture;
-class Model;
 class Shader;
 
 namespace Core
 {
 	
+class Model;
+
+enum class RendererAPI
+{
+	None = 0,
+	OpenGL = 1
+};
+
 class Renderer
 {
 public:
@@ -54,6 +61,13 @@ public:
 	// @param model - The model to render
 	// @param transform - The world transform of the model
 	static void Submit(const Model& model, const glm::mat4& transform);
+
+	// Sets the Renderer API (OpenGL, Vulkan, etc.)
+	// @param api - The API to use
+	static void SetRendererAPI(RendererAPI api);
+
+	// Returns the Renderer API (OpenGL, Vulkan, etc.)
+	static RendererAPI GetAPI();
 
 private:
 
@@ -101,6 +115,8 @@ private:
 
 	std::unique_ptr<CubemapTexture> m_skyBoxTexture;
 	std::unique_ptr<CubemapTexture> m_spaceSkyBoxTexture;
+
+	static RendererAPI s_rendererAPI;
 };
 
 }

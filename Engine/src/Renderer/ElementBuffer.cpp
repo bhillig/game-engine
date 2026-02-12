@@ -1,37 +1,24 @@
 #include <Renderer/ElementBuffer.h>
 
-ElementBuffer::ElementBuffer(const void* data, GLsizeiptr dataSize)
-	: ElementBuffer(data, dataSize, GL_STATIC_DRAW)
+#include <Renderer.h>
+
+#include <Platform/OpenGL/OpenGLElementBuffer.h>
+
+namespace Core
 {
+
+ElementBuffer* ElementBuffer::Create(const void* data, uint32_t dataSize)
+{
+	switch (Renderer::GetAPI())
+	{
+	case RendererAPI::OpenGL:
+		return new OpenGLElementBuffer(data, dataSize);
+	case RendererAPI::None:
+		break;
+	}
+
+	assert(false && "Renderer API not valid when creating ElementBuffer!");
+	return nullptr;
 }
 
-ElementBuffer::ElementBuffer(const void* data, GLsizeiptr dataSize, GLenum usage)
-{
-	// Generate an element buffer
-	glGenBuffers(1, &m_rendererID);
-
-	// Bind to the element buffer and pass in our indices
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, dataSize, data, usage);
-
-	// Unbind the element buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	// Store the element count
-	m_count = dataSize / sizeof(unsigned int);
-}
-
-ElementBuffer::~ElementBuffer()
-{
-	glDeleteBuffers(1, &m_rendererID);
-}
-
-void ElementBuffer::Bind() const
-{
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID);
-}
-
-void ElementBuffer::Unbind() const
-{
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

@@ -5,6 +5,9 @@
 
 #include <assimp/scene.h>
 
+namespace Core
+{
+
 struct ModelLoadTask
 {
 	std::string filepath;
@@ -48,6 +51,7 @@ private:
 	threadsafe_queue<ModelLoadTask> m_modelLoadTaskQueue;
 	std::atomic<bool> m_stopRequested;
 
-	friend class Core::AssetManager;
+	friend class AssetManager;
 };
 
+}

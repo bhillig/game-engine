@@ -5,6 +5,9 @@
 
 #include <glad/glad.h>
 
+namespace Core
+{
+
 VertexArray::VertexArray()
 {
 	glGenVertexArrays(1, &m_rendererID);
@@ -12,7 +15,7 @@ VertexArray::VertexArray()
 
 VertexArray::~VertexArray()
 {
-	if (m_rendererID != 0) 
+	if (m_rendererID != 0)
 	{
 		glDeleteVertexArrays(1, &m_rendererID);
 	}
@@ -33,7 +36,6 @@ VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
 	}
 	return *this;
 }
-
 
 void VertexArray::Add(const VertexBuffer& buffer, const VertexBufferLayout& layout)
 {
@@ -58,4 +60,6 @@ void VertexArray::Bind() const
 void VertexArray::Unbind() const
 {
 	glBindVertexArray(0);
+}
+
 }

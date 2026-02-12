@@ -1,7 +1,11 @@
 #pragma once
 
-class VertexBuffer;
+#include "VertexBuffer.h"
+
 class VertexBufferLayout;
+
+namespace Core
+{
 
 class VertexArray
 {
@@ -20,3 +24,5 @@ public:
 private:
 	unsigned int m_rendererID;
 };
+
+}

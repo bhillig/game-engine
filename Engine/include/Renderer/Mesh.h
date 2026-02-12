@@ -13,6 +13,9 @@
 #include <Renderer/Shader.h>
 #include <Renderer/Texture.h>
 
+namespace Core
+{
+
 struct Vertex
 {
 	glm::vec3 position;
@@ -70,6 +73,8 @@ private:
 	std::vector<TextureRef> m_textures;
 
 	VertexArray m_vao;
-	VertexBuffer m_vbo;
-	ElementBuffer m_ebo;
+	std::unique_ptr<VertexBuffer> m_vbo;
+	std::unique_ptr<ElementBuffer> m_ebo;
 };
+
+}

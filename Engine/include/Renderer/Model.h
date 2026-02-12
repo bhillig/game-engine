@@ -5,16 +5,16 @@
 
 #include <vector>
 
+namespace Core
+{
+
 struct AABB
 {
 	glm::vec3 min;
 	glm::vec3 max;
 };
 
-namespace Core
-{
-	class AssetManager;
-}
+class AssetManager;
 
 class Model
 {
@@ -38,5 +38,7 @@ private:
 
 	std::unordered_map<std::string, std::shared_ptr<Texture>> m_textureMap;
 
-	friend class Core::AssetManager;
+	friend class AssetManager;
 };
+
+}

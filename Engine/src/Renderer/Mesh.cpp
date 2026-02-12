@@ -4,28 +4,30 @@
 
 #include <Renderer/VertexBufferLayout.h>
 
+namespace Core
+{
+
 Mesh::Mesh(MeshData&& meshData)
 	: m_vertices(std::move(meshData.vertices))
 	, m_indices(std::move(meshData.indices))
 	, m_textures(std::move(meshData.textureReferences))
-	, m_vao()
-	, m_vbo(m_vertices.data(), m_vertices.size() * sizeof(Vertex))
-	, m_ebo(m_indices.data(), m_indices.size() * sizeof(unsigned int))
 {
+	m_vbo = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex)));
+	m_ebo = std::unique_ptr<ElementBuffer>(ElementBuffer::Create(m_indices.data(), m_indices.size() * sizeof(unsigned int)));
 	m_vao.Bind();
-	m_vbo.Bind();
-	m_ebo.Bind();
+	m_vbo->Bind();
+	m_ebo->Bind();
 
 	// Specify how our vertex data is formatted
 	VertexBufferLayout vertexBufferLayout;
 	vertexBufferLayout.Push<float>(3); // Position
 	vertexBufferLayout.Push<float>(3); // Normal
 	vertexBufferLayout.Push<float>(2); // Texture Coordinates
-	m_vao.Add(m_vbo, vertexBufferLayout);
+	m_vao.Add(*m_vbo, vertexBufferLayout);
 
 	m_vao.Unbind();
-	m_vbo.Unbind();
-	m_ebo.Unbind();
+	m_vbo->Unbind();
+	m_ebo->Unbind();
 }
 
 // Move constructor
@@ -81,4 +83,6 @@ void Mesh::Draw(Shader& shader) const
 
 	shader.Unbind();
 	m_vao.Unbind();
+}
+
 }

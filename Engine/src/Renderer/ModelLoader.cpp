@@ -5,6 +5,9 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
+namespace Core
+{
+
 ModelLoader::ModelLoader(ModelLoadedCallbackFunc callback)
 	: m_onModelLoadedCallback(std::move(callback))
 {
@@ -153,4 +156,6 @@ void ModelLoader::ProcessTasks_Thread()
 			m_onModelLoadedCallback(std::move(data));
 		}
 	}
+}
+
 }

@@ -106,7 +106,7 @@ void Scene::Render()
 		ECS::MeshComponent& meshComp = m_entityManager.GetComponentFromEntity<ECS::MeshComponent>(i);
 		if (meshComp.IsActive())
 		{
-			if (Model* model = meshComp.GetModel())
+			if (Core::Model* model = meshComp.GetModel())
 			{
 				Renderer::Submit(*model, transformComp.transformMatrix());
 			}

@@ -1,37 +1,24 @@
 #include <Renderer/VertexBuffer.h>
 
-VertexBuffer::VertexBuffer(const void* data, GLsizeiptr dataSize)
-	: VertexBuffer(data, dataSize, GL_STATIC_DRAW)
+#include <Renderer.h>
+
+#include <Platform/OpenGL/OpenGLVertexBuffer.h>
+
+namespace Core
 {
+
+VertexBuffer* VertexBuffer::Create(const void* data, uint32_t dataSize)
+{
+	switch (Renderer::GetAPI())
+	{
+	case RendererAPI::OpenGL:
+		return new OpenGLVertexBuffer(data, dataSize);
+	case RendererAPI::None:
+		break;
+	}
+
+	assert(false && "Renderer API not valid when creating VertexBuffer!");
+	return nullptr;
 }
 
-VertexBuffer::VertexBuffer(const void* data, GLsizeiptr dataSize, GLenum usage)
-{
-	// Generate a vertex buffer
-	glGenBuffers(1, &m_rendererID);
-
-	// Bind to the vertex buffer and pass in our vertices
-	glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
-	glBufferData(GL_ARRAY_BUFFER, dataSize, data, usage);
-
-	// Unbind the vertex buffer
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// Store the element count
-	m_count = dataSize / sizeof(float);
-}
-
-VertexBuffer::~VertexBuffer()
-{
-	glDeleteBuffers(1, &m_rendererID);
-}
-
-void VertexBuffer::Bind() const
-{
-	glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
-}
-
-void VertexBuffer::Unbind() const
-{
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
