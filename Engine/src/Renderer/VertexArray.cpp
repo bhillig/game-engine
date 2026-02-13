@@ -1,8 +1,5 @@
 #include <Renderer/VertexArray.h>
 
-#include <Renderer/VertexBuffer.h>
-#include <Renderer/VertexBufferLayout.h>
-
 #include <glad/glad.h>
 
 namespace Core
@@ -35,21 +32,6 @@ VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
 		other.m_rendererID = 0;
 	}
 	return *this;
-}
-
-void VertexArray::Add(const VertexBuffer& buffer, const VertexBufferLayout& layout)
-{
-	Bind();
-	buffer.Bind();
-	const std::vector<VertexBufferElement>& elements = layout.GetElements();
-	size_t offset = 0;
-	for (int i = 0; i < elements.size(); ++i)
-	{
-		const VertexBufferElement& element = elements[i];
-		glVertexAttribPointer(i, element.count, element.type, element.normalized, layout.GetStride(), (void*)offset);
-		glEnableVertexAttribArray(i);
-		offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
-	}
 }
 
 void VertexArray::Bind() const

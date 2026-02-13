@@ -2,10 +2,10 @@
 
 #include <Application.h>
 
+#include <Renderer/BufferLayout.h>
 #include <Renderer/CubemapTexture.h>
 #include <Renderer/VertexArray.h>
 #include <Renderer/VertexBuffer.h>
-#include <Renderer/VertexBufferLayout.h>
 
 #include <glad/glad.h>
 
@@ -203,14 +203,18 @@ void Renderer::DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::v
 		b.x, b.y, b.z, color.r, color.g, color.b
 	};
 
-	VertexBufferLayout layout;
-	layout.Push<float>(3);
-	layout.Push<float>(3);
+	VertexArray vao;
+	vao.Bind();
+
+	BufferLayout layout{
+		{
+		{ShaderDataType::Float3, "Position"},
+		{ShaderDataType::Float3, "Color"}
+		}
+	};
 
 	auto vbo = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(vertices, sizeof(vertices)));
-
-	VertexArray vao;
-	vao.Add(*vbo, layout);
+	vbo->SetLayout(layout);
 
 	glm::mat4 transform = glm::mat4(1.f);
 	m_lineShader->Bind();
@@ -271,13 +275,17 @@ void Renderer::DrawSkyboxImpl()
 		 1.0f, -1.0f,  1.0f
 	};
 
-	VertexBufferLayout layout;
-	layout.Push<float>(3);
+	VertexArray vao;
+	vao.Bind();
+
+	BufferLayout layout{
+		{
+			{ShaderDataType::Float3, "Position"}
+		}
+	};
 	
 	auto vbo = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices)));
-
-	VertexArray vao;
-	vao.Add(*vbo, layout);
+	vbo->SetLayout(layout);
 
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(false);
@@ -342,13 +350,17 @@ void Renderer::DrawSpaceSkyboxImpl()
 		 1.0f, -1.0f,  1.0f
 	};
 
-	VertexBufferLayout layout;
-	layout.Push<float>(3);
+	VertexArray vao;
+	vao.Bind();
+
+	BufferLayout layout{
+		{
+			{ShaderDataType::Float3, "Position"}
+		}
+	};
 
 	auto vbo = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices)));
-
-	VertexArray vao;
-	vao.Add(*vbo, layout);
+	vbo->SetLayout(layout);
 
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(false);

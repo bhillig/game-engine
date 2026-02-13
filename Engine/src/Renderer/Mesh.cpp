@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-#include <Renderer/VertexBufferLayout.h>
+#include <Renderer/BufferLayout.h>
 
 namespace Core
 {
@@ -19,11 +19,16 @@ Mesh::Mesh(MeshData&& meshData)
 	m_ebo->Bind();
 
 	// Specify how our vertex data is formatted
-	VertexBufferLayout vertexBufferLayout;
-	vertexBufferLayout.Push<float>(3); // Position
-	vertexBufferLayout.Push<float>(3); // Normal
-	vertexBufferLayout.Push<float>(2); // Texture Coordinates
-	m_vao.Add(*m_vbo, vertexBufferLayout);
+	BufferLayout layout{
+		{
+			{ShaderDataType::Float3, "Position"},
+			{ShaderDataType::Float3, "Normal"},
+			{ShaderDataType::Float2, "Texture Coordinates"}
+		}
+
+	};
+
+	m_vbo->SetLayout(layout);
 
 	m_vao.Unbind();
 	m_vbo->Unbind();

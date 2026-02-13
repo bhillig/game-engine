@@ -18,6 +18,8 @@ public:
 
 	void Unbind() const override;
 
+	void SetLayout(const BufferLayout& layout) const override;
+
 private:
 	unsigned int m_rendererID;
 };

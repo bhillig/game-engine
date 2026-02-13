@@ -3,6 +3,8 @@
 namespace Core
 {
 
+class BufferLayout;
+
 class VertexBuffer
 {
 public:
@@ -11,6 +13,8 @@ public:
 	virtual void Bind() const = 0;
 
 	virtual void Unbind() const = 0;
+
+	virtual void SetLayout(const BufferLayout& layout) const = 0;
 
 	static VertexBuffer* Create(const void* data, uint32_t dataSize);
 };

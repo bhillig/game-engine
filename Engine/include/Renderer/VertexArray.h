@@ -1,9 +1,5 @@
 #pragma once
 
-#include "VertexBuffer.h"
-
-class VertexBufferLayout;
-
 namespace Core
 {
 
@@ -14,8 +10,6 @@ public:
 	~VertexArray();
 	VertexArray(VertexArray&& other) noexcept;
 	VertexArray& operator=(VertexArray&& other) noexcept;
-
-	void Add(const VertexBuffer& buffer, const VertexBufferLayout& layout);
 
 	void Bind() const;
 

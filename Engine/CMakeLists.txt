@@ -78,7 +78,6 @@ set(SOURCES
 	src/Renderer/Texture.cpp
 	src/Renderer/VertexArray.cpp
 	src/Renderer/VertexBuffer.cpp
-	src/Renderer/VertexBufferLayout.cpp
 	src/Utils/FileUtils.cpp)
 
 set(HEADERS
@@ -105,6 +104,7 @@ set(HEADERS
 	include/Platform/OpenGL/OpenGLVertexBuffer.h
 	include/Platform/Windows/WindowsInput.h
 	include/Platform/Windows/WindowsWindow.h
+	include/Renderer/BufferLayout.h
 	include/Renderer/CubemapTexture.h
 	include/Renderer/ElementBuffer.h
 	include/Renderer/GraphicsContext.h
@@ -115,7 +115,6 @@ set(HEADERS
 	include/Renderer/Texture.h
 	include/Renderer/VertexArray.h
 	include/Renderer/VertexBuffer.h
-	include/Renderer/VertexBufferLayout.h
 	include/Utils/FileUtils.h
 	include/Utils/ThreadSafeQueue.h)
 
