@@ -1,47 +1,24 @@
 #include <Renderer/VertexArray.h>
 
-#include <glad/glad.h>
+#include <Renderer.h>
+
+#include <Platform/OpenGL/OpenGLVertexArray.h>
 
 namespace Core
 {
 
-VertexArray::VertexArray()
+std::shared_ptr<VertexArray> VertexArray::Create()
 {
-	glGenVertexArrays(1, &m_rendererID);
-}
-
-VertexArray::~VertexArray()
-{
-	if (m_rendererID != 0)
+	switch (Renderer::GetAPI())
 	{
-		glDeleteVertexArrays(1, &m_rendererID);
+	case RendererAPI::OpenGL:
+		return std::make_shared<OpenGLVertexArray>();
+	case RendererAPI::None:
+		break;
 	}
-}
 
-VertexArray::VertexArray(VertexArray&& other) noexcept : m_rendererID(other.m_rendererID)
-{
-	other.m_rendererID = 0; // prevent deletion
-}
-
-VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
-{
-	if (this != &other)
-	{
-		glDeleteVertexArrays(1, &m_rendererID); // delete current
-		m_rendererID = other.m_rendererID;              // steal ID
-		other.m_rendererID = 0;
-	}
-	return *this;
-}
-
-void VertexArray::Bind() const
-{
-	glBindVertexArray(m_rendererID);
-}
-
-void VertexArray::Unbind() const
-{
-	glBindVertexArray(0);
+	assert(false && "Could not create Vertex Array since RendererAPI is none!");
+	return nullptr;
 }
 
 }

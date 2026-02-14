@@ -7,12 +7,12 @@
 namespace Core
 {
 
-ElementBuffer* ElementBuffer::Create(const void* data, uint32_t dataSize)
+std::shared_ptr<ElementBuffer> ElementBuffer::Create(const void* data, uint32_t dataSize)
 {
 	switch (Renderer::GetAPI())
 	{
 	case RendererAPI::OpenGL:
-		return new OpenGLElementBuffer(data, dataSize);
+		return std::make_shared<OpenGLElementBuffer>(data, dataSize);
 	case RendererAPI::None:
 		break;
 	}

@@ -8,8 +8,6 @@
 #include <memory>
 
 #include <Renderer/VertexArray.h>
-#include <Renderer/VertexBuffer.h>
-#include <Renderer/ElementBuffer.h>
 #include <Renderer/Shader.h>
 #include <Renderer/Texture.h>
 
@@ -72,9 +70,7 @@ private:
 	std::vector<unsigned int> m_indices;
 	std::vector<TextureRef> m_textures;
 
-	VertexArray m_vao;
-	std::unique_ptr<VertexBuffer> m_vbo;
-	std::unique_ptr<ElementBuffer> m_ebo;
+	std::shared_ptr<VertexArray> m_vao;
 };
 
 }

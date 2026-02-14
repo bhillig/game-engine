@@ -7,12 +7,12 @@
 namespace Core
 {
 
-VertexBuffer* VertexBuffer::Create(const void* data, uint32_t dataSize)
+std::shared_ptr<VertexBuffer> VertexBuffer::Create(const void* data, uint32_t dataSize)
 {
 	switch (Renderer::GetAPI())
 	{
 	case RendererAPI::OpenGL:
-		return new OpenGLVertexBuffer(data, dataSize);
+		return std::make_shared<OpenGLVertexBuffer>(data, dataSize);
 	case RendererAPI::None:
 		break;
 	}

@@ -66,6 +66,7 @@ set(SOURCES
 	src/ImGui/CoreImGui.cpp
 	src/Platform/OpenGL/OpenGLElementBuffer.cpp
 	src/Platform/OpenGL/OpenGLGraphicsContext.cpp
+	src/Platform/OpenGL/OpenGLVertexArray.cpp
 	src/Platform/OpenGL/OpenGLVertexBuffer.cpp
 	src/Platform/Windows/WindowsInput.cpp
 	src/Platform/Windows/WindowsWindow.cpp
@@ -101,6 +102,7 @@ set(HEADERS
 	include/ImGui/CoreImGui.h
 	include/Platform/OpenGL/OpenGLElementBuffer.h
 	include/Platform/OpenGL/OpenGLGraphicsContext.h
+	include/Platform/OpenGL/OpenGLVertexArray.h
 	include/Platform/OpenGL/OpenGLVertexBuffer.h
 	include/Platform/Windows/WindowsInput.h
 	include/Platform/Windows/WindowsWindow.h

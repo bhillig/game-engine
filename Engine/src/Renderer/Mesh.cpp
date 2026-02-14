@@ -11,28 +11,33 @@ Mesh::Mesh(MeshData&& meshData)
 	: m_vertices(std::move(meshData.vertices))
 	, m_indices(std::move(meshData.indices))
 	, m_textures(std::move(meshData.textureReferences))
+	, m_vao(VertexArray::Create())
 {
-	m_vbo = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex)));
-	m_ebo = std::unique_ptr<ElementBuffer>(ElementBuffer::Create(m_indices.data(), m_indices.size() * sizeof(unsigned int)));
-	m_vao.Bind();
-	m_vbo->Bind();
-	m_ebo->Bind();
+	m_vao->Bind();
+
+	auto vbo = VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex));
+	auto ebo = ElementBuffer::Create(m_indices.data(), m_indices.size() * sizeof(unsigned int));
+	
+	vbo->Bind();
+	ebo->Bind();
 
 	// Specify how our vertex data is formatted
 	BufferLayout layout{
 		{
-			{ShaderDataType::Float3, "Position"},
-			{ShaderDataType::Float3, "Normal"},
-			{ShaderDataType::Float2, "Texture Coordinates"}
+			{ShaderDataType::Float3, "aPos"},
+			{ShaderDataType::Float3, "aNormal"},
+			{ShaderDataType::Float2, "aTexCoords"}
 		}
 
 	};
 
-	m_vbo->SetLayout(layout);
+	vbo->SetLayout(layout);
+	m_vao->AddVertexBuffer(vbo);
+	m_vao->SetElementBuffer(ebo);
 
-	m_vao.Unbind();
-	m_vbo->Unbind();
-	m_ebo->Unbind();
+	m_vao->Unbind();
+	vbo->Unbind();
+	ebo->Unbind();
 }
 
 // Move constructor
@@ -41,7 +46,6 @@ Mesh::Mesh(Mesh&& other) noexcept
 	, m_indices(std::move(other.m_indices))
 	, m_textures(std::move(other.m_textures))
 	, m_vao(std::move(other.m_vao))
-	, m_ebo(std::move(other.m_ebo))// important
 {}
 
 Mesh& Mesh::operator=(Mesh&& other) noexcept
@@ -83,11 +87,11 @@ void Mesh::Draw(Shader& shader) const
 	}
 
 	// Draw mesh
-	m_vao.Bind();
-	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+	m_vao->Bind();
+	glDrawElements(GL_TRIANGLES, m_vao->GetElementBuffer()->Count(), GL_UNSIGNED_INT, 0);
 
 	shader.Unbind();
-	m_vao.Unbind();
+	m_vao->Unbind();
 }
 
 }

@@ -203,8 +203,8 @@ void Renderer::DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::v
 		b.x, b.y, b.z, color.r, color.g, color.b
 	};
 
-	VertexArray vao;
-	vao.Bind();
+	auto vao = VertexArray::Create();
+	vao->Bind();
 
 	BufferLayout layout{
 		{
@@ -213,19 +213,20 @@ void Renderer::DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::v
 		}
 	};
 
-	auto vbo = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(vertices, sizeof(vertices)));
+	auto vbo = VertexBuffer::Create(vertices, sizeof(vertices));
 	vbo->SetLayout(layout);
+	vao->AddVertexBuffer(vbo);
 
 	glm::mat4 transform = glm::mat4(1.f);
 	m_lineShader->Bind();
 	m_lineShader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(transform));
 
-	vao.Bind();
+	vao->Bind();
 
 	glDrawArrays(GL_LINES, 0, 2);
 
 	m_lineShader->Unbind();
-	vao.Unbind();
+	vao->Unbind();
 }
 
 void Renderer::DrawSkyboxImpl()
@@ -275,8 +276,8 @@ void Renderer::DrawSkyboxImpl()
 		 1.0f, -1.0f,  1.0f
 	};
 
-	VertexArray vao;
-	vao.Bind();
+	auto vao = VertexArray::Create();
+	vao->Bind();
 
 	BufferLayout layout{
 		{
@@ -284,19 +285,20 @@ void Renderer::DrawSkyboxImpl()
 		}
 	};
 	
-	auto vbo = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices)));
+	auto vbo = VertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices));
 	vbo->SetLayout(layout);
+	vao->AddVertexBuffer(vbo);
 
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(false);
 	m_cubeMapShader->Bind();
-	vao.Bind();
+	vao->Bind();
 	m_skyBoxTexture->Bind();
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	m_cubeMapShader->Unbind();
-	vao.Unbind();
+	vao->Unbind();
 	m_skyBoxTexture->Unbind();
 	glDepthMask(true);
 	glDepthFunc(GL_LESS);
@@ -350,8 +352,8 @@ void Renderer::DrawSpaceSkyboxImpl()
 		 1.0f, -1.0f,  1.0f
 	};
 
-	VertexArray vao;
-	vao.Bind();
+	auto vao = VertexArray::Create();
+	vao->Bind();
 
 	BufferLayout layout{
 		{
@@ -359,19 +361,20 @@ void Renderer::DrawSpaceSkyboxImpl()
 		}
 	};
 
-	auto vbo = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices)));
+	auto vbo = VertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices));
 	vbo->SetLayout(layout);
+	vao->AddVertexBuffer(vbo);
 
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(false);
 	m_cubeMapShader->Bind();
-	vao.Bind();
+	vao->Bind();
 	m_spaceSkyBoxTexture->Bind();
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	m_cubeMapShader->Unbind();
-	vao.Unbind();
+	vao->Unbind();
 	m_spaceSkyBoxTexture->Unbind();
 	glDepthMask(true);
 	glDepthFunc(GL_LESS);

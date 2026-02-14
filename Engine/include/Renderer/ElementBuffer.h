@@ -14,7 +14,7 @@ public:
 
 	virtual unsigned int Count() const = 0;
 
-	static ElementBuffer* Create(const void* data, uint32_t dataSize);
+	static std::shared_ptr<ElementBuffer> Create(const void* data, uint32_t dataSize);
 };
 
 }
