@@ -11,9 +11,9 @@ std::shared_ptr<ElementBuffer> ElementBuffer::Create(const void* data, uint32_t 
 {
 	switch (Renderer::GetAPI())
 	{
-	case RendererAPI::OpenGL:
+	case RendererAPI::API::OpenGL:
 		return std::make_shared<OpenGLElementBuffer>(data, dataSize);
-	case RendererAPI::None:
+	case RendererAPI::API::None:
 		break;
 	}
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Renderer/RendererAPI.h>
+
 #include <memory>
 
 #include <glm/vec3.hpp>
@@ -14,11 +16,6 @@ namespace Core
 	
 class Model;
 
-enum class RendererAPI
-{
-	None = 0,
-	OpenGL = 1
-};
 
 class Renderer
 {
@@ -30,13 +27,6 @@ public:
 
 	// Clears the view and projection matrices for rendering
 	static void EndScene();
-
-	// Sets the renderer's clear color
-	// @param color - The value to set the color buffer
-	static void ClearColor(const glm::vec4& color);
-
-	// Clears the color and depth buffer. Typically called at the beginning of a new frame
-	static void ClearScreen();
 
 	// Draws a bounding box defined by (min,max) where min is the bottom-left corner and max is the top-right corner.
 	// @param min - Bottom-left corner of the bounding box to be rendered
@@ -62,12 +52,11 @@ public:
 	// @param transform - The world transform of the model
 	static void Submit(const Model& model, const glm::mat4& transform);
 
-	// Sets the Renderer API (OpenGL, Vulkan, etc.)
-	// @param api - The API to use
-	static void SetRendererAPI(RendererAPI api);
+	static void Submit(const std::shared_ptr<VertexArray>& vertexArray);
 
-	// Returns the Renderer API (OpenGL, Vulkan, etc.)
-	static RendererAPI GetAPI();
+	static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
+
+	static void SetAPI(RendererAPI::API api) { RendererAPI::SetAPI(api); }
 
 private:
 
@@ -79,12 +68,6 @@ private:
 
 	// Implementation of EndScene
 	void EndSceneImpl();
-
-	// Implementation of ClearColor
-	void ClearColorImpl(const glm::vec4& color);
-
-	// Implementation of ClearScreen
-	void ClearScreenImpl();
 
 	// Implementation of DrawBoundingBox
 	void DrawBoundingBoxImpl(const glm::vec3& min, const glm::vec3& max);
@@ -98,8 +81,11 @@ private:
 	// Implementation of DrawSpaceSkybox
 	void DrawSpaceSkyboxImpl();
 
-	// Implementation of Submit
+	// Implementation of Submit (model & transform)
 	void SubmitImpl(const Model& model, const glm::mat4& transform);
+
+	// Implementation of Submit (vertex array)
+	void SubmitImpl(const std::shared_ptr<VertexArray>& vertexArray);
 
 	friend class Application;
 
@@ -115,8 +101,6 @@ private:
 
 	std::unique_ptr<CubemapTexture> m_skyBoxTexture;
 	std::unique_ptr<CubemapTexture> m_spaceSkyBoxTexture;
-
-	static RendererAPI s_rendererAPI;
 };
 
 }

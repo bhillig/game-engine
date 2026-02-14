@@ -11,9 +11,9 @@ std::shared_ptr<VertexBuffer> VertexBuffer::Create(const void* data, uint32_t da
 {
 	switch (Renderer::GetAPI())
 	{
-	case RendererAPI::OpenGL:
+	case RendererAPI::API::OpenGL:
 		return std::make_shared<OpenGLVertexBuffer>(data, dataSize);
-	case RendererAPI::None:
+	case RendererAPI::API::None:
 		break;
 	}
 

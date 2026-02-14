@@ -7,6 +7,8 @@
 
 #include <imgui.h>
 
+#include <Renderer/RenderCommand.h>
+
 using Core::AssetManager;
 using Core::EventDispatcher;
 using Core::Renderer;
@@ -28,10 +30,6 @@ Scene::Scene()
 
 	m_camera = std::make_unique<Camera>(cameraPos, 0.0f, -90.f, 0.0f, cameraFOV);
 	m_cameraController = std::make_unique<CameraController>(*m_camera);
-
-	// Set initial color
-	constexpr glm::vec4 bgColor(0.0f, 0.0f, 0.0f, 1.0f);
-	Renderer::ClearColor(bgColor);
 }
 
 void Scene::Simulate(float deltaTime, unsigned int timeSteps /* = 1*/)
@@ -72,8 +70,8 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render()
 {
-	Renderer::ClearColor(glm::vec4(0, 0, 0, 1));
-	Renderer::ClearScreen();
+	Core::RenderCommand::SetClearColor({ 0.f, 0.f, 0.f, 1.f });
+	Core::RenderCommand::Clear();
 
 	// Retrieve aspect ratio
 	const Core::Window& window = Core::Application::GetApp()->GetWindow();

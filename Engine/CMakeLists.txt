@@ -66,6 +66,7 @@ set(SOURCES
 	src/ImGui/CoreImGui.cpp
 	src/Platform/OpenGL/OpenGLElementBuffer.cpp
 	src/Platform/OpenGL/OpenGLGraphicsContext.cpp
+	src/Platform/OpenGL/OpenGLRendererAPI.cpp
 	src/Platform/OpenGL/OpenGLVertexArray.cpp
 	src/Platform/OpenGL/OpenGLVertexBuffer.cpp
 	src/Platform/Windows/WindowsInput.cpp
@@ -75,6 +76,8 @@ set(SOURCES
 	src/Renderer/Mesh.cpp
 	src/Renderer/Model.cpp
 	src/Renderer/ModelLoader.cpp
+	src/Renderer/RenderCommand.cpp
+	src/Renderer/RendererAPI.cpp
 	src/Renderer/Shader.cpp
 	src/Renderer/Texture.cpp
 	src/Renderer/VertexArray.cpp
@@ -102,6 +105,7 @@ set(HEADERS
 	include/ImGui/CoreImGui.h
 	include/Platform/OpenGL/OpenGLElementBuffer.h
 	include/Platform/OpenGL/OpenGLGraphicsContext.h
+	include/Platform/OpenGL/OpenGLRendererAPI.h
 	include/Platform/OpenGL/OpenGLVertexArray.h
 	include/Platform/OpenGL/OpenGLVertexBuffer.h
 	include/Platform/Windows/WindowsInput.h
@@ -113,6 +117,8 @@ set(HEADERS
 	include/Renderer/Mesh.h
 	include/Renderer/Model.h
 	include/Renderer/ModelLoader.h
+	include/Renderer/RenderCommand.h
+	include/Renderer/RendererAPI.h
 	include/Renderer/Shader.h
 	include/Renderer/Texture.h
 	include/Renderer/VertexArray.h

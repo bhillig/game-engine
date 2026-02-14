@@ -11,9 +11,9 @@ std::shared_ptr<VertexArray> VertexArray::Create()
 {
 	switch (Renderer::GetAPI())
 	{
-	case RendererAPI::OpenGL:
+	case RendererAPI::API::OpenGL:
 		return std::make_shared<OpenGLVertexArray>();
-	case RendererAPI::None:
+	case RendererAPI::API::None:
 		break;
 	}
 

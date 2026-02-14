@@ -4,6 +4,7 @@
 
 #include <Renderer/BufferLayout.h>
 #include <Renderer/CubemapTexture.h>
+#include <Renderer/RenderCommand.h>
 #include <Renderer/VertexArray.h>
 #include <Renderer/VertexBuffer.h>
 
@@ -47,8 +48,6 @@ static constexpr const char* kProjectionMatrixUniform = "u_Projection";
 namespace Core
 {
 
-RendererAPI Renderer::s_rendererAPI = RendererAPI::None;
-
 Renderer::Renderer()
 {
 	// no-op for now
@@ -68,7 +67,7 @@ bool Renderer::Initialize()
 	m_spaceSkyBoxTexture = std::make_unique<CubemapTexture>(kSpaceSkyboxRightTexture, kSpaceSkyboxLeftTexture, kSpaceSkyboxTopTexture, kSpaceSkyboxBottomTexture, kSpaceSkyboxFrontTexture, kSpaceSkyboxBackTexture);
 
 	// Set Renderer API to OpenGL
-	SetRendererAPI(RendererAPI::OpenGL);
+	SetAPI(RendererAPI::API::OpenGL);
 
 	return true;
 }
@@ -81,16 +80,6 @@ void Renderer::BeginScene(const glm::mat4& view, const glm::mat4& projection)
 void Renderer::EndScene()
 {
 	GetRenderer().EndSceneImpl();
-}
-
-void Renderer::ClearColor(const glm::vec4& color)
-{
-	GetRenderer().ClearColorImpl(color);
-}
-
-void Renderer::ClearScreen()
-{
-	GetRenderer().ClearScreenImpl();
 }
 
 void Renderer::DrawBoundingBox(const glm::vec3& min, const glm::vec3& max)
@@ -118,14 +107,9 @@ void Renderer::Submit(const Model& model, const glm::mat4& transform)
 	GetRenderer().SubmitImpl(model, transform);
 }
 
-void Renderer::SetRendererAPI(RendererAPI api)
+void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
 {
-	s_rendererAPI = api;
-}
-
-RendererAPI Renderer::GetAPI()
-{
-	return s_rendererAPI;
+	GetRenderer().SubmitImpl(vertexArray);
 }
 
 void Renderer::BeginSceneImpl(const glm::mat4& view, const glm::mat4& projection)
@@ -152,16 +136,6 @@ void Renderer::EndSceneImpl()
 	m_modelShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
 	m_lineShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
 	m_cubeMapShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
-}
-
-void Renderer::ClearColorImpl(const glm::vec4& color)
-{
-	glClearColor(color.r, color.g, color.b, color.a);
-}
-
-void Renderer::ClearScreenImpl()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::DrawBoundingBoxImpl(const glm::vec3& min, const glm::vec3& max)
@@ -231,49 +205,44 @@ void Renderer::DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::v
 
 void Renderer::DrawSkyboxImpl()
 {
+	// Define 8 unique vertices (the corners of the cube)
 	float skyboxVertices[] = {
 		// positions          
-		-1.0f,  1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,  // 0
+		 1.0f, -1.0f, -1.0f,  // 1
+		 1.0f,  1.0f, -1.0f,  // 2
+		-1.0f,  1.0f, -1.0f,  // 3
+		-1.0f, -1.0f,  1.0f,  // 4
+		 1.0f, -1.0f,  1.0f,  // 5
+		 1.0f,  1.0f,  1.0f,  // 6
+		-1.0f,  1.0f,  1.0f   // 7
+	};
 
-		-1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
+	// Index buffer for the 6 faces (2 triangles each = 36 indices)
+	unsigned int skyboxIndices[] = {
+		// Back face (z = -1)
+		3, 0, 1,
+		1, 2, 3,
 
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
+		// Left face (x = -1)
+		4, 0, 3,
+		3, 7, 4,
 
-		-1.0f, -1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
+		// Right face (x = 1)
+		1, 5, 6,
+		6, 2, 1,
 
-		-1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f, -1.0f,
+		// Front face (z = 1)
+		4, 7, 6,
+		6, 5, 4,
 
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f
+		// Top face (y = 1)
+		3, 2, 6,
+		6, 7, 3,
+
+		// Bottom face (y = -1)
+		0, 4, 1,
+		1, 4, 5
 	};
 
 	auto vao = VertexArray::Create();
@@ -289,16 +258,15 @@ void Renderer::DrawSkyboxImpl()
 	vbo->SetLayout(layout);
 	vao->AddVertexBuffer(vbo);
 
+	auto ebo = ElementBuffer::Create(skyboxIndices, sizeof(skyboxIndices));
+	vao->SetElementBuffer(ebo);
+
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(false);
 	m_cubeMapShader->Bind();
-	vao->Bind();
 	m_skyBoxTexture->Bind();
-
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-
+	Submit(vao);
 	m_cubeMapShader->Unbind();
-	vao->Unbind();
 	m_skyBoxTexture->Unbind();
 	glDepthMask(true);
 	glDepthFunc(GL_LESS);
@@ -307,49 +275,44 @@ void Renderer::DrawSkyboxImpl()
 
 void Renderer::DrawSpaceSkyboxImpl()
 {
+	// Define 8 unique vertices (the corners of the cube)
 	float skyboxVertices[] = {
 		// positions          
-		-1.0f,  1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,  // 0
+		 1.0f, -1.0f, -1.0f,  // 1
+		 1.0f,  1.0f, -1.0f,  // 2
+		-1.0f,  1.0f, -1.0f,  // 3
+		-1.0f, -1.0f,  1.0f,  // 4
+		 1.0f, -1.0f,  1.0f,  // 5
+		 1.0f,  1.0f,  1.0f,  // 6
+		-1.0f,  1.0f,  1.0f   // 7
+	};
 
-		-1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
+	// Index buffer for the 6 faces (2 triangles each = 36 indices)
+	unsigned int skyboxIndices[] = {
+		// Back face (z = -1)
+		3, 0, 1,
+		1, 2, 3,
 
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
+		// Left face (x = -1)
+		4, 0, 3,
+		3, 7, 4,
 
-		-1.0f, -1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
+		// Right face (x = 1)
+		1, 5, 6,
+		6, 2, 1,
 
-		-1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f, -1.0f,
+		// Front face (z = 1)
+		4, 7, 6,
+		6, 5, 4,
 
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f
+		// Top face (y = 1)
+		3, 2, 6,
+		6, 7, 3,
+
+		// Bottom face (y = -1)
+		0, 4, 1,
+		1, 4, 5
 	};
 
 	auto vao = VertexArray::Create();
@@ -365,17 +328,18 @@ void Renderer::DrawSpaceSkyboxImpl()
 	vbo->SetLayout(layout);
 	vao->AddVertexBuffer(vbo);
 
+	auto ebo = ElementBuffer::Create(skyboxIndices, sizeof(skyboxIndices));
+	vao->SetElementBuffer(ebo);
+
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(false);
 	m_cubeMapShader->Bind();
-	vao->Bind();
 	m_spaceSkyBoxTexture->Bind();
 
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	Submit(vao);
 
-	m_cubeMapShader->Unbind();
-	vao->Unbind();
 	m_spaceSkyBoxTexture->Unbind();
+	m_cubeMapShader->Unbind();
 	glDepthMask(true);
 	glDepthFunc(GL_LESS);
 }
@@ -387,6 +351,12 @@ void Renderer::SubmitImpl(const Model& model, const glm::mat4& transform)
 	m_modelShader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(modelTransform));
 	model.Draw(*m_modelShader);
 	m_modelShader->Unbind();
+}
+
+void Renderer::SubmitImpl(const std::shared_ptr<VertexArray>& vertexArray)
+{
+	vertexArray->Bind();
+	RenderCommand::Submit(vertexArray);
 }
 
 Renderer::~Renderer()
