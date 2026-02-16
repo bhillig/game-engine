@@ -1,12 +1,11 @@
-#include <CameraController.h>
-
-#include <Application.h>
+#include <PerspectiveCameraController.h>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
-CameraController::CameraController(Camera& camera)
+namespace Core
+{
+
+PerspectiveCameraController::PerspectiveCameraController(PerspectiveCamera& camera)
 	: m_camera(camera)
 	, m_mouseHorizontalSensitivity(0.1f)
 	, m_mouseVerticalSensitivity(0.1f)
@@ -18,11 +17,11 @@ CameraController::CameraController(Camera& camera)
 {
 }
 
-CameraController::~CameraController()
+PerspectiveCameraController::~PerspectiveCameraController()
 {
 }
 
-void CameraController::Update(float deltaTime)
+void PerspectiveCameraController::Update(float deltaTime)
 {
 	const glm::vec3 cameraForward = m_camera.forward();
 	const glm::vec3 walkDirection = glm::normalize(glm::vec3(cameraForward.x, 0.0f, cameraForward.z));
@@ -50,7 +49,7 @@ void CameraController::Update(float deltaTime)
 	m_camera.Move(moveDelta);
 }
 
-void CameraController::OnMouseMove(double xPos, double yPos)
+void PerspectiveCameraController::OnMouseMove(double xPos, double yPos)
 {
 	static double lastX;
 	static double lastY;
@@ -74,7 +73,7 @@ void CameraController::OnMouseMove(double xPos, double yPos)
 	lastY = yPos;
 }
 
-void CameraController::OnKeyPressed(int key)
+void PerspectiveCameraController::OnKeyPressed(int key)
 {
 	if (key == KEY_W)
 	{
@@ -94,7 +93,7 @@ void CameraController::OnKeyPressed(int key)
 	}
 }
 
-void CameraController::OnKeyReleased(int key)
+void PerspectiveCameraController::OnKeyReleased(int key)
 {
 	if (key == KEY_W)
 	{
@@ -114,7 +113,9 @@ void CameraController::OnKeyReleased(int key)
 	}
 }
 
-void CameraController::OnLoseControl()
+void PerspectiveCameraController::OnLoseControl()
 {
 	m_firstMouseMoveEvent = true;
+}
+
 }

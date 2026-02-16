@@ -28,8 +28,8 @@ Scene::Scene()
 	constexpr glm::vec3 cameraPos(0.0f, 0.0f, -4.0f);
 	constexpr float cameraFOV = 45.f;
 
-	m_camera = std::make_unique<Camera>(cameraPos, 0.0f, -90.f, 0.0f, cameraFOV);
-	m_cameraController = std::make_unique<CameraController>(*m_camera);
+	m_camera = std::make_unique<Core::PerspectiveCamera>(cameraPos, 0.0f, -90.f, 0.0f, cameraFOV);
+	m_cameraController = std::make_unique<Core::PerspectiveCameraController>(*m_camera);
 }
 
 void Scene::Simulate(float deltaTime, unsigned int timeSteps /* = 1*/)

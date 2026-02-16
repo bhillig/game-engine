@@ -1,13 +1,14 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
-class Camera
+namespace Core
+{
+
+class PerspectiveCamera
 {
 public:
-	Camera(const glm::vec3& pos, float pitch, float yaw, float roll, float fov);
+	PerspectiveCamera(const glm::vec3& pos, float pitch, float yaw, float roll, float fov);
 
 	const glm::vec3& position() const { return m_position; }
 	glm::vec3 forward() const;
@@ -29,3 +30,5 @@ private:
 	float m_roll;
 	float m_fov;
 };
+
+}

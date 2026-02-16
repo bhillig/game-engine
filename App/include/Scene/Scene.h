@@ -4,15 +4,15 @@
 
 #include <ECS/EntityManager.h>
 
-#include <Camera.h>
-#include <CameraController.h>
+#include <PerspectiveCamera.h>
+#include <PerspectiveCameraController.h>
 
 class Scene
 {
 public:
 	Scene();
 
-	Camera* GetCamera() const { return m_camera.get(); }
+	Core::PerspectiveCamera* GetCamera() const { return m_camera.get(); }
 
 	ECS::EntityManager& GetEntityManager() { return m_entityManager; }
 
@@ -54,8 +54,8 @@ private:
 
 protected:
 	ECS::EntityManager m_entityManager; // Contains all the entities for the scene
-	std::unique_ptr<Camera> m_camera; // Camera for the scene
-	std::unique_ptr<CameraController> m_cameraController; // CameraController for passing input to the camera
+	std::unique_ptr<Core::PerspectiveCamera> m_camera; // Camera for the scene
+	std::unique_ptr<Core::PerspectiveCameraController> m_cameraController; // PerspectiveCameraController for passing input to the camera
 
 private:
 	bool m_skyBoxEnabled; // Whether skybox is enabled

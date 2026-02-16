@@ -1,14 +1,15 @@
 #pragma once
 
-#include <Camera.h>
+#include <PerspectiveCamera.h>
 
-#include <memory>
+namespace Core
+{
 
-class CameraController
+class PerspectiveCameraController
 {
 public:
-	CameraController(Camera& camera);
-	~CameraController();
+	PerspectiveCameraController(PerspectiveCamera& camera);
+	~PerspectiveCameraController();
 
 	void Update(float deltaTime);
 
@@ -21,7 +22,7 @@ public:
 	void OnLoseControl();
 
 private:
-	Camera& m_camera;
+	PerspectiveCamera& m_camera;
 
 	float m_mouseHorizontalSensitivity;
 	float m_mouseVerticalSensitivity;
@@ -33,3 +34,5 @@ private:
 
 	bool m_firstMouseMoveEvent;
 };
+
+}

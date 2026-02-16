@@ -57,9 +57,9 @@ add_subdirectory(external/spdlog)
 set(SOURCES 
 	src/Application.cpp
 	src/AssetManager.cpp
-	src/Camera.cpp
-	src/CameraController.cpp
 	src/Log.cpp
+	src/PerspectiveCamera.cpp
+	src/PerspectiveCameraController.cpp
 	src/Renderer.cpp
 	src/ECS/EntityManager.cpp
 	src/ECS/EntityMemoryPool.cpp
@@ -87,12 +87,12 @@ set(SOURCES
 set(HEADERS
 	include/Application.h
 	include/AssetManager.h
-	include/Camera.h
-	include/CameraController.h
 	include/Input.h
 	include/InputKeyCodes.h
 	include/Layer.h
 	include/Log.h
+	include/PerspectiveCamera.h
+	include/PerspectiveCameraController.h
 	include/Renderer.h
 	include/Window.h
 	include/ECS/Component.h
