@@ -20,12 +20,18 @@ class Model;
 class Renderer
 {
 public:
+	struct SceneData
+	{
+		glm::mat4 ViewMatrix;
+		glm::mat4 ProjectionMatrix;
+	};
+public:
 	~Renderer();
 
-	// Sets the view and projection matrices for rendering
-	static void BeginScene(const glm::mat4& view, const glm::mat4& projection);
+	// Sets the scene data for rendering
+	static void BeginScene(const SceneData& sceneData);
 
-	// Clears the view and projection matrices for rendering
+	// Clears the scene data for rendering
 	static void EndScene();
 
 	// Draws a bounding box defined by (min,max) where min is the bottom-left corner and max is the top-right corner.
@@ -52,7 +58,7 @@ public:
 	// @param transform - The world transform of the model
 	static void Submit(const Model& model, const glm::mat4& transform);
 
-	static void Submit(const std::shared_ptr<VertexArray>& vertexArray);
+	static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode);
 
 	static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
@@ -64,7 +70,7 @@ private:
 	bool Initialize();
 
 	// Implementation of BeginScene
-	void BeginSceneImpl(const glm::mat4& view, const glm::mat4& projection);
+	void BeginSceneImpl(const SceneData& sceneData);
 
 	// Implementation of EndScene
 	void EndSceneImpl();
@@ -84,23 +90,22 @@ private:
 	// Implementation of Submit (model & transform)
 	void SubmitImpl(const Model& model, const glm::mat4& transform);
 
-	// Implementation of Submit (vertex array)
-	void SubmitImpl(const std::shared_ptr<VertexArray>& vertexArray);
+	// Implementation of Submit (shader, va, and draw mode)
+	void SubmitImpl(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode);
 
 	friend class Application;
 
 	Renderer();
 	static Renderer& GetRenderer(); // Returns Renderer instance from Application
 
-	glm::mat4 m_view;
-	glm::mat4 m_projection;
+	SceneData m_sceneData;
 
-	std::unique_ptr<Shader> m_modelShader;
-	std::unique_ptr<Shader> m_lineShader;
-	std::unique_ptr<Shader> m_cubeMapShader;
+	std::shared_ptr<Shader> m_modelShader;
+	std::shared_ptr<Shader> m_lineShader;
+	std::shared_ptr<Shader> m_cubeMapShader;
 
-	std::unique_ptr<CubemapTexture> m_skyBoxTexture;
-	std::unique_ptr<CubemapTexture> m_spaceSkyBoxTexture;
+	std::shared_ptr<CubemapTexture> m_skyBoxTexture;
+	std::shared_ptr<CubemapTexture> m_spaceSkyBoxTexture;
 };
 
 }

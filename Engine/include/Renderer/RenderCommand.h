@@ -20,9 +20,9 @@ public:
 		s_rendererAPI->Clear();
 	}
 
-	static void Submit(const std::shared_ptr<VertexArray>& vertexArray)
+	static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode)
 	{
-		s_rendererAPI->DrawIndexed(vertexArray);
+		s_rendererAPI->DrawIndexed(vertexArray, drawMode);
 	}
 
 	static RendererAPI* s_rendererAPI;

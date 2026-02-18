@@ -77,7 +77,13 @@ void Scene::Render()
 	const Core::Window& window = Core::Application::GetApp()->GetWindow();
 	const float aspectRatio = static_cast<float>(window.GetWidth()) / static_cast<float>(window.GetHeight());
 
-	Renderer::BeginScene(m_camera->viewMatrix(), m_camera->projectionMatrix(aspectRatio));
+	// Gather scene data
+	Renderer::SceneData sceneData;
+	sceneData.ViewMatrix = m_camera->viewMatrix();
+	sceneData.ProjectionMatrix = m_camera->projectionMatrix(aspectRatio);
+
+	// Begin scene
+	Renderer::BeginScene(sceneData);
 
 	if (m_skyBoxEnabled)
 	{

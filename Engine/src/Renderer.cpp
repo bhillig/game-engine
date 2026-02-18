@@ -58,13 +58,13 @@ bool Renderer::Initialize()
 	stbi_set_flip_vertically_on_load(true);
 
 	// Create Engine Shaders
-	m_modelShader = std::make_unique<Shader>(kPositionNormalAndTexCoordVS, kColorFromTextureFS);
-	m_lineShader = std::make_unique<Shader>(kPositionAndColorVS, kColorFromVertexFS);
-	m_cubeMapShader = std::make_unique<Shader>(kCubeMapVS, kCubeMapFS);
+	m_modelShader = std::make_shared<Shader>(kPositionNormalAndTexCoordVS, kColorFromTextureFS);
+	m_lineShader = std::make_shared<Shader>(kPositionAndColorVS, kColorFromVertexFS);
+	m_cubeMapShader = std::make_shared<Shader>(kCubeMapVS, kCubeMapFS);
 
 	// Create Engine Textures
-	m_skyBoxTexture = std::make_unique<CubemapTexture>(kSkyboxRightTexture, kSkyboxLeftTexture, kSkyboxTopTexture, kSkyboxBottomTexture, kSkyboxFrontTexture, kSkyboxBackTexture);
-	m_spaceSkyBoxTexture = std::make_unique<CubemapTexture>(kSpaceSkyboxRightTexture, kSpaceSkyboxLeftTexture, kSpaceSkyboxTopTexture, kSpaceSkyboxBottomTexture, kSpaceSkyboxFrontTexture, kSpaceSkyboxBackTexture);
+	m_skyBoxTexture = std::make_shared<CubemapTexture>(kSkyboxRightTexture, kSkyboxLeftTexture, kSkyboxTopTexture, kSkyboxBottomTexture, kSkyboxFrontTexture, kSkyboxBackTexture);
+	m_spaceSkyBoxTexture = std::make_shared<CubemapTexture>(kSpaceSkyboxRightTexture, kSpaceSkyboxLeftTexture, kSpaceSkyboxTopTexture, kSpaceSkyboxBottomTexture, kSpaceSkyboxFrontTexture, kSpaceSkyboxBackTexture);
 
 	// Set Renderer API to OpenGL
 	SetAPI(RendererAPI::API::OpenGL);
@@ -72,9 +72,10 @@ bool Renderer::Initialize()
 	return true;
 }
 
-void Renderer::BeginScene(const glm::mat4& view, const glm::mat4& projection)
+
+void Renderer::BeginScene(const SceneData& sceneData)
 {
-	GetRenderer().BeginSceneImpl(view, projection);
+	GetRenderer().BeginSceneImpl(sceneData);
 }
 
 void Renderer::EndScene()
@@ -107,35 +108,22 @@ void Renderer::Submit(const Model& model, const glm::mat4& transform)
 	GetRenderer().SubmitImpl(model, transform);
 }
 
-void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
+void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray,
+	RendererAPI::DrawMode drawMode)
 {
-	GetRenderer().SubmitImpl(vertexArray);
+	GetRenderer().SubmitImpl(shader, vertexArray, drawMode);
 }
 
-void Renderer::BeginSceneImpl(const glm::mat4& view, const glm::mat4& projection)
+void Renderer::BeginSceneImpl(const SceneData& sceneData)
 {
-	m_view = view;
-	m_modelShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
-	m_lineShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
-	m_cubeMapShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
-
-	m_projection = projection;
-	m_modelShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
-	m_lineShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
-	m_cubeMapShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
+	// Set the scene data
+	m_sceneData = sceneData;
 }
 
 void Renderer::EndSceneImpl()
 {
-	m_view = glm::mat4(1);
-	m_modelShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
-	m_lineShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
-	m_cubeMapShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_view));
-
-	m_projection = glm::mat4(1);
-	m_modelShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
-	m_lineShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
-	m_cubeMapShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_projection));
+	// Clear the scene data
+	m_sceneData = SceneData();
 }
 
 void Renderer::DrawBoundingBoxImpl(const glm::vec3& min, const glm::vec3& max)
@@ -177,6 +165,8 @@ void Renderer::DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::v
 		b.x, b.y, b.z, color.r, color.g, color.b
 	};
 
+	unsigned int indices[] = {0, 1};
+
 	auto vao = VertexArray::Create();
 	vao->Bind();
 
@@ -191,16 +181,10 @@ void Renderer::DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::v
 	vbo->SetLayout(layout);
 	vao->AddVertexBuffer(vbo);
 
-	glm::mat4 transform = glm::mat4(1.f);
-	m_lineShader->Bind();
-	m_lineShader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(transform));
+	auto ebo = ElementBuffer::Create(indices, sizeof(indices));
+	vao->SetElementBuffer(ebo);
 
-	vao->Bind();
-
-	glDrawArrays(GL_LINES, 0, 2);
-
-	m_lineShader->Unbind();
-	vao->Unbind();
+	Submit(m_lineShader, vao, RendererAPI::DrawMode::Lines);
 }
 
 void Renderer::DrawSkyboxImpl()
@@ -253,7 +237,7 @@ void Renderer::DrawSkyboxImpl()
 			{ShaderDataType::Float3, "Position"}
 		}
 	};
-	
+
 	auto vbo = VertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices));
 	vbo->SetLayout(layout);
 	vao->AddVertexBuffer(vbo);
@@ -263,10 +247,10 @@ void Renderer::DrawSkyboxImpl()
 
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(false);
-	m_cubeMapShader->Bind();
 	m_skyBoxTexture->Bind();
-	Submit(vao);
-	m_cubeMapShader->Unbind();
+
+	Submit(m_cubeMapShader, vao, RendererAPI::DrawMode::Triangles);
+
 	m_skyBoxTexture->Unbind();
 	glDepthMask(true);
 	glDepthFunc(GL_LESS);
@@ -333,13 +317,11 @@ void Renderer::DrawSpaceSkyboxImpl()
 
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(false);
-	m_cubeMapShader->Bind();
 	m_spaceSkyBoxTexture->Bind();
 
-	Submit(vao);
+	Submit(m_cubeMapShader, vao, RendererAPI::DrawMode::Triangles);
 
 	m_spaceSkyBoxTexture->Unbind();
-	m_cubeMapShader->Unbind();
 	glDepthMask(true);
 	glDepthFunc(GL_LESS);
 }
@@ -349,14 +331,22 @@ void Renderer::SubmitImpl(const Model& model, const glm::mat4& transform)
 	glm::mat4 modelTransform = transform;
 	m_modelShader->Bind();
 	m_modelShader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(modelTransform));
+	m_modelShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_sceneData.ViewMatrix));
+	m_modelShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_sceneData.ProjectionMatrix));
 	model.Draw(*m_modelShader);
-	m_modelShader->Unbind();
 }
 
-void Renderer::SubmitImpl(const std::shared_ptr<VertexArray>& vertexArray)
+void Renderer::SubmitImpl(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray,
+	RendererAPI::DrawMode drawMode)
 {
+	glm::mat4 identity = glm::mat4(1.f);
+	shader->Bind();
+	shader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(identity));
+	shader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_sceneData.ViewMatrix));
+	shader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_sceneData.ProjectionMatrix));
+
 	vertexArray->Bind();
-	RenderCommand::Submit(vertexArray);
+	RenderCommand::DrawIndexed(vertexArray, drawMode);
 }
 
 Renderer::~Renderer()

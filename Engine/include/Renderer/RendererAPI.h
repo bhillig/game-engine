@@ -13,6 +13,14 @@ public:
 		None = 0,
 		OpenGL = 1
 	};
+
+	enum class DrawMode
+	{
+		None = 0,
+		Lines = 1,
+		Triangles = 2
+	};
+
 public:
 	virtual ~RendererAPI() = default;
 
@@ -20,7 +28,7 @@ public:
 
 	virtual void Clear() = 0;
 
-	virtual void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray) = 0;
+	virtual void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, DrawMode drawMode) = 0;
 
 	// Sets the Renderer API (OpenGL, Vulkan, etc.)
 	// @param api - The API to use

@@ -16,7 +16,7 @@ public:
 
 	void Clear() override;
 
-	void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray) override;
+	void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, DrawMode drawMode) override;
 
 };
 
