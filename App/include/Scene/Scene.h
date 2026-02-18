@@ -12,7 +12,7 @@ class Scene
 public:
 	Scene();
 
-	Core::PerspectiveCamera* GetCamera() const { return m_camera.get(); }
+	Core::PerspectiveCamera& GetCamera() { return m_camera; }
 
 	ECS::EntityManager& GetEntityManager() { return m_entityManager; }
 
@@ -54,8 +54,8 @@ private:
 
 protected:
 	ECS::EntityManager m_entityManager; // Contains all the entities for the scene
-	std::unique_ptr<Core::PerspectiveCamera> m_camera; // Camera for the scene
-	std::unique_ptr<Core::PerspectiveCameraController> m_cameraController; // PerspectiveCameraController for passing input to the camera
+	Core::PerspectiveCamera m_camera; // Camera for the scene
+	Core::PerspectiveCameraController m_cameraController; // PerspectiveCameraController for passing input to the camera
 
 private:
 	bool m_skyBoxEnabled; // Whether skybox is enabled

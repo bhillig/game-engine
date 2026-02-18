@@ -18,18 +18,11 @@ static constexpr std::string_view kBackpackModel = MODEL_DIR "/backpack/backpack
 static constexpr std::string_view kGirlModel = MODEL_DIR "/girl/girl.obj";
 
 Scene::Scene()
-	: m_camera(nullptr), m_cameraController(nullptr), m_skyBoxEnabled(true), m_useSpaceSkybox(false)
+	: m_camera({0.f, 0.f, -4.f}, 0.0f, -90.f, 0.0f, 45.f), m_cameraController(m_camera), m_skyBoxEnabled(true), m_useSpaceSkybox(false)
 {
 	// Import all models 
 	AssetManager::RequestLoadModel(std::string(kBackpackModel));
 	AssetManager::RequestLoadModel(std::string(kGirlModel));
-
-	// Init camera
-	constexpr glm::vec3 cameraPos(0.0f, 0.0f, -4.0f);
-	constexpr float cameraFOV = 45.f;
-
-	m_camera = std::make_unique<Core::PerspectiveCamera>(cameraPos, 0.0f, -90.f, 0.0f, cameraFOV);
-	m_cameraController = std::make_unique<Core::PerspectiveCameraController>(*m_camera);
 }
 
 void Scene::Simulate(float deltaTime, unsigned int timeSteps /* = 1*/)
@@ -54,18 +47,12 @@ void Scene::OnGainFocus()
 
 void Scene::OnLoseFocus()
 {
-	if (m_cameraController)
-	{
-		m_cameraController->OnLoseControl();
-	}
+	m_cameraController.OnLoseControl();
 }
 
 void Scene::Update(float deltaTime)
 {
-	if (m_cameraController)
-	{
-		m_cameraController->Update(deltaTime);
-	}
+	m_cameraController.Update(deltaTime);
 }
 
 void Scene::Render()
@@ -79,8 +66,8 @@ void Scene::Render()
 
 	// Gather scene data
 	Renderer::SceneData sceneData;
-	sceneData.ViewMatrix = m_camera->viewMatrix();
-	sceneData.ProjectionMatrix = m_camera->projectionMatrix(aspectRatio);
+	sceneData.ViewMatrix = m_camera.viewMatrix();
+	sceneData.ProjectionMatrix = m_camera.projectionMatrix(aspectRatio);
 
 	// Begin scene
 	Renderer::BeginScene(sceneData);
@@ -143,28 +130,19 @@ void Scene::ImGuiRender()
 
 bool Scene::OnKeyPressed(int key)
 {
-	if (m_cameraController)
-	{
-		m_cameraController->OnKeyPressed(key);
-	}
+	m_cameraController.OnKeyPressed(key);
 	return false;
 }
 
 bool Scene::OnKeyReleased(int key)
 {
-	if (m_cameraController)
-	{
-		m_cameraController->OnKeyReleased(key);
-	}
+	m_cameraController.OnKeyReleased(key);
 	return false;
 }
 
 bool Scene::OnMouseMove(double xPos, double yPos)
 {
-	if (m_cameraController)
-	{
-		m_cameraController->OnMouseMove(xPos, yPos);
-	}
+	m_cameraController.OnMouseMove(xPos, yPos);
 	return false;
 }
 
@@ -392,10 +370,10 @@ void Scene::ConstructCameraTab()
 {
 	if (ImGui::BeginTabItem("Camera"))
 	{
-		float cameraFOV = m_camera->fov();
+		float cameraFOV = m_camera.fov();
 		if (ImGui::SliderFloat("FOV", &cameraFOV, 1.f, 120.f))
 		{
-			m_camera->SetFOV(cameraFOV);
+			m_camera.SetFOV(cameraFOV);
 		}
 		ImGui::EndTabItem();
 	}

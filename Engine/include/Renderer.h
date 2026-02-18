@@ -13,7 +13,7 @@ class Shader;
 
 namespace Core
 {
-	
+
 class Model;
 
 
@@ -58,7 +58,7 @@ public:
 	// @param transform - The world transform of the model
 	static void Submit(const Model& model, const glm::mat4& transform);
 
-	static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode);
+	static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode = RendererAPI::DrawMode::Triangles, const glm::mat4& transform = glm::mat4(1.f));
 
 	static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
@@ -91,7 +91,7 @@ private:
 	void SubmitImpl(const Model& model, const glm::mat4& transform);
 
 	// Implementation of Submit (shader, va, and draw mode)
-	void SubmitImpl(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode);
+	void SubmitImpl(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode, const glm::mat4& transform);
 
 	friend class Application;
 

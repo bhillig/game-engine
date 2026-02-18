@@ -25,7 +25,7 @@ public:
 
 	bool SetUniform1b(const char* name, bool value);
 
-	bool SetUniformMatrix4fv(const char* name, float* value);
+	bool SetUniformMatrix4fv(const char* name, const float* value);
 
 private:
 

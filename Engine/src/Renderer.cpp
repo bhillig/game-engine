@@ -109,9 +109,9 @@ void Renderer::Submit(const Model& model, const glm::mat4& transform)
 }
 
 void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray,
-	RendererAPI::DrawMode drawMode)
+	RendererAPI::DrawMode drawMode, const glm::mat4& transform)
 {
-	GetRenderer().SubmitImpl(shader, vertexArray, drawMode);
+	GetRenderer().SubmitImpl(shader, vertexArray, drawMode, transform);
 }
 
 void Renderer::BeginSceneImpl(const SceneData& sceneData)
@@ -165,7 +165,7 @@ void Renderer::DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::v
 		b.x, b.y, b.z, color.r, color.g, color.b
 	};
 
-	unsigned int indices[] = {0, 1};
+	unsigned int indices[] = { 0, 1 };
 
 	auto vao = VertexArray::Create();
 	vao->Bind();
@@ -328,20 +328,17 @@ void Renderer::DrawSpaceSkyboxImpl()
 
 void Renderer::SubmitImpl(const Model& model, const glm::mat4& transform)
 {
-	glm::mat4 modelTransform = transform;
 	m_modelShader->Bind();
-	m_modelShader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(modelTransform));
+	m_modelShader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(transform));
 	m_modelShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_sceneData.ViewMatrix));
 	m_modelShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_sceneData.ProjectionMatrix));
 	model.Draw(*m_modelShader);
 }
 
-void Renderer::SubmitImpl(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray,
-	RendererAPI::DrawMode drawMode)
+void Renderer::SubmitImpl(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode, const glm::mat4& transform)
 {
-	glm::mat4 identity = glm::mat4(1.f);
 	shader->Bind();
-	shader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(identity));
+	shader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(transform));
 	shader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_sceneData.ViewMatrix));
 	shader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_sceneData.ProjectionMatrix));
 

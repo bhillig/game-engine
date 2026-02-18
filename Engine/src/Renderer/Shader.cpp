@@ -142,7 +142,7 @@ bool Shader::SetUniform1b(const char* name, bool value)
 	return SetUniform1i(name, value);
 }
 
-bool Shader::SetUniformMatrix4fv(const char* name, float* value)
+bool Shader::SetUniformMatrix4fv(const char* name, const float* value)
 {
 	const int uniformLocation = GetUniformLocation(name);
 	if (uniformLocation == -1) {
