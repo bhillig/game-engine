@@ -5,7 +5,7 @@
 namespace Core
 {
 
-class OpenGLTexture : public Texture
+class OpenGLTexture final : public Texture
 {
 public:
 	OpenGLTexture(const std::string& filepath, int slot = 0);

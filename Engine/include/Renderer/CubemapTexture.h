@@ -1,23 +1,20 @@
 #pragma once
 
-#include <array>
-#include <string>
-#include <string_view>
-
+namespace Core
+{
 
 class CubemapTexture
 {
 public:
-	CubemapTexture(std::string_view posX, std::string_view negX, std::string_view posY, std::string_view negY, std::string_view posZ, std::string_view negZ, int slot = 0);
-	~CubemapTexture();
+	virtual ~CubemapTexture() = default;
 
-	void Bind(int slot = 0) const;
+	virtual void Bind(int slot = 0) const = 0;
 
-	void Unbind() const;
+	virtual void Unbind() const = 0 ;
 
 	static constexpr unsigned int NUM_FACES = 6;
 
-private:
-	unsigned int m_rendererID;
-	std::array<std::string, NUM_FACES> m_filePaths;
+	static std::shared_ptr<CubemapTexture> Create(std::string_view posX, std::string_view negX, std::string_view posY, std::string_view negY, std::string_view posZ, std::string_view negZ, int slot = 0);
 };
+
+}

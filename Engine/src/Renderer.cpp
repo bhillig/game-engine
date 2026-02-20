@@ -66,8 +66,8 @@ bool Renderer::Initialize()
 	m_cubeMapShader = Shader::Create(kCubeMapVS, kCubeMapFS);
 
 	// Create Engine Textures
-	m_skyBoxTexture = std::make_shared<CubemapTexture>(kSkyboxRightTexture, kSkyboxLeftTexture, kSkyboxTopTexture, kSkyboxBottomTexture, kSkyboxFrontTexture, kSkyboxBackTexture);
-	m_spaceSkyBoxTexture = std::make_shared<CubemapTexture>(kSpaceSkyboxRightTexture, kSpaceSkyboxLeftTexture, kSpaceSkyboxTopTexture, kSpaceSkyboxBottomTexture, kSpaceSkyboxFrontTexture, kSpaceSkyboxBackTexture);
+	m_skyBoxTexture = CubemapTexture::Create(kSkyboxRightTexture, kSkyboxLeftTexture, kSkyboxTopTexture, kSkyboxBottomTexture, kSkyboxFrontTexture, kSkyboxBackTexture);
+	m_spaceSkyBoxTexture = CubemapTexture::Create(kSpaceSkyboxRightTexture, kSpaceSkyboxLeftTexture, kSpaceSkyboxTopTexture, kSpaceSkyboxBottomTexture, kSpaceSkyboxFrontTexture, kSpaceSkyboxBackTexture);
 
 	return true;
 }

@@ -65,6 +65,7 @@ set(SOURCES
 	src/ECS/EntityManager.cpp
 	src/ECS/EntityMemoryPool.cpp
 	src/ImGui/CoreImGui.cpp
+	src/Platform/OpenGL/OpenGLCubemapTexture.cpp
 	src/Platform/OpenGL/OpenGLElementBuffer.cpp
 	src/Platform/OpenGL/OpenGLGraphicsContext.cpp
 	src/Platform/OpenGL/OpenGLRendererAPI.cpp
@@ -107,6 +108,7 @@ set(HEADERS
 	include/Events/InputEvents.h
 	include/Events/WindowEvents.h
 	include/ImGui/CoreImGui.h
+	include/Platform/OpenGL/OpenGLCubemapTexture.h
 	include/Platform/OpenGL/OpenGLElementBuffer.h
 	include/Platform/OpenGL/OpenGLGraphicsContext.h
 	include/Platform/OpenGL/OpenGLRendererAPI.h
