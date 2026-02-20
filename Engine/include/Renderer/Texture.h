@@ -1,22 +1,18 @@
 #pragma once
-#include <string>
 
-#include <glad/glad.h>
+namespace Core
+{
 
 class Texture
 {
 public:
-	Texture(const std::string& filepath, int slot = 0);
-	~Texture();
+	virtual ~Texture() = default;
 
-	void Bind(int slot = 0) const;
+	virtual void Bind(int slot = 0) const = 0;
 
-	void Unbind() const;
+	virtual void Unbind() const = 0;
 
-private:
-	unsigned int m_rendererID;
-	int m_width;
-	int m_height;
-	int m_numberOfColorChannels;
-	unsigned char* m_buffer;
+	static std::shared_ptr<Texture> Create(const std::string& filepath, int slot = 0);
 };
+
+}

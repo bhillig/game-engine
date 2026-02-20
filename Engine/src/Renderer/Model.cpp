@@ -21,7 +21,7 @@ Model::Model(const std::string& filepath, std::vector<MeshLoadedData>&& meshData
 		{
 			if (!m_textureMap.contains(textureFilePath))
 			{
-				m_textureMap[textureFilePath] = std::make_shared<Texture>(textureFilePath);
+				m_textureMap[textureFilePath] = Texture::Create(textureFilePath);
 			}
 		}
 	}

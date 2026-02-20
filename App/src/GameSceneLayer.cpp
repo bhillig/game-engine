@@ -2,9 +2,6 @@
 
 #include <Application.h>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include <Events/InputEvents.h>
 
 #include <Scene/Scene.h>
