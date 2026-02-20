@@ -24,7 +24,7 @@ struct Vertex
 struct TextureRef
 {
 	std::string type;
-	std::shared_ptr<Texture> texture;
+	Ref<Texture> texture;
 };
 
 // Pairs a texture type (e.g "texture_diffuse" with a filepath)
@@ -37,7 +37,7 @@ struct MeshLoadedData
 	MeshDataTexturePairVec textureData; // Pairs a texture type (e.g "texture_diffuse" with a filepath)
 };
 
-using MeshDataTextureDataPairVec = std::vector<std::pair<std::string, std::shared_ptr<Texture>>>;
+using MeshDataTextureDataPairVec = std::vector<std::pair<std::string, Ref<Texture>>>;
 
 
 struct MeshData
@@ -70,7 +70,7 @@ private:
 	std::vector<unsigned int> m_indices;
 	std::vector<TextureRef> m_textures;
 
-	std::shared_ptr<VertexArray> m_vao;
+	Ref<VertexArray> m_vao;
 };
 
 }

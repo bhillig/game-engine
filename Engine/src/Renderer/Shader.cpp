@@ -7,7 +7,7 @@
 namespace Core
 {
 
-std::shared_ptr<Shader> Shader::Create(std::string_view vertexShaderFilePath, std::string_view fragmentShaderFilePath)
+Ref<Shader> Shader::Create(std::string_view vertexShaderFilePath, std::string_view fragmentShaderFilePath)
 {
 	switch (Renderer::GetAPI())
 	{

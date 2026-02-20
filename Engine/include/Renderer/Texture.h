@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Core.h>
+
 namespace Core
 {
 
@@ -12,7 +14,7 @@ public:
 
 	virtual void Unbind() const = 0;
 
-	static std::shared_ptr<Texture> Create(const std::string& filepath, int slot = 0);
+	static Ref<Texture> Create(const std::string& filepath, int slot = 0);
 };
 
 }

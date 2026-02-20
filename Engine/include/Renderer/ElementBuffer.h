@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Core.h>
+
 namespace Core
 {
 
@@ -14,7 +16,7 @@ public:
 
 	virtual unsigned int Count() const = 0;
 
-	static std::shared_ptr<ElementBuffer> Create(const void* data, uint32_t dataSize);
+	static Ref<ElementBuffer> Create(const void* data, uint32_t dataSize);
 };
 
 }

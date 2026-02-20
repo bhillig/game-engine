@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Core.h>
+
 namespace Core
 {
 
@@ -26,7 +28,7 @@ public:
 
 	virtual bool SetUniformMatrix4fv(const char* name, const float* value) = 0;
 
-	static std::shared_ptr<Shader> Create(std::string_view vertexShaderFilePath, std::string_view fragmentShaderFilePath);
+	static Ref<Shader> Create(std::string_view vertexShaderFilePath, std::string_view fragmentShaderFilePath);
 };
 
 }

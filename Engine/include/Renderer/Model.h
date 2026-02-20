@@ -36,7 +36,7 @@ private:
 	std::vector<Mesh> m_meshes;
 	AABB m_axisAlignedBoundingBox;
 
-	std::unordered_map<std::string, std::shared_ptr<Texture>> m_textureMap;
+	std::unordered_map<std::string, Ref<Texture>> m_textureMap;
 
 	friend class AssetManager;
 };

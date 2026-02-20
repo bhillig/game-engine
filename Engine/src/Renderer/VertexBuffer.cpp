@@ -7,7 +7,7 @@
 namespace Core
 {
 
-std::shared_ptr<VertexBuffer> VertexBuffer::Create(const void* data, uint32_t dataSize)
+Ref<VertexBuffer> VertexBuffer::Create(const void* data, uint32_t dataSize)
 {
 	switch (Renderer::GetAPI())
 	{

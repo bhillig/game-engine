@@ -40,7 +40,7 @@ void OpenGLRendererAPI::Clear()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void OpenGLRendererAPI::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, DrawMode drawMode)
+void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, DrawMode drawMode)
 {
 	glDrawElements(DrawModeToOpenGLMode(drawMode), static_cast<int>(vertexArray->GetElementBuffer()->Count()), GL_UNSIGNED_INT, nullptr);
 }

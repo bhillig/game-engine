@@ -7,7 +7,7 @@
 namespace Core
 {
 
-std::shared_ptr<ElementBuffer> ElementBuffer::Create(const void* data, uint32_t dataSize)
+Ref<ElementBuffer> ElementBuffer::Create(const void* data, uint32_t dataSize)
 {
 	switch (Renderer::GetAPI())
 	{

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Core.h>
+
 #include <Renderer/CubemapTexture.h>
 #include <Renderer/RendererAPI.h>
 #include <Renderer/Shader.h>
@@ -57,7 +59,7 @@ public:
 	// @param transform - The world transform of the model
 	static void Submit(const Model& model, const glm::mat4& transform);
 
-	static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode = RendererAPI::DrawMode::Triangles, const glm::mat4& transform = glm::mat4(1.f));
+	static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode = RendererAPI::DrawMode::Triangles, const glm::mat4& transform = glm::mat4(1.f));
 
 	static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
@@ -90,7 +92,7 @@ private:
 	void SubmitImpl(const Model& model, const glm::mat4& transform);
 
 	// Implementation of Submit (shader, va, and draw mode)
-	void SubmitImpl(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode, const glm::mat4& transform);
+	void SubmitImpl(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode, const glm::mat4& transform);
 
 	friend class Application;
 
@@ -99,12 +101,12 @@ private:
 
 	SceneData m_sceneData;
 
-	std::shared_ptr<Shader> m_modelShader;
-	std::shared_ptr<Shader> m_lineShader;
-	std::shared_ptr<Shader> m_cubeMapShader;
+	Ref<Shader> m_modelShader;
+	Ref<Shader> m_lineShader;
+	Ref<Shader> m_cubeMapShader;
 
-	std::shared_ptr<CubemapTexture> m_skyBoxTexture;
-	std::shared_ptr<CubemapTexture> m_spaceSkyBoxTexture;
+	Ref<CubemapTexture> m_skyBoxTexture;
+	Ref<CubemapTexture> m_spaceSkyBoxTexture;
 };
 
 }

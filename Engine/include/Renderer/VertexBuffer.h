@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Core.h>
+
 namespace Core
 {
 
@@ -18,7 +20,7 @@ public:
 
 	virtual const BufferLayout& GetLayout() const = 0;
 
-	static std::shared_ptr<VertexBuffer> Create(const void* data, uint32_t dataSize);
+	static Ref<VertexBuffer> Create(const void* data, uint32_t dataSize);
 };
 
 }

@@ -20,7 +20,7 @@ public:
 		s_rendererAPI->Clear();
 	}
 
-	static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode)
+	static void DrawIndexed(const Ref<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode)
 	{
 		s_rendererAPI->DrawIndexed(vertexArray, drawMode);
 	}

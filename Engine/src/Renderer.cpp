@@ -108,7 +108,7 @@ void Renderer::Submit(const Model& model, const glm::mat4& transform)
 	GetRenderer().SubmitImpl(model, transform);
 }
 
-void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray,
+void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray,
 	RendererAPI::DrawMode drawMode, const glm::mat4& transform)
 {
 	GetRenderer().SubmitImpl(shader, vertexArray, drawMode, transform);
@@ -335,7 +335,7 @@ void Renderer::SubmitImpl(const Model& model, const glm::mat4& transform)
 	model.Draw(*m_modelShader);
 }
 
-void Renderer::SubmitImpl(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode, const glm::mat4& transform)
+void Renderer::SubmitImpl(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode, const glm::mat4& transform)
 {
 	shader->Bind();
 	shader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(transform));

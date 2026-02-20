@@ -28,7 +28,7 @@ public:
 
 	virtual void Clear() = 0;
 
-	virtual void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, DrawMode drawMode) = 0;
+	virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, DrawMode drawMode) = 0;
 
 	// Sets the Renderer API (OpenGL, Vulkan, etc.)
 	// @param api - The API to use

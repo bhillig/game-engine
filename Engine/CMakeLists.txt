@@ -91,6 +91,7 @@ set(SOURCES
 set(HEADERS
 	include/Application.h
 	include/AssetManager.h
+	include/Core.h
 	include/Input.h
 	include/InputKeyCodes.h
 	include/Layer.h

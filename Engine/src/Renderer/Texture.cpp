@@ -7,7 +7,7 @@
 namespace Core
 {
 
-std::shared_ptr<Texture> Texture::Create(const std::string& filepath, int slot)
+Ref<Texture> Texture::Create(const std::string& filepath, int slot)
 {
 	switch (Renderer::GetAPI())
 	{
