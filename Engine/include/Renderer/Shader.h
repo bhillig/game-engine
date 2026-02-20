@@ -1,36 +1,32 @@
 #pragma once
 
-#include <unordered_map>
-#include <string>
+namespace Core
+{
 
 class Shader
 {
 public:
-	Shader(std::string_view vertexShaderFilePath, std::string_view fragmentShaderFilePath);
-	~Shader();
+	virtual ~Shader() = default;
 
-	void Bind() const;
+	virtual void Bind() const = 0;
 
-	void Unbind() const;
+	virtual void Unbind() const = 0;
 
-	bool SetUniform1f(const char* name, float value);
+	virtual bool SetUniform1f(const char* name, float value) = 0;
 
-	bool GetUniform1f(const char* name, float& value);
+	virtual bool GetUniform1f(const char* name, float& value) = 0;
 
-	bool SetUniform3f(const char* name, float v0, float v1, float v2);
+	virtual bool SetUniform3f(const char* name, float v0, float v1, float v2) = 0;
 
-	bool SetUniform4f(const char* name, float v0, float v1, float v2, float v3);
+	virtual bool SetUniform4f(const char* name, float v0, float v1, float v2, float v3) = 0;
 
-	bool SetUniform1i(const char* name, int value);
+	virtual bool SetUniform1i(const char* name, int value) = 0;
 
-	bool SetUniform1b(const char* name, bool value);
+	virtual bool SetUniform1b(const char* name, bool value) = 0;
 
-	bool SetUniformMatrix4fv(const char* name, const float* value);
+	virtual bool SetUniformMatrix4fv(const char* name, const float* value) = 0;
 
-private:
-
-	int GetUniformLocation(const std::string& name);
-
-	unsigned int m_shaderProgram;
-	std::unordered_map<std::string, int> m_uniformCache;
+	static std::shared_ptr<Shader> Create(std::string_view vertexShaderFilePath, std::string_view fragmentShaderFilePath);
 };
+
+}

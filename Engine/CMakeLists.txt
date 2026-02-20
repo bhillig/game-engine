@@ -68,6 +68,7 @@ set(SOURCES
 	src/Platform/OpenGL/OpenGLElementBuffer.cpp
 	src/Platform/OpenGL/OpenGLGraphicsContext.cpp
 	src/Platform/OpenGL/OpenGLRendererAPI.cpp
+	src/Platform/OpenGL/OpenGLShader.cpp
 	src/Platform/OpenGL/OpenGLVertexArray.cpp
 	src/Platform/OpenGL/OpenGLVertexBuffer.cpp
 	src/Platform/Windows/WindowsInput.cpp
@@ -108,6 +109,7 @@ set(HEADERS
 	include/Platform/OpenGL/OpenGLElementBuffer.h
 	include/Platform/OpenGL/OpenGLGraphicsContext.h
 	include/Platform/OpenGL/OpenGLRendererAPI.h
+	include/Platform/OpenGL/OpenGLShader.h
 	include/Platform/OpenGL/OpenGLVertexArray.h
 	include/Platform/OpenGL/OpenGLVertexBuffer.h
 	include/Platform/Windows/WindowsInput.h

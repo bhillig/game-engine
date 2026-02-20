@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Renderer/RendererAPI.h>
+#include <Renderer/Shader.h>
 
 #include <memory>
 
@@ -9,7 +10,6 @@
 #include <glm/mat4x4.hpp>
 
 class CubemapTexture;
-class Shader;
 
 namespace Core
 {

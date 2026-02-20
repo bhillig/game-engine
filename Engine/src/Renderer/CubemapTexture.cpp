@@ -1,5 +1,7 @@
 #include <Renderer/CubemapTexture.h>
 
+#include <glad/glad.h>
+
 #include <stb_image.h>
 
 CubemapTexture::CubemapTexture(std::string_view posX, std::string_view negX, std::string_view posY, std::string_view negY, std::string_view posZ, std::string_view negZ, int slot)
@@ -34,7 +36,7 @@ CubemapTexture::CubemapTexture(std::string_view posX, std::string_view negX, std
 		}
 		else
 		{
-			LOG_CORE_ERROR("Cubemap texture failed to load at path: {}", m_filePaths.at(i).c_str())
+			LOG_CORE_ERROR("Cubemap texture failed to load at path: {}", m_filePaths.at(i).c_str());
 		}
 		stbi_image_free(buffer);
 	}

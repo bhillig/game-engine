@@ -55,19 +55,19 @@ Renderer::Renderer()
 
 bool Renderer::Initialize()
 {
+	// Set Renderer API to OpenGL
+	SetAPI(RendererAPI::API::OpenGL);
+
 	stbi_set_flip_vertically_on_load(true);
 
 	// Create Engine Shaders
-	m_modelShader = std::make_shared<Shader>(kPositionNormalAndTexCoordVS, kColorFromTextureFS);
-	m_lineShader = std::make_shared<Shader>(kPositionAndColorVS, kColorFromVertexFS);
-	m_cubeMapShader = std::make_shared<Shader>(kCubeMapVS, kCubeMapFS);
+	m_modelShader = Shader::Create(kPositionNormalAndTexCoordVS, kColorFromTextureFS);
+	m_lineShader = Shader::Create(kPositionAndColorVS, kColorFromVertexFS);
+	m_cubeMapShader = Shader::Create(kCubeMapVS, kCubeMapFS);
 
 	// Create Engine Textures
 	m_skyBoxTexture = std::make_shared<CubemapTexture>(kSkyboxRightTexture, kSkyboxLeftTexture, kSkyboxTopTexture, kSkyboxBottomTexture, kSkyboxFrontTexture, kSkyboxBackTexture);
 	m_spaceSkyBoxTexture = std::make_shared<CubemapTexture>(kSpaceSkyboxRightTexture, kSpaceSkyboxLeftTexture, kSpaceSkyboxTopTexture, kSpaceSkyboxBottomTexture, kSpaceSkyboxFrontTexture, kSpaceSkyboxBackTexture);
-
-	// Set Renderer API to OpenGL
-	SetAPI(RendererAPI::API::OpenGL);
 
 	return true;
 }
