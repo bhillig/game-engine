@@ -37,8 +37,7 @@ OpenGLTexture::~OpenGLTexture()
 
 void OpenGLTexture::Bind(int slot) const
 {
-	glActiveTexture(GL_TEXTURE0 + slot);
-	glBindTexture(GL_TEXTURE_2D, m_rendererID);
+	glBindTextureUnit(slot, m_rendererID);
 }
 
 void OpenGLTexture::Unbind() const

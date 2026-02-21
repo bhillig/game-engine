@@ -32,6 +32,10 @@ OpenGLRendererAPI::~OpenGLRendererAPI()
 
 void OpenGLRendererAPI::Init()
 {
+	// Enable blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	auto getString = [](GLenum name) -> std::string {
 		const auto* str = glGetString(name);
 		return str ? reinterpret_cast<const char*>(str) : "Unknown";
