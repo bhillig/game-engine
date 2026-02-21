@@ -30,6 +30,19 @@ OpenGLRendererAPI::~OpenGLRendererAPI()
 {
 }
 
+void OpenGLRendererAPI::Init()
+{
+	auto getString = [](GLenum name) -> std::string {
+		const auto* str = glGetString(name);
+		return str ? reinterpret_cast<const char*>(str) : "Unknown";
+		};
+
+	// Set Renderer Capabilities
+	m_rendererCapabilities.Vendor = getString(GL_VENDOR);
+	m_rendererCapabilities.Renderer = getString(GL_RENDERER);
+	m_rendererCapabilities.Version = getString(GL_VERSION);
+}
+
 void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)
 {
 	glClearColor(color.r, color.g, color.b, color.a);

@@ -1,10 +1,14 @@
 #include <Application.h>
 
+#include <Renderer/RenderCommand.h>
+
 #include <Platform/Windows/WindowsWindow.h>
 
 #include <ImGui/CoreImGui.h>
 
 #include <GLFW/glfw3.h>
+
+#include <imgui.h>
 
 #include <ranges>
 
@@ -104,6 +108,17 @@ void Application::Run()
 
 		// Render ImGui
 		CoreImGui::Begin();
+
+		const auto& caps = RenderCommand::GetCapabilities();
+
+		// Display Renderer Information
+		ImGui::Begin("Renderer");
+		ImGui::Text("Vendor: %s", caps.Vendor.c_str());
+		ImGui::Text("Renderer: %s", caps.Renderer.c_str());
+		ImGui::Text("Version: %s", caps.Version.c_str());
+		ImGui::Text("Frame Time: %.3fms", m_deltaTime * 1000);
+		ImGui::End();
+
 		for (const auto& layer : m_layerStack)
 		{
 			layer->OnImGuiRender();

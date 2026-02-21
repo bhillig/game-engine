@@ -10,6 +10,17 @@ class RenderCommand
 {
 public:
 
+	// TODO: Figure out a better way for RendererAPI to initialize
+	static void Init()
+	{
+		s_rendererAPI->Init();
+	}
+
+	static RendererAPI::RendererCapabilities& GetCapabilities()
+	{
+		return s_rendererAPI->GetCapabilities();
+	}
+
 	static void SetClearColor(const glm::vec4& color)
 	{
 		s_rendererAPI->SetClearColor(color);

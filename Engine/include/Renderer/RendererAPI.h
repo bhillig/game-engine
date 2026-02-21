@@ -21,8 +21,17 @@ public:
 		Triangles = 2
 	};
 
+	struct RendererCapabilities
+	{
+		std::string Vendor;
+		std::string Renderer;
+		std::string Version;
+	};
+
 public:
 	virtual ~RendererAPI() = default;
+
+	virtual void Init() = 0;
 
 	virtual void SetClearColor(const glm::vec4& color) = 0;
 
@@ -36,6 +45,8 @@ public:
 
 	// Returns the Renderer API (OpenGL, Vulkan, etc.)
 	static API GetAPI() { return s_API; }
+
+	virtual RendererCapabilities& GetCapabilities() = 0;
 
 private:
 	static API s_API;

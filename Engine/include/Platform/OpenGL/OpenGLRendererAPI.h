@@ -9,8 +9,9 @@ class OpenGLRendererAPI : public RendererAPI
 {
 public:
 	OpenGLRendererAPI();
-
 	~OpenGLRendererAPI() override;
+
+	void Init() override;
 
 	void SetClearColor(const glm::vec4& color) override;
 
@@ -18,6 +19,10 @@ public:
 
 	void DrawIndexed(const Ref<VertexArray>& vertexArray, DrawMode drawMode) override;
 
+	RendererCapabilities& GetCapabilities() override { return m_rendererCapabilities; }
+
+private:
+	RendererCapabilities m_rendererCapabilities;
 };
 
 }
