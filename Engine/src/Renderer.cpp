@@ -64,9 +64,9 @@ bool Renderer::Initialize()
 	stbi_set_flip_vertically_on_load(true);
 
 	// Create Engine Shaders
-	m_modelShader = Shader::Create(kPositionNormalAndTexCoordVS, kColorFromTextureFS);
-	m_lineShader = Shader::Create(kPositionAndColorVS, kColorFromVertexFS);
-	m_cubeMapShader = Shader::Create(kCubeMapVS, kCubeMapFS);
+	m_shaderLibrary.Load("ModelShader", kPositionNormalAndTexCoordVS, kColorFromTextureFS);
+	m_shaderLibrary.Load("LineShader", kPositionAndColorVS, kColorFromVertexFS);
+	m_shaderLibrary.Load("CubemapShader", kCubeMapVS, kCubeMapFS);
 
 	// Create Engine Textures
 	m_skyBoxTexture = CubemapTexture::Create(kSkyboxRightTexture, kSkyboxLeftTexture, kSkyboxTopTexture, kSkyboxBottomTexture, kSkyboxFrontTexture, kSkyboxBackTexture);
@@ -84,6 +84,11 @@ void Renderer::BeginScene(const SceneData& sceneData)
 void Renderer::EndScene()
 {
 	GetRenderer().EndSceneImpl();
+}
+
+ShaderLibrary& Renderer::GetShaderLibrary()
+{
+	return GetRenderer().GetShaderLibraryImpl();
 }
 
 void Renderer::DrawBoundingBox(const glm::vec3& min, const glm::vec3& max)
@@ -187,7 +192,9 @@ void Renderer::DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::v
 	auto ebo = ElementBuffer::Create(indices, sizeof(indices));
 	vao->SetElementBuffer(ebo);
 
-	Submit(m_lineShader, vao, RendererAPI::DrawMode::Lines);
+	auto lineShader = m_shaderLibrary.Get("LineShader");
+
+	Submit(lineShader, vao, RendererAPI::DrawMode::Lines);
 }
 
 void Renderer::DrawSkyboxImpl()
@@ -252,7 +259,9 @@ void Renderer::DrawSkyboxImpl()
 	glDepthMask(false);
 	m_skyBoxTexture->Bind();
 
-	Submit(m_cubeMapShader, vao, RendererAPI::DrawMode::Triangles);
+	auto cubeMapShader = m_shaderLibrary.Get("CubemapShader");
+
+	Submit(cubeMapShader, vao, RendererAPI::DrawMode::Triangles);
 
 	m_skyBoxTexture->Unbind();
 	glDepthMask(true);
@@ -322,7 +331,9 @@ void Renderer::DrawSpaceSkyboxImpl()
 	glDepthMask(false);
 	m_spaceSkyBoxTexture->Bind();
 
-	Submit(m_cubeMapShader, vao, RendererAPI::DrawMode::Triangles);
+	auto cubeMapShader = m_shaderLibrary.Get("CubemapShader");
+
+	Submit(cubeMapShader, vao, RendererAPI::DrawMode::Triangles);
 
 	m_spaceSkyBoxTexture->Unbind();
 	glDepthMask(true);
@@ -331,11 +342,12 @@ void Renderer::DrawSpaceSkyboxImpl()
 
 void Renderer::SubmitImpl(const Model& model, const glm::mat4& transform)
 {
-	m_modelShader->Bind();
-	m_modelShader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(transform));
-	m_modelShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_sceneData.ViewMatrix));
-	m_modelShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_sceneData.ProjectionMatrix));
-	model.Draw(*m_modelShader);
+	auto modelShader = m_shaderLibrary.Get("ModelShader");
+	modelShader->Bind();
+	modelShader->SetUniformMatrix4fv(kModelMatrixUniform, glm::value_ptr(transform));
+	modelShader->SetUniformMatrix4fv(kViewMatrixUniform, glm::value_ptr(m_sceneData.ViewMatrix));
+	modelShader->SetUniformMatrix4fv(kProjectionMatrixUniform, glm::value_ptr(m_sceneData.ProjectionMatrix));
+	model.Draw(*modelShader);
 }
 
 void Renderer::SubmitImpl(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode, const glm::mat4& transform)

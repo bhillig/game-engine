@@ -31,4 +31,17 @@ public:
 	static Ref<Shader> Create(std::string_view vertexShaderFilePath, std::string_view fragmentShaderFilePath);
 };
 
+class ShaderLibrary
+{
+public:
+	bool Add(const std::string& name, const Ref<Shader>& shader);
+
+	Ref<Shader> Load(const std::string& name, std::string_view vertexShaderFilePath, std::string_view fragmentShaderFilePath);
+
+	Ref<Shader> Get(const std::string& name);
+
+private:
+	std::unordered_map<std::string, Ref<Shader>> m_shaders;
+};
+
 }

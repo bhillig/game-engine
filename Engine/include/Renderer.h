@@ -35,6 +35,8 @@ public:
 	// Clears the scene data for rendering
 	static void EndScene();
 
+	static ShaderLibrary& GetShaderLibrary();
+
 	// Draws a bounding box defined by (min,max) where min is the bottom-left corner and max is the top-right corner.
 	// @param min - Bottom-left corner of the bounding box to be rendered
 	// @param max - Top-right corner of the bounding box to be rendered
@@ -76,6 +78,8 @@ private:
 	// Implementation of EndScene
 	void EndSceneImpl();
 
+	ShaderLibrary& GetShaderLibraryImpl() { return m_shaderLibrary; }
+
 	// Implementation of DrawBoundingBox
 	void DrawBoundingBoxImpl(const glm::vec3& min, const glm::vec3& max);
 
@@ -101,9 +105,7 @@ private:
 
 	SceneData m_sceneData;
 
-	Ref<Shader> m_modelShader;
-	Ref<Shader> m_lineShader;
-	Ref<Shader> m_cubeMapShader;
+	ShaderLibrary m_shaderLibrary;
 
 	Ref<CubemapTexture> m_skyBoxTexture;
 	Ref<CubemapTexture> m_spaceSkyBoxTexture;
