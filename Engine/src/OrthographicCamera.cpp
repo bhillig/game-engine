@@ -4,9 +4,13 @@ namespace Core
 {
 
 OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
-	: m_viewMatrix(1.f), m_projectionMatrix(glm::orthoLH(left, right, bottom, top, -1.f, 1.f)),
-	m_position({ 0.f, 0.f, 0.f }), m_rotation(0.f)
+	: m_viewMatrix(1.f), m_projectionMatrix(glm::orthoLH(left, right, bottom, top, -1.f, 1.f))
 {
+}
+
+void OrthographicCamera::SetProjection(float left, float right, float bottom, float top)
+{
+	m_projectionMatrix = glm::orthoLH(left, right, bottom, top, -1.f, 1.f);
 }
 
 void OrthographicCamera::SetPosition(const glm::vec3& position)

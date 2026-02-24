@@ -59,6 +59,7 @@ set(SOURCES
 	src/AssetManager.cpp
 	src/Log.cpp
 	src/OrthographicCamera.cpp
+	src/OrthographicCameraController.cpp
 	src/PerspectiveCamera.cpp
 	src/PerspectiveCameraController.cpp
 	src/Renderer.cpp
@@ -97,6 +98,7 @@ set(HEADERS
 	include/Layer.h
 	include/Log.h
 	include/OrthographicCamera.h
+	include/OrthographicCameraController.h
 	include/PerspectiveCamera.h
 	include/PerspectiveCameraController.h
 	include/Renderer.h
