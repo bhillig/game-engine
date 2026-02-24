@@ -79,6 +79,15 @@ bool WindowsWindow::Initialize()
 		}
 		});
 
+	glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xOffset, double yOffset)
+		{
+			WindowData* self = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+			if (!self) return;
+
+			MouseScrolledEvent event(xOffset, yOffset);
+			self->Callback(event);
+		});
+
 	glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xPos, double yPos) {
 		WindowData* self = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 		if (!self) return;

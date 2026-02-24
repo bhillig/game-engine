@@ -91,4 +91,21 @@ private:
 	int m_button;
 };
 
+class MouseScrolledEvent : public Event
+{
+public:
+	MouseScrolledEvent(double xOffset, double yOffset)
+		: m_xOffset(xOffset), m_yOffset(yOffset) {}
+
+	double GetXOffset() const { return m_xOffset; }
+
+	double GetYOffset() const { return m_yOffset; }
+
+	EVENT_CLASS_TYPE(MouseScrolledEvent);
+
+private:
+	double m_xOffset;
+	double m_yOffset;
+};
+
 } // namespace Core

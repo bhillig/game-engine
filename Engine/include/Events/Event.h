@@ -9,7 +9,7 @@ namespace Core
 enum class EventType
 {
 	None = 0,
-	MouseMoved, MouseButtonPressed, MouseButtonReleased,
+	MouseMoved, MouseButtonPressed, MouseButtonReleased, MouseScrolledEvent,
 	KeyPressed, KeyReleased,
 	WindowClosed, WindowResized
 };
