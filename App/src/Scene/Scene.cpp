@@ -9,6 +9,8 @@
 
 #include <Renderer/RenderCommand.h>
 
+#include "Renderer/BufferLayout.h"
+
 using Core::AssetManager;
 using Core::EventDispatcher;
 using Core::Renderer;
@@ -17,24 +19,40 @@ using Core::Renderer;
 static constexpr std::string_view kBackpackModel = MODEL_DIR "/backpack/backpack.obj";
 static constexpr std::string_view kGirlModel = MODEL_DIR "/girl/girl.obj";
 
+// Shaders
+static constexpr std::string_view kPositionAndTextureVS = SHADER_DIR "/positionAndTexCoords.vertex.glsl";
+static constexpr std::string_view kColorFromTextureFS = SHADER_DIR "/colorFromTexture.fragment.glsl";
+
+// Textures
+static constexpr std::string_view kMartyPNG = TEXTURE_DIR "/MartySupremeMovieLogo.png";
+
 Scene::Scene()
-	: m_camera({0.f, 0.f, -4.f}, 0.0f, -90.f, 0.0f, 45.f), m_cameraController(m_camera), m_skyBoxEnabled(true), m_useSpaceSkybox(false)
+	: m_orthoCameraController(1280.f / 720.f)
+	, m_perspectiveCamera(glm::vec3{0.f, 0.f, -4.f}, 0.f, -90.f, 0.f, 45.f)
+	, m_perspectiveCameraController(m_perspectiveCamera)
+	, m_enable3DView(true)
+	, m_skyBoxEnabled(true)
+	, m_useSpaceSkybox(false)
 {
 	// Import all models 
 	AssetManager::RequestLoadModel(std::string(kBackpackModel));
 	AssetManager::RequestLoadModel(std::string(kGirlModel));
-}
 
-void Scene::Simulate(float deltaTime, unsigned int timeSteps /* = 1*/)
-{
-	for (unsigned int i = 0; i < timeSteps; ++i)
-	{
-		Update(deltaTime);
-	}
+	auto posTexShader = Core::Renderer::GetShaderLibrary().Load("PosTexShader", kPositionAndTextureVS, kColorFromTextureFS);
+
+	m_texture = Core::Texture::Create(std::string(kMartyPNG), 1);
+
+	posTexShader->Bind();
+	posTexShader->SetUniform1i("u_Material.texture_diffuse1", 1);
 }
 
 void Scene::OnEvent(Core::Event& event)
 {
+	if (!m_enable3DView)
+	{
+		m_orthoCameraController.OnEvent(event);
+	}
+
 	EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<Core::MouseMovedEvent>([this](Core::MouseMovedEvent& event) { return OnMouseMove(event.GetX(), event.GetY()); });
 	dispatcher.Dispatch<Core::KeyPressedEvent>([this](Core::KeyPressedEvent& event) { return OnKeyPressed(event.GetKeyCode()); });
@@ -47,16 +65,23 @@ void Scene::OnGainFocus()
 
 void Scene::OnLoseFocus()
 {
-	m_cameraController.OnLoseControl();
+	if (m_enable3DView)
+	{
+		m_perspectiveCameraController.OnLoseControl();
+	}
 }
 
 void Scene::Update(float deltaTime)
 {
-	m_cameraController.Update(deltaTime);
-}
+	if (m_enable3DView)
+	{
+		m_perspectiveCameraController.Update(deltaTime);
+	}
+	else
+	{
+		m_orthoCameraController.Update(deltaTime);
+	}
 
-void Scene::Render()
-{
 	Core::RenderCommand::SetClearColor({ 0.f, 0.f, 0.f, 1.f });
 	Core::RenderCommand::Clear();
 
@@ -66,8 +91,17 @@ void Scene::Render()
 
 	// Gather scene data
 	Renderer::SceneData sceneData;
-	sceneData.ViewMatrix = m_camera.viewMatrix();
-	sceneData.ProjectionMatrix = m_camera.projectionMatrix(aspectRatio);
+
+	if (m_enable3DView)
+	{
+		sceneData.ViewMatrix = m_perspectiveCamera.viewMatrix();
+		sceneData.ProjectionMatrix = m_perspectiveCamera.projectionMatrix(aspectRatio);
+	}
+	else
+	{
+		sceneData.ViewMatrix = m_orthoCameraController.viewMatrix();
+		sceneData.ProjectionMatrix = m_orthoCameraController.projectionMatrix();
+	}
 
 	// Begin scene
 	Renderer::BeginScene(sceneData);
@@ -112,6 +146,39 @@ void Scene::Render()
 
 	}
 
+	// Draw texture
+	{
+		auto va = Core::VertexArray::Create();
+
+		// Create vertex array
+		float vertices[] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f, 0.5f, 0.0f, 0.f, 1.0f };
+
+		unsigned int indices[] = { 0, 1, 2, 2, 3, 0 };
+
+		Core::BufferLayout layout{
+			{
+				{Core::ShaderDataType::Float3, "a_Pos"},
+				{Core::ShaderDataType::Float2, "a_TexCoord"}
+			}
+		};
+
+		auto vbo = Core::VertexBuffer::Create(vertices, sizeof(vertices));
+		vbo->SetLayout(layout);
+		va->AddVertexBuffer(vbo);
+
+		auto ebo = Core::ElementBuffer::Create(indices, sizeof(indices));
+		va->SetElementBuffer(ebo);
+
+		m_texture->Bind();
+
+		auto posTexShader = Core::Renderer::GetShaderLibrary().Get("PosTexShader");
+		Renderer::Submit(posTexShader, va);
+	}
+
 	Renderer::EndScene();
 }
 
@@ -130,19 +197,28 @@ void Scene::ImGuiRender()
 
 bool Scene::OnKeyPressed(int key)
 {
-	m_cameraController.OnKeyPressed(key);
+	if (m_enable3DView)
+	{
+		m_perspectiveCameraController.OnKeyPressed(key);
+	}
 	return false;
 }
 
 bool Scene::OnKeyReleased(int key)
 {
-	m_cameraController.OnKeyReleased(key);
+	if (m_enable3DView)
+	{
+		m_perspectiveCameraController.OnKeyReleased(key);
+	}
 	return false;
 }
 
 bool Scene::OnMouseMove(double xPos, double yPos)
 {
-	m_cameraController.OnMouseMove(xPos, yPos);
+	if (m_enable3DView)
+	{
+		m_perspectiveCameraController.OnMouseMove(xPos, yPos);
+	}
 	return false;
 }
 
@@ -370,11 +446,13 @@ void Scene::ConstructCameraTab()
 {
 	if (ImGui::BeginTabItem("Camera"))
 	{
-		float cameraFOV = m_camera.fov();
+		/*float cameraFOV = m_camera.fov();
 		if (ImGui::SliderFloat("FOV", &cameraFOV, 1.f, 120.f))
 		{
 			m_camera.SetFOV(cameraFOV);
-		}
+		}*/
+
+		ImGui::Checkbox("Enable 3D", &m_enable3DView);
 		ImGui::EndTabItem();
 	}
 }

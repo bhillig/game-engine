@@ -12,8 +12,6 @@ public:
 
 	virtual void OnUpdate(float deltaTime) {};
 
-	virtual void OnRender() {};
-
 	virtual void OnImGuiRender() {};
 
 	virtual void OnEvent(Event& event) {};

@@ -56,6 +56,8 @@ private:
 
 	bool OnWindowClosed(WindowClosedEvent& event);
 
+	bool OnWindowResized(WindowResizedEvent& event);
+
 private:
 	ApplicationSpecification m_appSpec;
 	std::unique_ptr<Window> m_window;
@@ -67,6 +69,7 @@ private:
 	float m_deltaTime;
 	float m_lastTime;
 	bool m_running;
+	bool m_minimized;
 
 	std::vector<std::unique_ptr<Layer>> m_layerStack;
 

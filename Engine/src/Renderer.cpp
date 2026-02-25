@@ -58,7 +58,6 @@ bool Renderer::Initialize()
 	// Set Renderer API to OpenGL
 	SetAPI(RendererAPI::API::OpenGL);
 
-	// TODO: Figure out a better way to initialize the RendererAPI
 	RenderCommand::Init();
 
 	stbi_set_flip_vertically_on_load(true);

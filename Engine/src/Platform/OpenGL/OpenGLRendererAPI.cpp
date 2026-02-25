@@ -47,6 +47,11 @@ void OpenGLRendererAPI::Init()
 	m_rendererCapabilities.Version = getString(GL_VERSION);
 }
 
+void OpenGLRendererAPI::SetViewport(int x, int y, int width, int height)
+{
+	glViewport(x, y, width, height);
+}
+
 void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)
 {
 	glClearColor(color.r, color.g, color.b, color.a);

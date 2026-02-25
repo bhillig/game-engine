@@ -10,10 +10,14 @@ class RenderCommand
 {
 public:
 
-	// TODO: Figure out a better way for RendererAPI to initialize
 	static void Init()
 	{
 		s_rendererAPI->Init();
+	}
+
+	static void SetViewport(int x, int y, int width, int height)
+	{
+		s_rendererAPI->SetViewport(x, y, width, height);
 	}
 
 	static RendererAPI::RendererCapabilities& GetCapabilities()

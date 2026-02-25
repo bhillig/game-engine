@@ -21,6 +21,7 @@ Application::Application(const ApplicationSpecification& appSpec)
 	: m_appSpec(appSpec)
 	, m_deltaTime(0.f)
 	, m_lastTime(0.f)
+	, m_minimized(false)
 {
 	assert(!s_instance && "Application is already instantiated!");
 	s_instance = this;
@@ -94,16 +95,13 @@ void Application::Run()
 		// Process events
 		glfwPollEvents();
 
-		// Update layers
-		for (const auto& layer : m_layerStack)
+		if (!m_minimized)
 		{
-			layer->OnUpdate(m_deltaTime);
-		}
-
-		// Render layers
-		for (const auto& layer : m_layerStack)
-		{
-			layer->OnRender();
+			// Update layers
+			for (const auto& layer : m_layerStack)
+			{
+				layer->OnUpdate(m_deltaTime);
+			}
 		}
 
 		// Render ImGui
@@ -154,7 +152,8 @@ Renderer& Application::GetRenderer()
 void Application::RaiseEvent(Event& event)
 {
 	Core::EventDispatcher dispatcher(event);
-	dispatcher.Dispatch<Core::WindowClosedEvent>([this](Core::WindowClosedEvent& event) { return OnWindowClosed(event); });
+	dispatcher.Dispatch<WindowClosedEvent>(CORE_BIND_FN(Application::OnWindowClosed));
+	dispatcher.Dispatch<WindowResizedEvent>(CORE_BIND_FN(Application::OnWindowResized));
 
 	for (auto& layer : std::views::reverse(m_layerStack))
 	{
@@ -170,6 +169,21 @@ bool Application::OnWindowClosed(WindowClosedEvent& event)
 {
 	m_running = false;
 	return true;
+}
+
+bool Application::OnWindowResized(WindowResizedEvent& event)
+{
+	if (event.GetWidth() == 0 || event.GetHeight() == 0)
+	{
+		m_minimized = true;
+		return false;
+	}
+
+	// TODO: Can be optimized. Should only update the viewport once when the window has stopped resizing.
+	RenderCommand::SetViewport(0, 0, event.GetWidth(), event.GetHeight());
+
+	m_minimized = false;
+	return false;
 }
 
 Application::~Application()

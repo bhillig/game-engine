@@ -102,7 +102,6 @@ bool WindowsWindow::Initialize()
 
 		self->Width = width;
 		self->Height = height;
-		glViewport(0, 0, width, height);
 
 		WindowResizedEvent event(width, height);
 		self->Callback(event);

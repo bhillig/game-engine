@@ -15,12 +15,7 @@ GameSceneLayer::GameSceneLayer()
 void GameSceneLayer::OnUpdate(float deltaTime)
 {
 	// Simulate the current scene
-	m_scene->Simulate(deltaTime);
-}
-
-void GameSceneLayer::OnRender()
-{
-	m_scene->Render();
+	m_scene->Update(deltaTime);
 }
 
 void GameSceneLayer::OnImGuiRender()
