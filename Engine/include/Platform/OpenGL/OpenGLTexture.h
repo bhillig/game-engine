@@ -8,7 +8,7 @@ namespace Core
 class OpenGLTexture final : public Texture
 {
 public:
-	OpenGLTexture(const std::string& filepath, int slot = 0);
+	OpenGLTexture(const std::string& filepath);
 	~OpenGLTexture() override;
 
 	void Bind(int slot = 0) const override;

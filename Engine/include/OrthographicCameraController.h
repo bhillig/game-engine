@@ -17,13 +17,16 @@ class OrthographicCameraController
 public:
 	OrthographicCameraController(float aspectRatio);
 
-	void Update(float deltaTime);
-
-	void OnEvent(Event& event);
+	const OrthographicCamera& GetCamera() const { return m_camera; }
+	OrthographicCamera& GetCamera() { return m_camera; }
 
 	const glm::mat4& viewMatrix() const { return m_camera.viewMatrix(); }
 	const glm::mat4& projectionMatrix() const { return m_camera.projectionMatrix(); }
 	glm::mat4 viewProjectionMatrix() const { return m_camera.viewProjectionMatrix(); }
+
+	void Update(float deltaTime);
+
+	void OnEvent(Event& event);
 
 private:
 

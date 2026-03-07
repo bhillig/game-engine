@@ -1,6 +1,6 @@
 #include <Application.h>
 
-#include <GameSceneLayer.h>
+#include <GameLayer.h>
 #include <GUILayer.h>
 
 int main(int argc, char* argv[])
@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	app.AddLayer<GameSceneLayer>();
+	app.AddLayer<App::GameLayer>();
 	app.AddLayer<GUILayer>();
 
 	LOG_INFO("Running '{}'", appSpec.Name);

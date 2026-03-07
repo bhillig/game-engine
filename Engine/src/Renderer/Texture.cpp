@@ -7,12 +7,12 @@
 namespace Core
 {
 
-Ref<Texture> Texture::Create(const std::string& filepath, int slot)
+Ref<Texture> Texture::Create(const std::string& filepath)
 {
 	switch (Renderer::GetAPI())
 	{
 	case RendererAPI::API::OpenGL:
-		return std::make_shared<OpenGLTexture>(filepath, slot);
+		return std::make_shared<OpenGLTexture>(filepath);
 	default:
 		break;
 	}

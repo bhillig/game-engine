@@ -35,7 +35,7 @@ public:
 		s_rendererAPI->Clear();
 	}
 
-	static void DrawIndexed(const Ref<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode)
+	static void DrawIndexed(const Ref<VertexArray>& vertexArray, RendererAPI::DrawMode drawMode = RendererAPI::DrawMode::Triangles)
 	{
 		s_rendererAPI->DrawIndexed(vertexArray, drawMode);
 	}

@@ -14,7 +14,7 @@ public:
 
 	virtual void Unbind() const = 0;
 
-	static Ref<Texture> Create(const std::string& filepath, int slot = 0);
+	static Ref<Texture> Create(const std::string& filepath);
 };
 
 }

@@ -1,12 +1,14 @@
 project(App)
 
 set(SOURCES 
+    src/GameLayer.cpp
     src/Main.cpp
     src/GameSceneLayer.cpp
     src/GUILayer.cpp
     src/Scene/Scene.cpp)
 
 set(HEADERS
+    include/GameLayer.h
     include/GameSceneLayer.h
     include/GUILayer.h
 	include/Scene/Scene.h)

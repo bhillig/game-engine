@@ -7,11 +7,10 @@
 namespace Core
 {
 
-OpenGLTexture::OpenGLTexture(const std::string& filepath, int slot)
+OpenGLTexture::OpenGLTexture(const std::string& filepath)
 {
 	// Create and bind texture
 	glGenTextures(1, &m_rendererID);
-	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, m_rendererID);
 
 	// Set texture parameters
@@ -27,6 +26,10 @@ OpenGLTexture::OpenGLTexture(const std::string& filepath, int slot)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_buffer);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(m_buffer);
+	}
+	else
+	{
+		LOG_CORE_ERROR("Texture failed!");
 	}
 }
 

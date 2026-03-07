@@ -82,6 +82,7 @@ set(SOURCES
 	src/Renderer/Model.cpp
 	src/Renderer/ModelLoader.cpp
 	src/Renderer/RenderCommand.cpp
+	src/Renderer/Renderer2D.cpp
 	src/Renderer/RendererAPI.cpp
 	src/Renderer/Shader.cpp
 	src/Renderer/Texture.cpp
@@ -129,6 +130,7 @@ set(HEADERS
 	include/Renderer/Model.h
 	include/Renderer/ModelLoader.h
 	include/Renderer/RenderCommand.h
+	include/Renderer/Renderer2D.h
 	include/Renderer/RendererAPI.h
 	include/Renderer/Shader.h
 	include/Renderer/Texture.h

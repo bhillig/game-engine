@@ -5,6 +5,7 @@
 #include <Renderer/BufferLayout.h>
 #include <Renderer/CubemapTexture.h>
 #include <Renderer/RenderCommand.h>
+#include <Renderer/Renderer2D.h>
 #include <Renderer/VertexArray.h>
 #include <Renderer/VertexBuffer.h>
 
@@ -59,6 +60,8 @@ bool Renderer::Initialize()
 	SetAPI(RendererAPI::API::OpenGL);
 
 	RenderCommand::Init();
+
+	Renderer2D::Init();
 
 	stbi_set_flip_vertically_on_load(true);
 

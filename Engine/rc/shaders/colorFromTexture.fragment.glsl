@@ -7,14 +7,15 @@ struct Material
     float shininess;
 };
 
-in vec2 TexCoords;
+in vec2 v_TexCoords;
 
 out vec4 FragColor;
 
 uniform Material u_Material;
+uniform vec4 u_Color;
+uniform float u_TilingFactor;
 
 void main()
 {
-    vec3 diffuse = texture(u_Material.texture_diffuse1, TexCoords).rgb;
-    FragColor = vec4(diffuse, 1.0);
+    FragColor = texture(u_Material.texture_diffuse1, v_TexCoords * u_TilingFactor) * u_Color;
 }
