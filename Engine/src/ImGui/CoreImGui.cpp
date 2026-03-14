@@ -37,7 +37,7 @@ void Initialize()
 
 	// Setup backends
 	ImGui_ImplGlfw_InitForOpenGL(glfwWindow, true);
-	ImGui_ImplOpenGL3_Init("#version 460");
+	ImGui_ImplOpenGL3_Init("#version 410");
 }
 
 void Begin()

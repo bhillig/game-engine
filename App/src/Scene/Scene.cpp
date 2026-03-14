@@ -40,7 +40,7 @@ Scene::Scene()
 
 	auto posTexShader = Core::Renderer::GetShaderLibrary().Load("PosTexShader", kPositionAndTextureVS, kColorFromTextureFS);
 
-	m_texture = Core::Texture::Create(std::string(kMartyPNG), 1);
+	m_texture = Core::Texture::Create(std::string(kMartyPNG));
 
 	posTexShader->Bind();
 	posTexShader->SetUniform1i("u_Material.texture_diffuse1", 1);

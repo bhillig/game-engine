@@ -5,6 +5,8 @@
 
 #include <assimp/scene.h>
 
+#include <thread>
+
 namespace Core
 {
 

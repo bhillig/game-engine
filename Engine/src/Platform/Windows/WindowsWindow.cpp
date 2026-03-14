@@ -19,7 +19,7 @@ bool WindowsWindow::Initialize()
 {
 	// Set window hints (OpenGL version and profile)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // Required for macOS
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -115,12 +115,13 @@ bool WindowsWindow::Initialize()
 		self->Callback(event);
 		});
 
-
 	// Capture mouse cursor
 	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Initialize viewport
-	glViewport(0, 0, m_windowData.Width, m_windowData.Height);
+	int fbWidth, fbHeight;
+	glfwGetFramebufferSize(m_window, &fbWidth, &fbHeight);
+	glViewport(0, 0, fbWidth, fbHeight);
 
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
