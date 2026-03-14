@@ -1,2 +1,5 @@
 # Builds
 build/
+
+# CLion IDE
+.idea/
