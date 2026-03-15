@@ -54,6 +54,11 @@ add_subdirectory(external/assimp)
 # ----------------------------------------------------------
 add_subdirectory(external/spdlog)
 
+# ----------------------------------------------------------
+# Miniaudio (Audio Library)
+# ----------------------------------------------------------
+add_subdirectory(external/miniaudio)
+
 set(SOURCES 
 	src/Application.cpp
 	src/AssetManager.cpp
@@ -141,7 +146,7 @@ set(HEADERS
 
 add_library(Engine STATIC ${SOURCES} ${HEADERS})
 
-target_link_libraries(Engine PUBLIC OpenGL::GL glfw glad stb_image imgui assimp spdlog)
+target_link_libraries(Engine PUBLIC OpenGL::GL glfw glad stb_image imgui assimp spdlog miniaudio)
 
 target_include_directories(Engine PUBLIC include)
 
