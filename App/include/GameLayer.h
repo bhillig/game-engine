@@ -6,6 +6,8 @@
 
 #include <Renderer/Texture.h>
 
+#include <miniaudio.h>
+
 namespace Core
 {
 	class MouseButtonPressedEvent;
@@ -88,6 +90,9 @@ private:
 	glm::vec3 m_playerPosition {0, -0.6f, -0.1};
 
 	std::vector<Projectile> m_projectiles;
+
+	// TEMPORARY
+	ma_engine m_soundEngine;
 };
 
 }

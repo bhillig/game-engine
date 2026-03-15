@@ -11,11 +11,13 @@
 
 #include "Events/InputEvents.h"
 
+// Audio
+static constexpr std::string_view kSpaceshipShootSound = AUDIO_DIR "/spaceship-shoot.wav";
+
 // Textures
 static constexpr std::string_view kSpaceshipTexture = TEXTURE_DIR "/spaceship.png";
 static constexpr std::string_view kPlayerProjectileTexture = TEXTURE_DIR "/player-projectile.png";
 static constexpr std::string_view kStarfieldTexture = TEXTURE_DIR "/starfield.png";
-
 
 namespace App
 {
@@ -23,6 +25,13 @@ namespace App
 GameLayer::GameLayer()
 	: m_cameraController(1280.f / 720.f)
 {
+
+	// TEMPORARY: Initialize sound engine
+	const ma_result result = ma_engine_init(nullptr, &m_soundEngine);
+	if (result != ma_result::MA_SUCCESS) {
+		LOG_CORE_ERROR("Failed to initialize sound engine!");
+	}
+
 	m_playerSpaceShipTexture = Core::Texture::Create(std::string(kSpaceshipTexture));
 	m_playerProjectileTexture = Core::Texture::Create(std::string(kPlayerProjectileTexture));
 	m_starfieldTexture = Core::Texture::Create(std::string(kStarfieldTexture));
@@ -30,6 +39,8 @@ GameLayer::GameLayer()
 
 GameLayer::~GameLayer()
 {
+	// TEMPORARY
+	ma_engine_uninit(&m_soundEngine);
 }
 
 void GameLayer::OnUpdate(float deltaTime)
@@ -101,8 +112,12 @@ void GameLayer::OnEvent(Core::Event& event)
 
 void GameLayer::SpawnProjectile()
 {
+	// Spawn projectile object
 	const glm::vec2 projectileSpawnLocation{ m_playerPosition.x, m_playerPosition.y + 0.15f };
 	m_projectiles.emplace_back(Projectile{ projectileSpawnLocation, m_playerProjectileTexture });
+
+	// Play sound effect
+	ma_engine_play_sound(&m_soundEngine, kSpaceshipShootSound.data(), nullptr);
 }
 
 bool GameLayer::OnMouseButtonPressed(Core::MouseButtonPressedEvent& event)

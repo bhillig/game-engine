@@ -23,12 +23,14 @@ target_include_directories(App PRIVATE include)
 set(ALL_FILES ${SOURCES} ${HEADERS})
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${ALL_FILES})
 
-# Define TEXTURE_DIR
-target_compile_definitions(App PRIVATE TEXTURE_DIR="$<TARGET_FILE_DIR:App>/rc/textures")
+# Define AUDIO_DIR
+target_compile_definitions(App PRIVATE AUDIO_DIR="$<TARGET_FILE_DIR:App>/rc/audio")
 # Define MODEL_DIR
 target_compile_definitions(App PRIVATE MODEL_DIR="$<TARGET_FILE_DIR:App>/rc/models")
 # Define SHADER_DIR
 target_compile_definitions(App PRIVATE SHADER_DIR="$<TARGET_FILE_DIR:App>/rc/shaders")
+# Define TEXTURE_DIR
+target_compile_definitions(App PRIVATE TEXTURE_DIR="$<TARGET_FILE_DIR:App>/rc/textures")
 
 # Copy resources to build folder
 add_custom_command(TARGET App POST_BUILD
