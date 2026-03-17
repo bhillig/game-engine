@@ -54,13 +54,13 @@ void GameLayer::OnUpdate(float deltaTime)
 	{
 		m_playerPosition.y += -1.0f * deltaTime;
 	}
-	if (Core::Input::IsKeyPressed(KEY_A))
-	{
-		m_playerPosition.x += -1.0f * deltaTime;
-	}
-	else if (Core::Input::IsKeyPressed(KEY_D))
+	if (Core::Input::IsKeyPressed(KEY_D))
 	{
 		m_playerPosition.x += 1.0f * deltaTime;
+	}
+	else if (Core::Input::IsKeyPressed(KEY_A))
+	{
+		m_playerPosition.x += -1.0f * deltaTime;
 	}
 
 	// Update projectiles
