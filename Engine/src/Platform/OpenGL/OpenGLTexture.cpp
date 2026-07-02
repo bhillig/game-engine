@@ -29,7 +29,11 @@ OpenGLTexture::OpenGLTexture(const std::string& filepath)
 	}
 	else
 	{
-		LOG_CORE_ERROR("Texture failed!");
+		LOG_CORE_ERROR("Texture {} failed to construct as OpenGLTexture!", filepath);
+		// Fallback: 1x1 magenta so failures are obvious
+		unsigned char fallback[] = { 255, 0, 255, 255 };
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, fallback);
+		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 }
 
