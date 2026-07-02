@@ -61,25 +61,39 @@ private:
 	Core::Model* m_model;
 };
 
+class AABB
+{
+public:
+	AABB() : min(0.f), max(0.f) {}
+	AABB(const glm::vec3& min, const glm::vec3& max) 
+		: min(min), max(max) {}
+
+	glm::vec3 min;
+	glm::vec3 max;
+};
+
+
 class BoundingBoxComponent : public Component
 {
 public:
-	BoundingBoxComponent()  : m_min(0.f), m_max(0.f) {};
+	BoundingBoxComponent() {}
 	BoundingBoxComponent(const glm::vec3& min, const glm::vec3& max)
-		: m_min(min), m_max(max) {}
+		: m_boundingBox(min, max)
+	{
+	}
 
 	void SetCenter(const glm::vec3& center)
 	{
 		const glm::vec3 extents = GetExtents();
-		m_min = center - extents;
-		m_max = center + extents;
+		m_boundingBox.min = center - extents;
+		m_boundingBox.max = center + extents;
 	}
 
 	void SetExtents(const glm::vec3& extents)
 	{
 		const glm::vec3 center = GetCenter();
-		m_min = center - extents;
-		m_max = center + extents;
+		m_boundingBox.min = center - extents;
+		m_boundingBox.max = center + extents;
 	}
 
 	void SetSize(const glm::vec3& size)
@@ -87,19 +101,34 @@ public:
 		SetExtents(size * 0.5f);
 	}
 
-	glm::vec3 GetCenter() const { return (m_min + m_max) * 0.5f; }
+	glm::vec3 GetCenter() const { return (m_boundingBox.min + m_boundingBox.max) * 0.5f; }
 
-	glm::vec3 GetExtents() const { return (m_max - m_min) * 0.5f; }
+	glm::vec3 GetExtents() const { return (m_boundingBox.max - m_boundingBox.max) * 0.5f; }
 
-	glm::vec3 GetSize() const { return m_max - m_min; }
+	glm::vec3 GetSize() const { return m_boundingBox.max - m_boundingBox.min; }
 
-	const glm::vec3& GetMin() const { return m_min; }
+	const glm::vec3& GetMin() const { return m_boundingBox.min; }
 
-	const glm::vec3& GetMax() const { return m_max; }
+	const glm::vec3& GetMax() const { return m_boundingBox.max; }
 
 private:
-	glm::vec3 m_min;
-	glm::vec3 m_max;
+	AABB m_boundingBox;
+};
+
+class LifeSpanComponent : public Component
+{
+public:
+	LifeSpanComponent(float duration) : m_totalLifeSpan(duration), m_lifeSpanRemaining(duration) {}
+
+	float GetLifeSpanRemaining() const { return m_lifeSpanRemaining; }
+
+	float GetTotalLifeSpan() const { return m_totalLifeSpan; }
+
+	void SetLifeSpanRemaining(float duration) { m_lifeSpanRemaining = duration; }
+
+private:
+	float m_totalLifeSpan;
+	float m_lifeSpanRemaining;
 };
 
 } // namespace ECS

@@ -25,7 +25,7 @@ glm::vec3 PerspectiveCamera::forward() const
 	glm::vec3 cameraForward(0.f);
 	cameraForward.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
 	cameraForward.y = sin(glm::radians(m_pitch));
-	cameraForward.z = -sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+	cameraForward.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
 	return cameraForward;
 }
 

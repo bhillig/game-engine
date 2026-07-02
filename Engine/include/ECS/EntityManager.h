@@ -25,7 +25,7 @@ public:
 	}
 
 	template<IsComponent T>
-	std::vector<T>& GetComponentsOfType()
+	std::vector<T*> GetComponentsOfType()
 	{
 		return m_entityPool.GetComponentsOfType<T>();
 	}

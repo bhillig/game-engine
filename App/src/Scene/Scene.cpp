@@ -9,11 +9,126 @@
 
 #include <Renderer/RenderCommand.h>
 
+#include "GLFW/glfw3.h"
 #include "Renderer/BufferLayout.h"
 
 using Core::AssetManager;
 using Core::EventDispatcher;
 using Core::Renderer;
+
+namespace
+{
+
+	float Remap(float currentTime, float startTime, float endTime, float minValue, float maxValue)
+	{
+		const float fraction = (currentTime - startTime) / (endTime - startTime);
+		return fraction * (maxValue - minValue) + minValue;
+	}
+
+	bool ClipLine(int dimension, const ECS::AABB& aabb, const glm::vec3& start, const glm::vec3& end, float& low, float& high)
+	{
+		float dimension_low = (aabb.min.operator[](dimension) - start.operator[](dimension)) / (end.operator[](dimension) - start.operator[](dimension));
+		float dimension_high = (aabb.max.operator[](dimension) - start.operator[](dimension)) / (end.operator[](dimension) - start.operator[](dimension));
+
+		if (dimension_low > dimension_high)
+			std::swap(dimension_low, dimension_high);
+
+		if (dimension_low > high || dimension_high < low)
+		{
+			return false;
+		}
+
+		low = std::max(dimension_low, low);
+		high = std::min(dimension_high, high);
+		return low <= high;
+	}
+
+	bool LineAABBIntersection(const ECS::AABB& aabb, const glm::vec3& start, const glm::vec3& end, glm::vec3& intersection, float& fraction)
+	{
+		float low = 0;
+		float high = 1;
+
+		// Clip X
+		if (!ClipLine(0, aabb, start, end, low, high))
+		{
+			return false;
+		}
+		// Clip Y
+		if (!ClipLine(1, aabb, start, end, low, high))
+		{
+			return false;
+		}
+		// Clip Z
+		if (!ClipLine(2, aabb, start, end, low, high))
+		{
+			return false;
+		}
+		const glm::vec3 startToEnd = end - start;
+
+		intersection = start + (startToEnd * low);
+		fraction = low;
+		return true;
+	}
+
+	bool PerformLineTraceIntersection(Scene& scene, const glm::vec3& start, const glm::vec3& end, HitResult& hitResult)
+	{
+		auto& entityManager = scene.GetEntityManager();
+
+		// TODO: Remove AABB from ECS 
+		std::vector<ECS::AABB> worldSpaceBoundingBoxes;
+
+		// Iterate through all AABBs
+		const size_t entityCount = entityManager.GetEntityCount();
+
+		for (size_t i = 0; i < entityCount; ++i)
+		{
+			auto& entity = entityManager.GetEntity(i);
+			if (!entity.HasComponent<ECS::BoundingBoxComponent>())
+			{
+				continue;
+			}
+
+			ECS::TransformComponent& transformComp = entity.GetComponent<ECS::TransformComponent>();
+			ECS::BoundingBoxComponent& localBBoxComp = entity.GetComponent<ECS::BoundingBoxComponent>();
+
+			// Transform the AABBS into world space
+			const glm::vec3 worldMin = transformComp.transformMatrix() * glm::vec4(localBBoxComp.GetMin(), 1.0f);
+			const glm::vec3 worldMax = transformComp.transformMatrix() * glm::vec4(localBBoxComp.GetMax(), 1.0f);
+			worldSpaceBoundingBoxes.emplace_back(worldMin, worldMax);
+		}
+
+		float closestFraction = 1.f;
+		glm::vec3 closestIntersection{};
+
+		// For each bounding box, see if we get a hit
+		for (const ECS::AABB& aabb : worldSpaceBoundingBoxes)
+		{
+			glm::vec3 intersection;
+			float fraction;
+			if (!LineAABBIntersection(aabb, start, end, intersection, fraction))
+			{
+				continue;
+			}
+
+			if (fraction < closestFraction)
+			{
+				closestFraction = fraction;
+				closestIntersection = intersection;
+			}
+		}
+
+		if (std::abs(closestFraction - 1.0f) >= 0.001f)
+		{
+			hitResult.Hit = true;
+			hitResult.Intersection = closestIntersection;
+			return true;
+		}
+
+		hitResult.Hit = false;
+		return false;
+	}
+
+}
 
 // Models
 static constexpr std::string_view kBackpackModel = MODEL_DIR "/backpack/backpack.obj";
@@ -27,12 +142,9 @@ static constexpr std::string_view kColorFromTextureFS = SHADER_DIR "/colorFromTe
 static constexpr std::string_view kMartyPNG = TEXTURE_DIR "/MartySupremeMovieLogo.png";
 
 Scene::Scene()
-	: m_orthoCameraController(1280.f / 720.f)
-	, m_perspectiveCamera(glm::vec3{0.f, 0.f, -4.f}, 0.f, -90.f, 0.f, 45.f)
+	: m_perspectiveCamera(glm::vec3{0.f, 0.f, -4.f}, 0.f, 90.f, 0.f, 45.f)
 	, m_perspectiveCameraController(m_perspectiveCamera)
-	, m_enable3DView(true)
 	, m_skyBoxEnabled(true)
-	, m_useSpaceSkybox(false)
 {
 	// Import all models 
 	AssetManager::RequestLoadModel(std::string(kBackpackModel));
@@ -43,16 +155,11 @@ Scene::Scene()
 	m_texture = Core::Texture::Create(std::string(kMartyPNG));
 
 	posTexShader->Bind();
-	posTexShader->SetUniform1i("u_Material.texture_diffuse1", 1);
+	posTexShader->SetUniform1i("u_Material.texture_diffuse1", 0);
 }
 
 void Scene::OnEvent(Core::Event& event)
 {
-	if (!m_enable3DView)
-	{
-		m_orthoCameraController.OnEvent(event);
-	}
-
 	EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<Core::MouseMovedEvent>([this](Core::MouseMovedEvent& event) { return OnMouseMove(event.GetX(), event.GetY()); });
 	dispatcher.Dispatch<Core::KeyPressedEvent>([this](Core::KeyPressedEvent& event) { return OnKeyPressed(event.GetKeyCode()); });
@@ -65,22 +172,26 @@ void Scene::OnGainFocus()
 
 void Scene::OnLoseFocus()
 {
-	if (m_enable3DView)
-	{
-		m_perspectiveCameraController.OnLoseControl();
-	}
+	m_perspectiveCameraController.OnLoseControl();
 }
 
 void Scene::Update(float deltaTime)
 {
-	if (m_enable3DView)
+	if (m_timeEnabled)
 	{
-		m_perspectiveCameraController.Update(deltaTime);
+		// Print current value
+		const float minValue = 200.f;
+		const float maxValue = 700.f;
+		const float currentTime = glfwGetTime();
+		const float currentValue = Remap(currentTime, m_timeStarted, m_timeFinished, minValue, maxValue);
+		LOG_INFO("Value: [200 -> {} -> 700]", currentValue);
+		if (currentTime > m_timeFinished)
+		{
+			m_timeEnabled = false;
+		}
 	}
-	else
-	{
-		m_orthoCameraController.Update(deltaTime);
-	}
+
+	m_perspectiveCameraController.Update(deltaTime);
 
 	Core::RenderCommand::SetClearColor({ 0.f, 0.f, 0.f, 1.f });
 	Core::RenderCommand::Clear();
@@ -91,32 +202,15 @@ void Scene::Update(float deltaTime)
 
 	// Gather scene data
 	Renderer::SceneData sceneData;
-
-	if (m_enable3DView)
-	{
-		sceneData.ViewMatrix = m_perspectiveCamera.viewMatrix();
-		sceneData.ProjectionMatrix = m_perspectiveCamera.projectionMatrix(aspectRatio);
-	}
-	else
-	{
-		sceneData.ViewMatrix = m_orthoCameraController.viewMatrix();
-		sceneData.ProjectionMatrix = m_orthoCameraController.projectionMatrix();
-	}
+	sceneData.ViewMatrix = m_perspectiveCamera.viewMatrix();
+	sceneData.ProjectionMatrix = m_perspectiveCamera.projectionMatrix(aspectRatio);
 
 	// Begin scene
 	Renderer::BeginScene(sceneData);
 
 	if (m_skyBoxEnabled)
 	{
-		if (m_useSpaceSkybox)
-		{
-			Renderer::DrawSpaceSkybox();
-
-		}
-		else
-		{
-			Renderer::DrawSkybox();
-		}
+		Renderer::DrawSkybox();
 	}
 
 	for (size_t i = 0; i < m_entityManager.GetEntityCount(); ++i)
@@ -141,42 +235,23 @@ void Scene::Update(float deltaTime)
 		ECS::BoundingBoxComponent& bbComp = m_entityManager.GetComponentFromEntity<ECS::BoundingBoxComponent>(i);
 		if (bbComp.IsActive())
 		{
-			Renderer::DrawBoundingBox(bbComp.GetMin(), bbComp.GetMax());
+			Renderer::DrawBoundingBox(transformComp.transformMatrix(), bbComp.GetMin(), bbComp.GetMax());
 		}
 
 	}
 
-	// Draw texture
+	// If we hit something, draw the line
+	if (m_rayCastHit)
 	{
-		auto va = Core::VertexArray::Create();
+		Renderer::DrawLine(m_rayCastOrigin, m_rayCastImpactPoint, glm::vec3(0, 1, 0));
+	}
 
-		// Create vertex array
-		float vertices[] = {
-			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-			0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-			-0.5f, 0.5f, 0.0f, 0.f, 1.0f };
-
-		unsigned int indices[] = { 0, 1, 2, 2, 3, 0 };
-
-		Core::BufferLayout layout{
-			{
-				{Core::ShaderDataType::Float3, "a_Pos"},
-				{Core::ShaderDataType::Float2, "a_TexCoord"}
-			}
-		};
-
-		auto vbo = Core::VertexBuffer::Create(vertices, sizeof(vertices));
-		vbo->SetLayout(layout);
-		va->AddVertexBuffer(vbo);
-
-		auto ebo = Core::ElementBuffer::Create(indices, sizeof(indices));
-		va->SetElementBuffer(ebo);
-
-		m_texture->Bind();
-
-		auto posTexShader = Core::Renderer::GetShaderLibrary().Get("PosTexShader");
-		Renderer::Submit(posTexShader, va);
+	// Draw Billboard
+	{
+		const glm::vec3 position(0.0, 5.0, 0.0);
+		const glm::vec2 size(1, 1);
+		const glm::vec4 color(1.0, 1.0, 0.0, 1.0);
+		Renderer::DrawBillboard(position, size, color);
 	}
 
 	Renderer::EndScene();
@@ -197,28 +272,48 @@ void Scene::ImGuiRender()
 
 bool Scene::OnKeyPressed(int key)
 {
-	if (m_enable3DView)
+	m_perspectiveCameraController.OnKeyPressed(key);
+
+	if (key == KEY_F)
 	{
-		m_perspectiveCameraController.OnKeyPressed(key);
+		const glm::vec3 start = m_perspectiveCamera.position();
+		const glm::vec3 end = start + m_perspectiveCamera.forward() * 10000.f;
+
+		HitResult hitResult;
+		if (PerformLineTraceIntersection(*this, start, end, hitResult))
+		{
+			LOG_INFO("Hit object at intersection: ({},{},{})", hitResult.Intersection.x, hitResult.Intersection.y, hitResult.Intersection.z);
+
+			m_rayCastHit = true;
+			m_rayCastOrigin = start;
+			m_rayCastImpactPoint = hitResult.Intersection;
+		}
+		else
+		{
+			LOG_INFO("No intersection...");
+		}
+	}
+	else if (key == KEY_T)
+	{
+		if (!m_timeEnabled)
+		{
+			m_timeEnabled = true;
+			m_timeStarted = static_cast<float>(glfwGetTime());
+			m_timeFinished = m_timeStarted + 5.f;
+		}
 	}
 	return false;
 }
 
 bool Scene::OnKeyReleased(int key)
 {
-	if (m_enable3DView)
-	{
-		m_perspectiveCameraController.OnKeyReleased(key);
-	}
+	m_perspectiveCameraController.OnKeyReleased(key);
 	return false;
 }
 
 bool Scene::OnMouseMove(double xPos, double yPos)
 {
-	if (m_enable3DView)
-	{
-		m_perspectiveCameraController.OnMouseMove(xPos, yPos);
-	}
+	m_perspectiveCameraController.OnMouseMove(xPos, yPos);
 	return false;
 }
 
@@ -317,19 +412,19 @@ void Scene::ConstructLevelTreeTab()
 						ECS::TransformComponent& transformComp = entity.GetComponent<ECS::TransformComponent>();
 
 						float objectPos[3]{ transformComp.position.x, transformComp.position.y, transformComp.position.z };
-						if (ImGui::DragFloat3("Position", objectPos))
+						if (ImGui::DragFloat3("Position", objectPos, 0.125f))
 						{
 							transformComp.position = glm::vec3(objectPos[0], objectPos[1], objectPos[2]);
 						}
 
 						float objectRot[3]{ transformComp.rotation.x, transformComp.rotation.y, transformComp.rotation.z };
-						if (ImGui::DragFloat3("Rotation", objectRot))
+						if (ImGui::DragFloat3("Rotation", objectRot, 0.125f))
 						{
 							transformComp.rotation = glm::vec3(objectRot[0], objectRot[1], objectRot[2]);
 						}
 
 						float objectScale[3]{ transformComp.scale.x, transformComp.scale.y, transformComp.scale.z };
-						if (ImGui::DragFloat3("Scale", objectScale))
+						if (ImGui::DragFloat3("Scale", objectScale, 0.125f))
 						{
 							transformComp.scale = glm::vec3(objectScale[0], objectScale[1], objectScale[2]);
 						}
@@ -431,13 +526,6 @@ void Scene::ConstructWorldTab()
 		{
 			m_skyBoxEnabled = skyBoxEnabled;
 		}
-
-		bool useSpaceSkybox = m_useSpaceSkybox;
-		if (ImGui::Checkbox("Use Space Skybox", &useSpaceSkybox))
-		{
-			m_useSpaceSkybox = useSpaceSkybox;
-		}
-
 		ImGui::EndTabItem();
 	}
 }
@@ -452,7 +540,6 @@ void Scene::ConstructCameraTab()
 			m_camera.SetFOV(cameraFOV);
 		}*/
 
-		ImGui::Checkbox("Enable 3D", &m_enable3DView);
 		ImGui::EndTabItem();
 	}
 }

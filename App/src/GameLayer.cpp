@@ -19,6 +19,27 @@ static constexpr std::string_view kSpaceshipTexture = TEXTURE_DIR "/spaceship.pn
 static constexpr std::string_view kPlayerProjectileTexture = TEXTURE_DIR "/player-projectile.png";
 static constexpr std::string_view kStarfieldTexture = TEXTURE_DIR "/starfield.png";
 
+namespace
+{
+
+glm::vec2 Approach(const glm::vec2& target, const glm::vec2& currentValue, float deltaTime, float rate = 1.f)
+{
+	const glm::vec2 diff = target - currentValue;
+	const float dist = glm::length(diff);
+	const float step = deltaTime * rate;
+
+	if (dist > step)
+	{
+		const glm::vec2 direction = glm::normalize(diff);
+		return currentValue + direction * step;
+	}
+
+	return target;
+}
+
+}
+
+
 namespace App
 {
 
@@ -46,22 +67,42 @@ GameLayer::~GameLayer()
 void GameLayer::OnUpdate(float deltaTime)
 {
 	// Player movement input
+	glm::vec2 playerInput{ 0, 0 };
+
 	if (Core::Input::IsKeyPressed(KEY_W))
 	{
-		m_playerPosition.y += 1.0f * deltaTime;
+		playerInput.y = 1.f;
 	}
 	else if (Core::Input::IsKeyPressed(KEY_S))
 	{
-		m_playerPosition.y += -1.0f * deltaTime;
+		playerInput.y = -1.f;
 	}
 	if (Core::Input::IsKeyPressed(KEY_D))
 	{
-		m_playerPosition.x += 1.0f * deltaTime;
+		playerInput.x = 1.f;
 	}
 	else if (Core::Input::IsKeyPressed(KEY_A))
 	{
-		m_playerPosition.x += -1.0f * deltaTime;
+		playerInput.x = -1.f;
 	}
+
+	if (glm::length(playerInput) > 0.f)
+	{
+		playerInput = glm::normalize(playerInput);
+	}
+
+	const float playerSpeed = 1.f;
+	m_playerGoalVelocity = playerInput * playerSpeed;
+
+	// Lerp to desired velocity
+	m_playerVelocity = Approach(m_playerGoalVelocity, m_playerVelocity, deltaTime, 1.f);
+
+	// Print out player velocity
+	LOG_INFO("Player velocity = ({}, {})", m_playerVelocity.x, m_playerVelocity.y);
+
+	// Update player position
+	m_playerPosition.x += m_playerVelocity.x * deltaTime;
+	m_playerPosition.y += m_playerVelocity.y * deltaTime;
 
 	// Update projectiles
 	for (auto& projectile : m_projectiles)

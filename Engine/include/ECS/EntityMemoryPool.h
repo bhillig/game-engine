@@ -71,10 +71,21 @@ public:
 		return true;
 	}
 
+	// TODO: This breaks ECS advantages with cache friendly code as it introduces pointer indirection. This will be addressed at a 
+	// later date, but is here now so callers can simply query without having to filter for active components themselves.
 	template<IsComponent T>
-	std::vector<T>& GetComponentsOfType()
+	std::vector<T*> GetComponentsOfType()
 	{
-		return std::get<std::vector<T>>(m_componentPool);
+		std::vector<T*> activeComponentsOfType;
+		auto& componentVector = std::get<std::vector<T>>(m_componentPool);
+		for (auto& component : componentVector)
+		{
+			if (component.IsActive())
+			{
+				activeComponentsOfType.push_back(&component);
+			}
+		}
+		return activeComponentsOfType;
 	}
 
 	void AddEntity(size_t index);

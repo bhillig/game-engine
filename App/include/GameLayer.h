@@ -91,6 +91,9 @@ private:
 
 	std::vector<Projectile> m_projectiles;
 
+	glm::vec2 m_playerVelocity{0, 0}; // Lerps to goal velocity on update for smooth movement
+	glm::vec2 m_playerGoalVelocity{0, 0};
+
 	// TEMPORARY
 	ma_engine m_soundEngine;
 };

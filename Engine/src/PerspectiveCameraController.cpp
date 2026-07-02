@@ -24,26 +24,25 @@ PerspectiveCameraController::~PerspectiveCameraController()
 void PerspectiveCameraController::Update(float deltaTime)
 {
 	const glm::vec3 cameraForward = m_camera.forward();
-	const glm::vec3 walkDirection = glm::normalize(glm::vec3(cameraForward.x, 0.0f, cameraForward.z));
 	const float movementSpeed = 15.f;
 	const glm::vec3 upVector = glm::vec3(0.f, 1.0f, 0.f);
 
 	glm::vec3 moveDelta(0.0f);
 	if (m_forwardPressed)
 	{
-		moveDelta = movementSpeed * walkDirection * deltaTime;
+		moveDelta = movementSpeed * cameraForward * deltaTime;
 	}
 	if (m_backwardPressed)
 	{
-		moveDelta = -(movementSpeed * walkDirection * deltaTime);
+		moveDelta = -(movementSpeed * cameraForward * deltaTime);
 	}
 	if (m_leftPressed)
 	{
-		moveDelta = (glm::normalize(glm::cross(walkDirection, upVector)) * movementSpeed * deltaTime);
+		moveDelta = -(glm::normalize(glm::cross(upVector, cameraForward)) * movementSpeed * deltaTime);
 	}
 	if (m_rightPressed)
 	{
-		moveDelta = -glm::normalize(glm::cross(walkDirection, upVector)) * movementSpeed * deltaTime;
+		moveDelta = glm::normalize(glm::cross(upVector, cameraForward)) * movementSpeed * deltaTime;
 	}
 
 	m_camera.Move(moveDelta);
@@ -64,7 +63,7 @@ void PerspectiveCameraController::OnMouseMove(double xPos, double yPos)
 	const float deltaX = xPos - lastX;
 	const float deltaY = yPos - lastY;
 
-	const float yawOffset = deltaX * m_mouseHorizontalSensitivity;
+	const float yawOffset = -deltaX * m_mouseHorizontalSensitivity;
 	const float pitchOffset = -deltaY * m_mouseVerticalSensitivity;
 
 	m_camera.Rotate(pitchOffset, yawOffset, 0.f);

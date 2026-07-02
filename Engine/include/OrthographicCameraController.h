@@ -40,7 +40,7 @@ private:
 	/* Speed parameters */
 	float m_horizontalSpeed;
 	float m_verticalSpeed;
-	float m_rotationSpeed;
+	float m_rotationSpeed = 5.f;
 
 	/* Camera transform */
 	glm::vec3 m_position;

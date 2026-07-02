@@ -7,8 +7,11 @@
 #include <PerspectiveCamera.h>
 #include <PerspectiveCameraController.h>
 
-#include "OrthographicCamera.h"
-#include "OrthographicCameraController.h"
+struct HitResult
+{
+	bool Hit;
+	glm::vec3 Intersection;
+};
 
 class Scene
 {
@@ -47,14 +50,19 @@ private:
 private:
 	ECS::EntityManager m_entityManager; // Contains all the entities for the scene
 
-	Core::OrthographicCameraController m_orthoCameraController; // Camera controller
-
 	Core::PerspectiveCamera m_perspectiveCamera;
 	Core::PerspectiveCameraController m_perspectiveCameraController;
 
 	Core::Ref<Core::Texture> m_texture;
 
-	bool m_enable3DView; // Whether 3D view is selected
 	bool m_skyBoxEnabled; // Whether skybox is enabled
-	bool m_useSpaceSkybox; // Toggle between skybox and space-skybox
+
+
+	bool m_rayCastHit = false; // TEMP
+	glm::vec3 m_rayCastOrigin; // TEMP
+	glm::vec3 m_rayCastImpactPoint; // TEMP
+
+	bool m_timeEnabled = false;
+	float m_timeStarted;
+	float m_timeFinished;
 };
