@@ -2,11 +2,9 @@
 
 #include <Core.h>
 
-#include <Renderer/CubemapTexture.h>
 #include <Renderer/RendererAPI.h>
 #include <Renderer/Shader.h>
 
-#include <memory>
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -14,8 +12,8 @@
 
 namespace Core
 {
-
-class Model;
+	class Texture;
+	class Model;
 
 
 class Renderer
@@ -40,7 +38,7 @@ public:
 	// Draws a bounding box defined by (min,max) where min is the bottom-left corner and max is the top-right corner.
 	// @param min - Bottom-left corner of the bounding box to be rendered
 	// @param max - Top-right corner of the bounding box to be rendered
-	static void DrawBoundingBox(const glm::vec3& min, const glm::vec3& max);
+	static void DrawBoundingBox(const glm::mat4& transform, const glm::vec3& min, const glm::vec3& max);
 
 	// Draws a line between two vertices. Positions should be in world-space
 	// @param a - First vertex
@@ -48,13 +46,20 @@ public:
 	// @param color - Color of the line to be drawn
 	static void DrawLine(const glm::vec3& a, const glm::vec3& b, const glm::vec3& color = glm::vec3(1.f));
 
+	// Draws a colored billboard with a given size. Positions should be in world-space
+	// @param position - World position
+	// @param size - Size of billboard
+	// @param color - Color of the billboard to be drawn
+	static void DrawBillboard(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
+
+	// Draws a textured billboard with a given size. Positions should be in world-space
+	// @param position - World position
+	// @param size - Size of billboard
+	// @param texture - Texture of the billboard to be drawn
+	static void DrawBillboard(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture);
+
 	// Draws the engine's skybox
 	static void DrawSkybox();
-
-	// Draws the engine's space skybox
-	static void DrawSpaceSkybox();
-
-	// TODO: Implement a function which allows users to pass in a skybox texture so games can apply their own skybox's
 
 	// Submits a model to be rendered
 	// @param model - The model to render
@@ -81,16 +86,19 @@ private:
 	ShaderLibrary& GetShaderLibraryImpl() { return m_shaderLibrary; }
 
 	// Implementation of DrawBoundingBox
-	void DrawBoundingBoxImpl(const glm::vec3& min, const glm::vec3& max);
+	void DrawBoundingBoxImpl(const glm::mat4& transform, const glm::vec3& min, const glm::vec3& max);
 
 	// Implementation of DrawLine
 	void DrawLineImpl(const glm::vec3& a, const glm::vec3& b, const glm::vec3& color = glm::vec3(1.f));
 
+	// Implementation of DrawBillboard
+	void DrawBillboardImpl(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
+
+	// Implementation of DrawBillboard
+	void DrawBillboardImpl(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture);
+
 	// Implementation of DrawSkybox
 	void DrawSkyboxImpl();
-
-	// Implementation of DrawSpaceSkybox
-	void DrawSpaceSkyboxImpl();
 
 	// Implementation of Submit (model & transform)
 	void SubmitImpl(const Model& model, const glm::mat4& transform);
@@ -106,9 +114,6 @@ private:
 	SceneData m_sceneData;
 
 	ShaderLibrary m_shaderLibrary;
-
-	Ref<CubemapTexture> m_skyBoxTexture;
-	Ref<CubemapTexture> m_spaceSkyBoxTexture;
 };
 
 }
